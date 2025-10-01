@@ -1,11 +1,13 @@
-import { useState, FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authApi } from '../../../features/auth/api/authApi';
-import type { LoginCredentials } from '../../../shared/types';
+import { authApi } from '../../features/auth/api/authApi';
+import { useAuthStore } from '../../shared/store/authStore';
+import type { LoginCredentials } from '../../shared/types';
 import './LoginPage.css';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
+  const { login: setAuth } = useAuthStore();
   const [credentials, setCredentials] = useState<LoginCredentials>({
     login: '',
     password: '',
@@ -19,7 +21,8 @@ export const LoginPage = () => {
     setLoading(true);
 
     try {
-      await authApi.login(credentials);
+      const response = await authApi.login(credentials);
+      setAuth(response.account_id);
       navigate('/');
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Ошибка входа');

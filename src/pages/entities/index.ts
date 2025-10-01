@@ -1,1 +1,1 @@
-export { EntitiesPage } from './ui/EntitiesPage';
+export { EntitiesPage } from './EntitiesPage';

@@ -17,6 +17,11 @@ export interface LoginResponse {
   account_id: number;
 }
 
+export interface AuthorizationResponse {
+  access_token: string;
+  refresh_token: string;
+}
+
 export interface CheckAuthResponse {
   account_id: number;
   two_fa_status: boolean;

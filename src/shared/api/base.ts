@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { authorizationClient } from './authorizationClient';
 
 // Базовый клиент API с поддержкой cookies
 export const apiClient = axios.create({
@@ -20,12 +21,8 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        // Пытаемся обновить токен
-        await axios.post(
-          `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/refresh-token`,
-          {},
-          { withCredentials: true }
-        );
+        // Пытаемся обновить токен через authorization-сервис
+        await authorizationClient.post('/refresh');
 
         // Повторяем оригинальный запрос
         return apiClient(originalRequest);
