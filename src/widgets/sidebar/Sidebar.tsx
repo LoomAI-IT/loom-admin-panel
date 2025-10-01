@@ -8,9 +8,7 @@ interface MenuItem {
 
 // Здесь будут добавляться новые сущности
 const menuItems: MenuItem[] = [
-  // Пример:
-  // { path: '/users', label: 'Пользователи' },
-  // { path: '/orders', label: 'Заказы' },
+  { path: '/organizations', label: 'Организации' },
 ];
 
 export const Sidebar = () => {
