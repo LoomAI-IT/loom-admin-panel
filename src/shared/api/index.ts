@@ -3,3 +3,5 @@ export { accountClient } from './accountClient';
 export { authorizationClient } from './authorizationClient';
 export { organizationClient } from './organizationClient';
 export { organizationApi } from './organizationApi';
+export { contentClient } from './contentClient';
+export { categoryApi } from './categoryApi';

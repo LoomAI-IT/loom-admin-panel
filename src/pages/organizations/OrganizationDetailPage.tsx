@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { organizationApi } from '../../shared/api';
+import { organizationApi, categoryApi } from '../../shared/api';
 import type { Organization, UpdateOrganizationRequest } from '../../shared/types';
+import type { Category } from '../../shared/types/category';
 import './OrganizationDetailPage.css';
 
 export const OrganizationDetailPage = () => {
@@ -12,6 +13,12 @@ export const OrganizationDetailPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Состояние для рубрик
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
 
   // Форма редактирования
   const [formData, setFormData] = useState({
@@ -24,6 +31,7 @@ export const OrganizationDetailPage = () => {
   useEffect(() => {
     if (id) {
       loadOrganization(parseInt(id));
+      loadCategories(parseInt(id));
     }
   }, [id]);
 
@@ -85,6 +93,28 @@ export const OrganizationDetailPage = () => {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const loadCategories = async (organizationId: number) => {
+    try {
+      setCategoriesLoading(true);
+      const data = await categoryApi.getByOrganization(organizationId);
+      setCategories(data);
+    } catch (err) {
+      console.error('Failed to load categories:', err);
+    } finally {
+      setCategoriesLoading(false);
+    }
+  };
+
+  const handleCategoryClick = (category: Category) => {
+    setSelectedCategory(category);
+    setShowCategoryModal(true);
+  };
+
+  const handleCloseCategoryModal = () => {
+    setShowCategoryModal(false);
+    setSelectedCategory(null);
   };
 
   if (loading) {
@@ -220,6 +250,169 @@ export const OrganizationDetailPage = () => {
               </div>
             )}
           </div>
+        </div>
+
+        <div className="info-section">
+          <h2>Рубрики</h2>
+          {categoriesLoading ? (
+            <div className="loading-text">Загрузка рубрик...</div>
+          ) : categories.length === 0 ? (
+            <div className="empty-text">Рубрик пока нет</div>
+          ) : (
+            <div className="categories-grid">
+              {categories.map((category) => (
+                <div
+                  key={category.id}
+                  className="category-card"
+                  onClick={() => handleCategoryClick(category)}
+                >
+                  <div className="category-name">{category.name}</div>
+                  <div className="category-id">ID: {category.id}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {showCategoryModal && selectedCategory && (
+        <CategoryModal
+          category={selectedCategory}
+          onClose={handleCloseCategoryModal}
+          onUpdate={() => {
+            if (organization) {
+              loadCategories(organization.id);
+            }
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+// Модальное окно для просмотра и редактирования рубрики
+interface CategoryModalProps {
+  category: Category;
+  onClose: () => void;
+  onUpdate: () => void;
+}
+
+const CategoryModal = ({ category, onClose, onUpdate }: CategoryModalProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    name: category.name,
+    prompt_for_image_style: category.prompt_for_image_style,
+    prompt_for_text_style: category.prompt_for_text_style,
+  });
+
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      await categoryApi.update(category.id, formData);
+      setIsEditing(false);
+      onUpdate();
+      onClose();
+    } catch (err) {
+      console.error('Failed to update category:', err);
+      alert('Ошибка при сохранении изменений');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setFormData({
+      name: category.name,
+      prompt_for_image_style: category.prompt_for_image_style,
+      prompt_for_text_style: category.prompt_for_text_style,
+    });
+    setIsEditing(false);
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Рубрика #{category.id}</h2>
+          <button className="close-button" onClick={onClose}>
+            ×
+          </button>
+        </div>
+
+        <div className="modal-body">
+          <div className="info-item">
+            <label>Название</label>
+            {isEditing ? (
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="edit-input"
+              />
+            ) : (
+              <div className="value">{category.name}</div>
+            )}
+          </div>
+
+          <div className="info-item full-width">
+            <label>Промпт для стиля изображения</label>
+            {isEditing ? (
+              <textarea
+                value={formData.prompt_for_image_style}
+                onChange={(e) =>
+                  setFormData({ ...formData, prompt_for_image_style: e.target.value })
+                }
+                className="edit-textarea"
+                rows={6}
+              />
+            ) : (
+              <div className="value text-content">{category.prompt_for_image_style}</div>
+            )}
+          </div>
+
+          <div className="info-item full-width">
+            <label>Промпт для стиля текста</label>
+            {isEditing ? (
+              <textarea
+                value={formData.prompt_for_text_style}
+                onChange={(e) =>
+                  setFormData({ ...formData, prompt_for_text_style: e.target.value })
+                }
+                className="edit-textarea"
+                rows={6}
+              />
+            ) : (
+              <div className="value text-content">{category.prompt_for_text_style}</div>
+            )}
+          </div>
+
+          <div className="info-item">
+            <label>Дата создания</label>
+            <div className="value">{new Date(category.created_at).toLocaleString('ru-RU')}</div>
+          </div>
+        </div>
+
+        <div className="modal-footer">
+          {!isEditing ? (
+            <>
+              <button onClick={onClose} className="btn-secondary">
+                Закрыть
+              </button>
+              <button onClick={() => setIsEditing(true)} className="btn-primary">
+                Редактировать
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={handleCancel} className="btn-secondary" disabled={isSaving}>
+                Отмена
+              </button>
+              <button onClick={handleSave} className="btn-primary" disabled={isSaving}>
+                {isSaving ? 'Сохранение...' : 'Сохранить'}
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
