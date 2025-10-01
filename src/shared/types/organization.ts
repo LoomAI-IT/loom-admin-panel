@@ -1,7 +1,7 @@
 export interface Organization {
-  organization_id: number;
+  id: number;
   name: string;
-  balance_rub: string;
+  rub_balance: string;
   autoposting_moderation: boolean;
   video_cut_description_end_sample: string | null;
   publication_text_end_sample: string | null;
@@ -15,11 +15,6 @@ export interface CreateOrganizationRequest {
 export interface CreateOrganizationResponse {
   message: string;
   organization_id: number;
-}
-
-export interface GetOrganizationResponse {
-  message: string;
-  organization: Organization;
 }
 
 export interface GetAllOrganizationsResponse {

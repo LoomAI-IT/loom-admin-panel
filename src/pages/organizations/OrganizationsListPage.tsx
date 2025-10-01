@@ -70,13 +70,13 @@ export const OrganizationsListPage = () => {
             <tbody>
               {organizations.map((org) => (
                 <tr
-                  key={org.organization_id}
-                  onClick={() => handleOrganizationClick(org.organization_id)}
+                  key={org.id}
+                  onClick={() => handleOrganizationClick(org.id)}
                   className="clickable-row"
                 >
-                  <td>{org.organization_id}</td>
+                  <td>{org.id}</td>
                   <td>{org.name}</td>
-                  <td>{parseFloat(org.balance_rub).toFixed(2)}</td>
+                  <td>{parseFloat(org.rub_balance).toFixed(2)}</td>
                   <td>
                     <span className={`status ${org.autoposting_moderation ? 'enabled' : 'disabled'}`}>
                       {org.autoposting_moderation ? 'Включена' : 'Выключена'}

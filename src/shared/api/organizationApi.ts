@@ -1,12 +1,12 @@
 import { organizationClient } from './organizationClient';
 import type {
-  CreateOrganizationRequest,
-  CreateOrganizationResponse,
-  GetOrganizationResponse,
-  GetAllOrganizationsResponse,
-  UpdateOrganizationRequest,
-  UpdateOrganizationResponse,
-  DeleteOrganizationResponse,
+    CreateOrganizationRequest,
+    CreateOrganizationResponse,
+    GetOrganizationResponse,
+    GetAllOrganizationsResponse,
+    UpdateOrganizationRequest,
+    UpdateOrganizationResponse,
+    DeleteOrganizationResponse, Organization,
 } from '../types';
 
 export const organizationApi = {
@@ -17,8 +17,8 @@ export const organizationApi = {
   },
 
   // Получение организации по ID
-  getById: async (organizationId: number): Promise<GetOrganizationResponse> => {
-    const response = await organizationClient.get<GetOrganizationResponse>(`/${organizationId}`);
+  getById: async (organizationId: number): Promise<Organization> => {
+    const response = await organizationClient.get<Organization>(`/${organizationId}`);
     return response.data;
   },
 

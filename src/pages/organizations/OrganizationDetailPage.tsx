@@ -32,12 +32,12 @@ export const OrganizationDetailPage = () => {
       setLoading(true);
       setError(null);
       const response = await organizationApi.getById(organizationId);
-      setOrganization(response.organization);
+      setOrganization(response);
       setFormData({
-        name: response.organization.name,
-        autoposting_moderation: response.organization.autoposting_moderation,
-        video_cut_description_end_sample: response.organization.video_cut_description_end_sample || '',
-        publication_text_end_sample: response.organization.publication_text_end_sample || '',
+        name: response.name,
+        autoposting_moderation: response.autoposting_moderation,
+        video_cut_description_end_sample: response.video_cut_description_end_sample || '',
+        publication_text_end_sample: response.publication_text_end_sample || '',
       });
     } catch (err) {
       setError('Ошибка загрузки организации');
@@ -69,7 +69,7 @@ export const OrganizationDetailPage = () => {
     try {
       setIsSaving(true);
       const updateData: UpdateOrganizationRequest = {
-        organization_id: organization.organization_id,
+        organization_id: organization.id,
         name: formData.name,
         autoposting_moderation: formData.autoposting_moderation,
         video_cut_description_end_sample: formData.video_cut_description_end_sample,
@@ -77,7 +77,7 @@ export const OrganizationDetailPage = () => {
       };
 
       await organizationApi.update(updateData);
-      await loadOrganization(organization.organization_id);
+      await loadOrganization(organization.id);
       setIsEditing(false);
     } catch (err) {
       console.error('Failed to update organization:', err);
@@ -106,7 +106,7 @@ export const OrganizationDetailPage = () => {
         <button onClick={() => navigate('/organizations')} className="back-button">
           ← Назад к списку
         </button>
-        <h1>Организация #{organization.organization_id}</h1>
+        <h1>Организация #{organization.id}</h1>
         <div className="actions">
           {!isEditing ? (
             <button onClick={handleEdit} className="btn-primary">
@@ -131,7 +131,7 @@ export const OrganizationDetailPage = () => {
           <div className="info-grid">
             <div className="info-item">
               <label>ID</label>
-              <div className="value">{organization.organization_id}</div>
+              <div className="value">{organization.id}</div>
             </div>
 
             <div className="info-item">
@@ -150,7 +150,7 @@ export const OrganizationDetailPage = () => {
 
             <div className="info-item">
               <label>Баланс</label>
-              <div className="value balance">{parseFloat(organization.balance_rub).toFixed(2)} ₽</div>
+              <div className="value balance">{parseFloat(organization.rub_balance).toFixed(2)} ₽</div>
             </div>
 
             <div className="info-item">
