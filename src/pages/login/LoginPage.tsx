@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../../features/auth/api/authApi';
 import { useAuthStore } from '../../shared/store/authStore';
@@ -7,13 +7,19 @@ import './LoginPage.css';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
-  const { login: setAuth } = useAuthStore();
+  const { login: setAuth, isAuthenticated } = useAuthStore();
   const [credentials, setCredentials] = useState<LoginCredentials>({
     login: '',
     password: '',
   });
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
