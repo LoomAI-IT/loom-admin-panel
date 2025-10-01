@@ -9,6 +9,9 @@ export const OrganizationsListPage = () => {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newOrgName, setNewOrgName] = useState('');
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     loadOrganizations();
@@ -32,6 +35,24 @@ export const OrganizationsListPage = () => {
     navigate(`/organizations/${organizationId}`);
   };
 
+  const handleCreateOrganization = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newOrgName.trim()) return;
+
+    try {
+      setCreating(true);
+      await organizationApi.create({ name: newOrgName.trim() });
+      setShowCreateModal(false);
+      setNewOrgName('');
+      await loadOrganizations();
+    } catch (err) {
+      console.error('Failed to create organization:', err);
+      alert('Ошибка создания организации');
+    } finally {
+      setCreating(false);
+    }
+  };
+
   if (loading) {
     return <div className="organizations-list-page loading">Загрузка...</div>;
   }
@@ -49,6 +70,9 @@ export const OrganizationsListPage = () => {
     <div className="organizations-list-page">
       <div className="page-header">
         <h1>Организации</h1>
+        <button className="create-button" onClick={() => setShowCreateModal(true)}>
+          Создать организацию
+        </button>
       </div>
 
       <div className="organizations-table-container">
@@ -89,6 +113,45 @@ export const OrganizationsListPage = () => {
           </table>
         )}
       </div>
+
+      {showCreateModal && (
+        <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Создать организацию</h2>
+            <form onSubmit={handleCreateOrganization}>
+              <div className="form-group">
+                <label htmlFor="org-name">Название организации</label>
+                <input
+                  id="org-name"
+                  type="text"
+                  value={newOrgName}
+                  onChange={(e) => setNewOrgName(e.target.value)}
+                  placeholder="Введите название"
+                  autoFocus
+                  required
+                />
+              </div>
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="cancel-button"
+                  onClick={() => setShowCreateModal(false)}
+                  disabled={creating}
+                >
+                  Отмена
+                </button>
+                <button
+                  type="submit"
+                  className="submit-button"
+                  disabled={creating || !newOrgName.trim()}
+                >
+                  {creating ? 'Создание...' : 'Создать'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
