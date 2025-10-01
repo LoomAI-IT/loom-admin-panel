@@ -36,3 +36,4 @@ export interface BaseEntity {
 }
 
 export * from './organization';
+export * from './employee';

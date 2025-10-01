@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { organizationApi, categoryApi } from '../../shared/api';
-import type { Organization, UpdateOrganizationRequest } from '../../shared/types';
+import { organizationApi, categoryApi, employeeApi } from '../../shared/api';
+import type { Organization, UpdateOrganizationRequest, Employee } from '../../shared/types';
+import { EmployeeRole } from '../../shared/types';
 import type { Category } from '../../shared/types/category';
 import './OrganizationDetailPage.css';
 
@@ -20,6 +21,13 @@ export const OrganizationDetailPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
 
+  // Состояние для сотрудников
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [employeesLoading, setEmployeesLoading] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [showEmployeeModal, setShowEmployeeModal] = useState(false);
+  const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false);
+
   // Форма редактирования
   const [formData, setFormData] = useState({
     name: '',
@@ -32,6 +40,7 @@ export const OrganizationDetailPage = () => {
     if (id) {
       loadOrganization(parseInt(id));
       loadCategories(parseInt(id));
+      loadEmployees(parseInt(id));
     }
   }, [id]);
 
@@ -115,6 +124,36 @@ export const OrganizationDetailPage = () => {
   const handleCloseCategoryModal = () => {
     setShowCategoryModal(false);
     setSelectedCategory(null);
+  };
+
+  const loadEmployees = async (organizationId: number) => {
+    try {
+      setEmployeesLoading(true);
+      const response = await employeeApi.getByOrganization(organizationId);
+      setEmployees(response.employees);
+    } catch (err) {
+      console.error('Failed to load employees:', err);
+    } finally {
+      setEmployeesLoading(false);
+    }
+  };
+
+  const handleEmployeeClick = (employee: Employee) => {
+    setSelectedEmployee(employee);
+    setShowEmployeeModal(true);
+  };
+
+  const handleCloseEmployeeModal = () => {
+    setShowEmployeeModal(false);
+    setSelectedEmployee(null);
+  };
+
+  const handleAddEmployee = () => {
+    setShowAddEmployeeModal(true);
+  };
+
+  const handleCloseAddEmployeeModal = () => {
+    setShowAddEmployeeModal(false);
   };
 
   if (loading) {
@@ -273,6 +312,34 @@ export const OrganizationDetailPage = () => {
             </div>
           )}
         </div>
+
+        <div className="info-section">
+          <div className="section-header">
+            <h2>Сотрудники</h2>
+            <button onClick={handleAddEmployee} className="btn-primary">
+              Добавить сотрудника
+            </button>
+          </div>
+          {employeesLoading ? (
+            <div className="loading-text">Загрузка сотрудников...</div>
+          ) : employees.length === 0 ? (
+            <div className="empty-text">Сотрудников пока нет</div>
+          ) : (
+            <div className="employees-grid">
+              {employees.map((employee) => (
+                <div
+                  key={employee.id}
+                  className="employee-card"
+                  onClick={() => handleEmployeeClick(employee)}
+                >
+                  <div className="employee-name">{employee.name}</div>
+                  <div className="employee-role">{employee.role}</div>
+                  <div className="employee-id">Account ID: {employee.account_id}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {showCategoryModal && selectedCategory && (
@@ -282,6 +349,37 @@ export const OrganizationDetailPage = () => {
           onUpdate={() => {
             if (organization) {
               loadCategories(organization.id);
+            }
+          }}
+        />
+      )}
+
+      {showEmployeeModal && selectedEmployee && (
+        <EmployeeModal
+          employee={selectedEmployee}
+          onClose={handleCloseEmployeeModal}
+          onUpdate={() => {
+            if (organization) {
+              loadEmployees(organization.id);
+            }
+          }}
+          onDelete={() => {
+            if (organization) {
+              loadEmployees(organization.id);
+              handleCloseEmployeeModal();
+            }
+          }}
+        />
+      )}
+
+      {showAddEmployeeModal && organization && (
+        <AddEmployeeModal
+          organizationId={organization.id}
+          onClose={handleCloseAddEmployeeModal}
+          onAdd={() => {
+            if (organization) {
+              loadEmployees(organization.id);
+              handleCloseAddEmployeeModal();
             }
           }}
         />
@@ -413,6 +511,371 @@ const CategoryModal = ({ category, onClose, onUpdate }: CategoryModalProps) => {
               </button>
             </>
           )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Модальное окно для просмотра и редактирования сотрудника
+interface EmployeeModalProps {
+  employee: Employee;
+  onClose: () => void;
+  onUpdate: () => void;
+  onDelete: () => void;
+}
+
+const EmployeeModal = ({ employee, onClose, onUpdate, onDelete }: EmployeeModalProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [formData, setFormData] = useState({
+    role: employee.role,
+    required_moderation: employee.required_moderation,
+    autoposting_permission: employee.autoposting_permission,
+    add_employee_permission: employee.add_employee_permission,
+    edit_employee_perm_permission: employee.edit_employee_perm_permission,
+    top_up_balance_permission: employee.top_up_balance_permission,
+    sign_up_social_net_permission: employee.sign_up_social_net_permission,
+  });
+
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+
+      // Обновляем роль
+      await employeeApi.updateRole({
+        account_id: employee.account_id,
+        role: formData.role,
+      });
+
+      // Обновляем права
+      await employeeApi.updatePermissions({
+        account_id: employee.account_id,
+        required_moderation: formData.required_moderation,
+        autoposting_permission: formData.autoposting_permission,
+        add_employee_permission: formData.add_employee_permission,
+        edit_employee_perm_permission: formData.edit_employee_perm_permission,
+        top_up_balance_permission: formData.top_up_balance_permission,
+        sign_up_social_net_permission: formData.sign_up_social_net_permission,
+      });
+
+      setIsEditing(false);
+      onUpdate();
+    } catch (err) {
+      console.error('Failed to update employee:', err);
+      alert('Ошибка при сохранении изменений');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm(`Вы уверены, что хотите удалить сотрудника ${employee.name}?`)) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await employeeApi.delete(employee.account_id);
+      onDelete();
+    } catch (err) {
+      console.error('Failed to delete employee:', err);
+      alert('Ошибка при удалении сотрудника');
+      setIsDeleting(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setFormData({
+      role: employee.role,
+      required_moderation: employee.required_moderation,
+      autoposting_permission: employee.autoposting_permission,
+      add_employee_permission: employee.add_employee_permission,
+      edit_employee_perm_permission: employee.edit_employee_perm_permission,
+      top_up_balance_permission: employee.top_up_balance_permission,
+      sign_up_social_net_permission: employee.sign_up_social_net_permission,
+    });
+    setIsEditing(false);
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Сотрудник: {employee.name}</h2>
+          <button className="close-button" onClick={onClose}>
+            ×
+          </button>
+        </div>
+
+        <div className="modal-body">
+          <div className="info-item">
+            <label>ID</label>
+            <div className="value">{employee.id}</div>
+          </div>
+
+          <div className="info-item">
+            <label>Account ID</label>
+            <div className="value">{employee.account_id}</div>
+          </div>
+
+          <div className="info-item">
+            <label>Имя</label>
+            <div className="value">{employee.name}</div>
+          </div>
+
+          <div className="info-item">
+            <label>Роль</label>
+            {isEditing ? (
+              <select
+                value={formData.role}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                className="edit-input"
+              >
+                <option value={EmployeeRole.ADMIN}>Admin</option>
+                <option value={EmployeeRole.MODERATOR}>Moderator</option>
+                <option value={EmployeeRole.EMPLOYEE}>Employee</option>
+              </select>
+            ) : (
+              <div className="value">{employee.role}</div>
+            )}
+          </div>
+
+          <div className="info-item">
+            <label>Приглашён от Account ID</label>
+            <div className="value">{employee.invited_from_account_id}</div>
+          </div>
+
+          <div className="info-item full-width">
+            <h3>Права доступа</h3>
+          </div>
+
+          <div className="info-item">
+            <label>Требуется модерация</label>
+            {isEditing ? (
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={formData.required_moderation}
+                  onChange={(e) => setFormData({ ...formData, required_moderation: e.target.checked })}
+                />
+                <span className="slider"></span>
+              </label>
+            ) : (
+              <div className="value">{employee.required_moderation ? 'Да' : 'Нет'}</div>
+            )}
+          </div>
+
+          <div className="info-item">
+            <label>Автопостинг</label>
+            {isEditing ? (
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={formData.autoposting_permission}
+                  onChange={(e) => setFormData({ ...formData, autoposting_permission: e.target.checked })}
+                />
+                <span className="slider"></span>
+              </label>
+            ) : (
+              <div className="value">{employee.autoposting_permission ? 'Да' : 'Нет'}</div>
+            )}
+          </div>
+
+          <div className="info-item">
+            <label>Добавление сотрудников</label>
+            {isEditing ? (
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={formData.add_employee_permission}
+                  onChange={(e) => setFormData({ ...formData, add_employee_permission: e.target.checked })}
+                />
+                <span className="slider"></span>
+              </label>
+            ) : (
+              <div className="value">{employee.add_employee_permission ? 'Да' : 'Нет'}</div>
+            )}
+          </div>
+
+          <div className="info-item">
+            <label>Редактирование прав сотрудников</label>
+            {isEditing ? (
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={formData.edit_employee_perm_permission}
+                  onChange={(e) => setFormData({ ...formData, edit_employee_perm_permission: e.target.checked })}
+                />
+                <span className="slider"></span>
+              </label>
+            ) : (
+              <div className="value">{employee.edit_employee_perm_permission ? 'Да' : 'Нет'}</div>
+            )}
+          </div>
+
+          <div className="info-item">
+            <label>Пополнение баланса</label>
+            {isEditing ? (
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={formData.top_up_balance_permission}
+                  onChange={(e) => setFormData({ ...formData, top_up_balance_permission: e.target.checked })}
+                />
+                <span className="slider"></span>
+              </label>
+            ) : (
+              <div className="value">{employee.top_up_balance_permission ? 'Да' : 'Нет'}</div>
+            )}
+          </div>
+
+          <div className="info-item">
+            <label>Регистрация соц. сетей</label>
+            {isEditing ? (
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={formData.sign_up_social_net_permission}
+                  onChange={(e) => setFormData({ ...formData, sign_up_social_net_permission: e.target.checked })}
+                />
+                <span className="slider"></span>
+              </label>
+            ) : (
+              <div className="value">{employee.sign_up_social_net_permission ? 'Да' : 'Нет'}</div>
+            )}
+          </div>
+
+          <div className="info-item">
+            <label>Дата создания</label>
+            <div className="value">{new Date(employee.created_at).toLocaleString('ru-RU')}</div>
+          </div>
+        </div>
+
+        <div className="modal-footer">
+          {!isEditing ? (
+            <>
+              <button onClick={handleDelete} className="btn-danger" disabled={isDeleting}>
+                {isDeleting ? 'Удаление...' : 'Удалить'}
+              </button>
+              <div style={{ flex: 1 }} />
+              <button onClick={onClose} className="btn-secondary">
+                Закрыть
+              </button>
+              <button onClick={() => setIsEditing(true)} className="btn-primary">
+                Редактировать
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={handleCancel} className="btn-secondary" disabled={isSaving}>
+                Отмена
+              </button>
+              <button onClick={handleSave} className="btn-primary" disabled={isSaving}>
+                {isSaving ? 'Сохранение...' : 'Сохранить'}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Модальное окно для добавления нового сотрудника
+interface AddEmployeeModalProps {
+  organizationId: number;
+  onClose: () => void;
+  onAdd: () => void;
+}
+
+const AddEmployeeModal = ({ organizationId, onClose, onAdd }: AddEmployeeModalProps) => {
+  const [isSaving, setIsSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    account_id: '',
+    name: '',
+    role: EmployeeRole.EMPLOYEE as string,
+  });
+
+  const handleSave = async () => {
+    if (!formData.account_id || !formData.name) {
+      alert('Заполните все обязательные поля');
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      await employeeApi.create({
+        account_id: parseInt(formData.account_id),
+        organization_id: organizationId,
+        invited_from_account_id: 0, // TODO: получать из текущего пользователя
+        name: formData.name,
+        role: formData.role,
+      });
+      onAdd();
+    } catch (err) {
+      console.error('Failed to create employee:', err);
+      alert('Ошибка при создании сотрудника');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Добавить сотрудника</h2>
+          <button className="close-button" onClick={onClose}>
+            ×
+          </button>
+        </div>
+
+        <div className="modal-body">
+          <div className="info-item">
+            <label>Account ID *</label>
+            <input
+              type="number"
+              value={formData.account_id}
+              onChange={(e) => setFormData({ ...formData, account_id: e.target.value })}
+              className="edit-input"
+              placeholder="Введите account ID"
+            />
+          </div>
+
+          <div className="info-item">
+            <label>Имя *</label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="edit-input"
+              placeholder="Введите имя"
+            />
+          </div>
+
+          <div className="info-item">
+            <label>Роль</label>
+            <select
+              value={formData.role}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+              className="edit-input"
+            >
+              <option value={EmployeeRole.ADMIN}>Admin</option>
+              <option value={EmployeeRole.MODERATOR}>Moderator</option>
+              <option value={EmployeeRole.EMPLOYEE}>Employee</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="modal-footer">
+          <button onClick={onClose} className="btn-secondary" disabled={isSaving}>
+            Отмена
+          </button>
+          <button onClick={handleSave} className="btn-primary" disabled={isSaving}>
+            {isSaving ? 'Создание...' : 'Создать'}
+          </button>
         </div>
       </div>
     </div>

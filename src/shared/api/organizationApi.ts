@@ -2,11 +2,11 @@ import { organizationClient } from './organizationClient';
 import type {
     CreateOrganizationRequest,
     CreateOrganizationResponse,
-    GetOrganizationResponse,
     GetAllOrganizationsResponse,
     UpdateOrganizationRequest,
     UpdateOrganizationResponse,
-    DeleteOrganizationResponse, Organization,
+    DeleteOrganizationResponse,
+    Organization,
 } from '../types';
 
 export const organizationApi = {

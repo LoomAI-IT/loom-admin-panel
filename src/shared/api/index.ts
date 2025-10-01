@@ -5,3 +5,5 @@ export { organizationClient } from './organizationClient';
 export { organizationApi } from './organizationApi';
 export { contentClient } from './contentClient';
 export { categoryApi } from './categoryApi';
+export { employeeClient } from './employeeClient';
+export { employeeApi } from './employeeApi';
