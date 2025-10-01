@@ -8,9 +8,6 @@ RUN npm ci
 
 COPY . .
 
-ARG VITE_LOOM_DOMAIN
-ENV VITE_LOOM_DOMAIN=$VITE_LOOM_DOMAIN
-
 RUN npm run build
 
 # Production stage
