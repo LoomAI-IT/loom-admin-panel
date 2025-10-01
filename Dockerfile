@@ -8,6 +8,10 @@ RUN npm ci
 
 COPY . .
 
+# Переменные окружения для Vite должны быть указаны здесь
+ARG VITE_LOOM_DOMAIN
+ENV VITE_LOOM_DOMAIN=${VITE_LOOM_DOMAIN}
+
 RUN npm run build
 
 # Production stage
