@@ -20,6 +20,7 @@ export const OrganizationDetailPage = () => {
   const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
 
   // Состояние для сотрудников
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -124,6 +125,14 @@ export const OrganizationDetailPage = () => {
   const handleCloseCategoryModal = () => {
     setShowCategoryModal(false);
     setSelectedCategory(null);
+  };
+
+  const handleAddCategory = () => {
+    setShowAddCategoryModal(true);
+  };
+
+  const handleCloseAddCategoryModal = () => {
+    setShowAddCategoryModal(false);
   };
 
   const loadEmployees = async (organizationId: number) => {
@@ -292,7 +301,12 @@ export const OrganizationDetailPage = () => {
         </div>
 
         <div className="info-section">
-          <h2>Рубрики</h2>
+          <div className="section-header">
+            <h2>Рубрики</h2>
+            <button onClick={handleAddCategory} className="btn-primary">
+              Создать рубрику
+            </button>
+          </div>
           {categoriesLoading ? (
             <div className="loading-text">Загрузка рубрик...</div>
           ) : categories.length === 0 ? (
@@ -380,6 +394,19 @@ export const OrganizationDetailPage = () => {
             if (organization) {
               loadEmployees(organization.id);
               handleCloseAddEmployeeModal();
+            }
+          }}
+        />
+      )}
+
+      {showAddCategoryModal && organization && (
+        <AddCategoryModal
+          organizationId={organization.id}
+          onClose={handleCloseAddCategoryModal}
+          onAdd={() => {
+            if (organization) {
+              loadCategories(organization.id);
+              handleCloseAddCategoryModal();
             }
           }}
         />
@@ -777,6 +804,103 @@ const EmployeeModal = ({ employee, onClose, onUpdate, onDelete }: EmployeeModalP
               </button>
             </>
           )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Модальное окно для добавления новой рубрики
+interface AddCategoryModalProps {
+  organizationId: number;
+  onClose: () => void;
+  onAdd: () => void;
+}
+
+const AddCategoryModal = ({ organizationId, onClose, onAdd }: AddCategoryModalProps) => {
+  const [isSaving, setIsSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    prompt_for_image_style: '',
+    prompt_for_text_style: '',
+  });
+
+  const handleSave = async () => {
+    if (!formData.name.trim()) {
+      alert('Введите название рубрики');
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      await categoryApi.create({
+        organization_id: organizationId,
+        name: formData.name.trim(),
+        prompt_for_image_style: formData.prompt_for_image_style,
+        prompt_for_text_style: formData.prompt_for_text_style,
+      });
+      onAdd();
+    } catch (err) {
+      console.error('Failed to create category:', err);
+      alert('Ошибка при создании рубрики');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Создать рубрику</h2>
+          <button className="close-button" onClick={onClose}>
+            ×
+          </button>
+        </div>
+
+        <div className="modal-body">
+          <div className="info-item">
+            <label>Название *</label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="edit-input"
+              placeholder="Введите название рубрики"
+              autoFocus
+            />
+          </div>
+
+          <div className="info-item full-width">
+            <label>Промпт для стиля изображения</label>
+            <textarea
+              value={formData.prompt_for_image_style}
+              onChange={(e) => setFormData({ ...formData, prompt_for_image_style: e.target.value })}
+              className="edit-textarea"
+              rows={6}
+              placeholder="Введите промпт для стиля изображения"
+            />
+          </div>
+
+          <div className="info-item full-width">
+            <label>Промпт для стиля текста</label>
+            <textarea
+              value={formData.prompt_for_text_style}
+              onChange={(e) => setFormData({ ...formData, prompt_for_text_style: e.target.value })}
+              className="edit-textarea"
+              rows={6}
+              placeholder="Введите промпт для стиля текста"
+            />
+          </div>
+        </div>
+
+        <div className="modal-footer">
+          <button onClick={onClose} className="btn-secondary" disabled={isSaving}>
+            Отмена
+          </button>
+          <button onClick={handleSave} className="btn-primary" disabled={isSaving || !formData.name.trim()}>
+            {isSaving ? 'Создание...' : 'Создать'}
+          </button>
         </div>
       </div>
     </div>
