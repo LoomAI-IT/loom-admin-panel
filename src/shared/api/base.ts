@@ -3,7 +3,7 @@ import { authorizationClient } from './authorizationClient';
 
 // Базовый клиент API с поддержкой cookies
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
+  baseURL: import.meta.env.VITE_LOOM_DOMAIN,
   headers: {
     'Content-Type': 'application/json',
   },
