@@ -1,2 +1,2 @@
-- docker build --build-arg VITE_LOOM_DOMAIN=$LOOM_DOMAIN -t loom-admin-panel .
+- docker build --build-arg VITE_LOOM_DOMAIN=https://$LOOM_DOMAIN -t loom-admin-panel .
 - docker run -p 3010:80 loom-admin-panel
