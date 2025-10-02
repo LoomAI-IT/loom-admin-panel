@@ -29,7 +29,7 @@ export const LoginPage = () => {
     try {
       const response = await authApi.login(credentials);
       setAuth(response.account_id);
-      navigate('/');
+      navigate('/', { replace: true });
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Ошибка входа');
     } finally {

@@ -13,34 +13,12 @@ const AUTH_KEY = 'auth_account_id';
 
 let listeners: Array<() => void> = [];
 
-// Функция для проверки наличия токенов в куках
-const hasAuthTokens = (): boolean => {
-  const cookies = document.cookie.split(';');
-  const hasAccessToken = cookies.some(cookie => cookie.trim().startsWith('access_token='));
-  const hasRefreshToken = cookies.some(cookie => cookie.trim().startsWith('refresh_token='));
-  return hasAccessToken || hasRefreshToken;
-};
-
 const authStore = {
   getState: (): { isAuthenticated: boolean; accountId: string | null } => {
     const accountId = localStorage.getItem(AUTH_KEY);
-    const hasTokens = hasAuthTokens();
-
-    // Пользователь аутентифицирован только если есть и accountId, и токены в куках
-    const isAuthenticated = !!accountId && hasTokens;
-
-    // Если нет токенов, но есть accountId - очищаем accountId
-    if (!hasTokens && accountId) {
-      localStorage.removeItem(AUTH_KEY);
-      return {
-        isAuthenticated: false,
-        accountId: null,
-      };
-    }
-
     return {
-      isAuthenticated,
-      accountId: isAuthenticated ? accountId : null,
+      isAuthenticated: !!accountId,
+      accountId,
     };
   },
 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { authorizationClient } from './authorizationClient';
+import type { AxiosInstance } from 'axios';
 
 // Базовый клиент API с поддержкой cookies
 export const apiClient = axios.create({
@@ -11,28 +11,31 @@ export const apiClient = axios.create({
 });
 
 // Интерцептор для обработки ошибок и автоматического refresh токена
-apiClient.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+export const setupAuthInterceptor = (client: AxiosInstance, authClient: AxiosInstance) => {
+  client.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
 
-    // Если получили 403 и это не повторный запрос
-    if (error.response?.status === 403 && !originalRequest._retry) {
-      originalRequest._retry = true;
+      // Если получили 401 или 403 и это не повторный запрос
+      if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
+        originalRequest._retry = true;
 
-      try {
-        // Пытаемся обновить токен через authorization-сервис
-        await authorizationClient.post('/refresh');
+        try {
+          // Пытаемся обновить токен через authorization-сервис
+          await authClient.post('/refresh');
 
-        // Повторяем оригинальный запрос
-        return apiClient(originalRequest);
-      } catch (refreshError) {
-        // Если refresh не удался, перенаправляем на логин
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
+          // Повторяем оригинальный запрос
+          return client(originalRequest);
+        } catch (refreshError) {
+          // Если refresh не удался, очищаем localStorage и перенаправляем на логин
+          localStorage.removeItem('auth_account_id');
+          window.location.href = '/login';
+          return Promise.reject(refreshError);
+        }
       }
-    }
 
-    return Promise.reject(error);
-  }
-);
+      return Promise.reject(error);
+    }
+  );
+};

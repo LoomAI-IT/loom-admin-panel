@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { setupAuthInterceptor } from './base';
+import { authorizationClient } from './authorizationClient';
 
 // Клиент для микросервиса account
 export const accountClient = axios.create({
@@ -8,3 +10,5 @@ export const accountClient = axios.create({
   },
   withCredentials: true, // Важно для работы с httpOnly cookies
 });
+
+setupAuthInterceptor(accountClient, authorizationClient);
