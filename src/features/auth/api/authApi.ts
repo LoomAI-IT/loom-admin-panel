@@ -1,5 +1,5 @@
 import { accountClient, authorizationClient } from '../../../shared/api';
-import type { LoginCredentials, LoginResponse, AuthorizationResponse } from '../../../shared/types';
+import type { LoginCredentials, LoginResponse } from '../../../shared/types';
 
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
