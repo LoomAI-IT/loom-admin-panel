@@ -308,15 +308,41 @@ export const OrganizationDetailPage = () => {
           <h2>Tone of Voice</h2>
           <div className="info-item full-width">
             {isEditing ? (
-              <textarea
-                value={formData.tone_of_voice.join('\n')}
-                onChange={(e) =>
-                  setFormData({ ...formData, tone_of_voice: e.target.value.split('\n').filter(s => s.trim()) })
-                }
-                className="edit-textarea"
-                rows={6}
-                placeholder="Введите каждую запись с новой строки..."
-              />
+              <div className="list-editor">
+                {formData.tone_of_voice.map((item, idx) => (
+                  <div key={idx} className="list-item">
+                    <textarea
+                      value={item}
+                      onChange={(e) => {
+                        const newList = [...formData.tone_of_voice];
+                        newList[idx] = e.target.value;
+                        setFormData({ ...formData, tone_of_voice: newList });
+                      }}
+                      className="edit-textarea"
+                      rows={3}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newList = formData.tone_of_voice.filter((_, i) => i !== idx);
+                        setFormData({ ...formData, tone_of_voice: newList });
+                      }}
+                      className="btn-remove"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, tone_of_voice: [...formData.tone_of_voice, ''] });
+                  }}
+                  className="btn-add"
+                >
+                  + Добавить
+                </button>
+              </div>
             ) : (
               <div className="value">
                 {organization.tone_of_voice.length > 0 ? (
@@ -337,15 +363,41 @@ export const OrganizationDetailPage = () => {
           <h2>Правила бренда</h2>
           <div className="info-item full-width">
             {isEditing ? (
-              <textarea
-                value={formData.brand_rules.join('\n')}
-                onChange={(e) =>
-                  setFormData({ ...formData, brand_rules: e.target.value.split('\n').filter(s => s.trim()) })
-                }
-                className="edit-textarea"
-                rows={6}
-                placeholder="Введите каждое правило с новой строки..."
-              />
+              <div className="list-editor">
+                {formData.brand_rules.map((item, idx) => (
+                  <div key={idx} className="list-item">
+                    <textarea
+                      value={item}
+                      onChange={(e) => {
+                        const newList = [...formData.brand_rules];
+                        newList[idx] = e.target.value;
+                        setFormData({ ...formData, brand_rules: newList });
+                      }}
+                      className="edit-textarea"
+                      rows={3}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newList = formData.brand_rules.filter((_, i) => i !== idx);
+                        setFormData({ ...formData, brand_rules: newList });
+                      }}
+                      className="btn-remove"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, brand_rules: [...formData.brand_rules, ''] });
+                  }}
+                  className="btn-add"
+                >
+                  + Добавить
+                </button>
+              </div>
             ) : (
               <div className="value">
                 {organization.brand_rules.length > 0 ? (
@@ -366,15 +418,41 @@ export const OrganizationDetailPage = () => {
           <h2>Правила соответствия</h2>
           <div className="info-item full-width">
             {isEditing ? (
-              <textarea
-                value={formData.compliance_rules.join('\n')}
-                onChange={(e) =>
-                  setFormData({ ...formData, compliance_rules: e.target.value.split('\n').filter(s => s.trim()) })
-                }
-                className="edit-textarea"
-                rows={6}
-                placeholder="Введите каждое правило с новой строки..."
-              />
+              <div className="list-editor">
+                {formData.compliance_rules.map((item, idx) => (
+                  <div key={idx} className="list-item">
+                    <textarea
+                      value={item}
+                      onChange={(e) => {
+                        const newList = [...formData.compliance_rules];
+                        newList[idx] = e.target.value;
+                        setFormData({ ...formData, compliance_rules: newList });
+                      }}
+                      className="edit-textarea"
+                      rows={3}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newList = formData.compliance_rules.filter((_, i) => i !== idx);
+                        setFormData({ ...formData, compliance_rules: newList });
+                      }}
+                      className="btn-remove"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, compliance_rules: [...formData.compliance_rules, ''] });
+                  }}
+                  className="btn-add"
+                >
+                  + Добавить
+                </button>
+              </div>
             ) : (
               <div className="value">
                 {organization.compliance_rules.length > 0 ? (
@@ -395,15 +473,41 @@ export const OrganizationDetailPage = () => {
           <h2>Информация об аудитории</h2>
           <div className="info-item full-width">
             {isEditing ? (
-              <textarea
-                value={formData.audience_insights.join('\n')}
-                onChange={(e) =>
-                  setFormData({ ...formData, audience_insights: e.target.value.split('\n').filter(s => s.trim()) })
-                }
-                className="edit-textarea"
-                rows={6}
-                placeholder="Введите каждый инсайт с новой строки..."
-              />
+              <div className="list-editor">
+                {formData.audience_insights.map((item, idx) => (
+                  <div key={idx} className="list-item">
+                    <textarea
+                      value={item}
+                      onChange={(e) => {
+                        const newList = [...formData.audience_insights];
+                        newList[idx] = e.target.value;
+                        setFormData({ ...formData, audience_insights: newList });
+                      }}
+                      className="edit-textarea"
+                      rows={3}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newList = formData.audience_insights.filter((_, i) => i !== idx);
+                        setFormData({ ...formData, audience_insights: newList });
+                      }}
+                      className="btn-remove"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, audience_insights: [...formData.audience_insights, ''] });
+                  }}
+                  className="btn-add"
+                >
+                  + Добавить
+                </button>
+              </div>
             ) : (
               <div className="value">
                 {organization.audience_insights.length > 0 ? (
@@ -424,23 +528,107 @@ export const OrganizationDetailPage = () => {
           <h2>Продукты</h2>
           <div className="info-item full-width">
             {isEditing ? (
-              <textarea
-                value={JSON.stringify(formData.products, null, 2)}
-                onChange={(e) => {
-                  try {
-                    setFormData({ ...formData, products: JSON.parse(e.target.value) });
-                  } catch {
-                    // Игнорируем ошибки парсинга во время ввода
-                  }
-                }}
-                className="edit-textarea"
-                rows={8}
-                placeholder="Введите JSON массив продуктов..."
-              />
+              <div className="dict-list-editor">
+                {formData.products.map((product, productIdx) => (
+                  <div key={productIdx} className="dict-item">
+                    <div className="dict-item-header">
+                      <h4>Продукт #{productIdx + 1}</h4>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newList = formData.products.filter((_, i) => i !== productIdx);
+                          setFormData({ ...formData, products: newList });
+                        }}
+                        className="btn-remove"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div className="key-value-pairs">
+                      {Object.entries(product).map(([key, value], pairIdx) => (
+                        <div key={pairIdx} className="key-value-pair">
+                          <input
+                            type="text"
+                            value={key}
+                            onChange={(e) => {
+                              const newProducts = [...formData.products];
+                              const newProduct = { ...product };
+                              delete newProduct[key];
+                              newProduct[e.target.value] = value;
+                              newProducts[productIdx] = newProduct;
+                              setFormData({ ...formData, products: newProducts });
+                            }}
+                            placeholder="Ключ"
+                            className="edit-input key-input"
+                          />
+                          <textarea
+                            value={String(value)}
+                            onChange={(e) => {
+                              const newProducts = [...formData.products];
+                              newProducts[productIdx] = { ...product, [key]: e.target.value };
+                              setFormData({ ...formData, products: newProducts });
+                            }}
+                            placeholder="Значение"
+                            className="edit-textarea value-textarea"
+                            rows={2}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newProducts = [...formData.products];
+                              const newProduct = { ...product };
+                              delete newProduct[key];
+                              newProducts[productIdx] = newProduct;
+                              setFormData({ ...formData, products: newProducts });
+                            }}
+                            className="btn-remove-small"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newProducts = [...formData.products];
+                          newProducts[productIdx] = { ...product, '': '' };
+                          setFormData({ ...formData, products: newProducts });
+                        }}
+                        className="btn-add-small"
+                      >
+                        + Добавить поле
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, products: [...formData.products, {}] });
+                  }}
+                  className="btn-add"
+                >
+                  + Добавить продукт
+                </button>
+              </div>
             ) : (
               <div className="value">
                 {organization.products.length > 0 ? (
-                  <pre>{JSON.stringify(organization.products, null, 2)}</pre>
+                  <div className="dict-list-display">
+                    {organization.products.map((product, idx) => (
+                      <div key={idx} className="dict-display-item">
+                        <h4>Продукт #{idx + 1}</h4>
+                        <div className="dict-display-content">
+                          {Object.entries(product).map(([key, value]) => (
+                            <div key={key} className="dict-display-pair">
+                              <span className="dict-key">{key}:</span>
+                              <span className="dict-value">{String(value)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 ) : (
                   'Не задано'
                 )}
@@ -453,23 +641,67 @@ export const OrganizationDetailPage = () => {
           <h2>Локаль</h2>
           <div className="info-item full-width">
             {isEditing ? (
-              <textarea
-                value={JSON.stringify(formData.locale, null, 2)}
-                onChange={(e) => {
-                  try {
-                    setFormData({ ...formData, locale: JSON.parse(e.target.value) });
-                  } catch {
-                    // Игнорируем ошибки парсинга во время ввода
-                  }
-                }}
-                className="edit-textarea"
-                rows={6}
-                placeholder="Введите JSON объект локали..."
-              />
+              <div className="dict-editor">
+                <div className="key-value-pairs">
+                  {Object.entries(formData.locale).map(([key, value], pairIdx) => (
+                    <div key={pairIdx} className="key-value-pair">
+                      <input
+                        type="text"
+                        value={key}
+                        onChange={(e) => {
+                          const newLocale = { ...formData.locale };
+                          delete newLocale[key];
+                          newLocale[e.target.value] = value;
+                          setFormData({ ...formData, locale: newLocale });
+                        }}
+                        placeholder="Ключ"
+                        className="edit-input key-input"
+                      />
+                      <textarea
+                        value={String(value)}
+                        onChange={(e) => {
+                          const newLocale = { ...formData.locale, [key]: e.target.value };
+                          setFormData({ ...formData, locale: newLocale });
+                        }}
+                        placeholder="Значение"
+                        className="edit-textarea value-textarea"
+                        rows={2}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newLocale = { ...formData.locale };
+                          delete newLocale[key];
+                          setFormData({ ...formData, locale: newLocale });
+                        }}
+                        className="btn-remove-small"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData({ ...formData, locale: { ...formData.locale, '': '' } });
+                    }}
+                    className="btn-add-small"
+                  >
+                    + Добавить поле
+                  </button>
+                </div>
+              </div>
             ) : (
               <div className="value">
                 {Object.keys(organization.locale).length > 0 ? (
-                  <pre>{JSON.stringify(organization.locale, null, 2)}</pre>
+                  <div className="dict-display-content">
+                    {Object.entries(organization.locale).map(([key, value]) => (
+                      <div key={key} className="dict-display-pair">
+                        <span className="dict-key">{key}:</span>
+                        <span className="dict-value">{String(value)}</span>
+                      </div>
+                    ))}
+                  </div>
                 ) : (
                   'Не задано'
                 )}
@@ -482,15 +714,41 @@ export const OrganizationDetailPage = () => {
           <h2>Дополнительная информация</h2>
           <div className="info-item full-width">
             {isEditing ? (
-              <textarea
-                value={formData.additional_info.join('\n')}
-                onChange={(e) =>
-                  setFormData({ ...formData, additional_info: e.target.value.split('\n').filter(s => s.trim()) })
-                }
-                className="edit-textarea"
-                rows={6}
-                placeholder="Введите каждую запись с новой строки..."
-              />
+              <div className="list-editor">
+                {formData.additional_info.map((item, idx) => (
+                  <div key={idx} className="list-item">
+                    <textarea
+                      value={item}
+                      onChange={(e) => {
+                        const newList = [...formData.additional_info];
+                        newList[idx] = e.target.value;
+                        setFormData({ ...formData, additional_info: newList });
+                      }}
+                      className="edit-textarea"
+                      rows={3}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newList = formData.additional_info.filter((_, i) => i !== idx);
+                        setFormData({ ...formData, additional_info: newList });
+                      }}
+                      className="btn-remove"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, additional_info: [...formData.additional_info, ''] });
+                  }}
+                  className="btn-add"
+                >
+                  + Добавить
+                </button>
+              </div>
             ) : (
               <div className="value">
                 {organization.additional_info.length > 0 ? (
