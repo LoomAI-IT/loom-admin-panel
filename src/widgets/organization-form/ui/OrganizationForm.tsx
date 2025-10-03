@@ -59,6 +59,12 @@ export const OrganizationForm = ({ organization, onUpdate }: OrganizationFormPro
       const updateData: UpdateOrganizationRequest = {
         organization_id: organization.id,
         ...formData,
+        tone_of_voice: formData.tone_of_voice.filter(item => item.trim() !== ''),
+        brand_rules: formData.brand_rules.filter(item => item.trim() !== ''),
+        compliance_rules: formData.compliance_rules.filter(item => item.trim() !== ''),
+        audience_insights: formData.audience_insights.filter(item => item.trim() !== ''),
+        additional_info: formData.additional_info.filter(item => item.trim() !== ''),
+        products: formData.products.filter(item => Object.keys(item).length > 0),
       };
       await organizationApi.update(updateData);
       setIsEditing(false);

@@ -198,27 +198,35 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
     try {
       setSubmitting(true);
 
+      const filteredStructureSkeleton = formData.structure_skeleton.filter(item => item.trim() !== '');
+      const filteredMustHave = formData.must_have.filter(item => item.trim() !== '');
+      const filteredMustAvoid = formData.must_avoid.filter(item => item.trim() !== '');
+      const filteredToneOfVoice = formData.tone_of_voice.filter(item => item.trim() !== '');
+      const filteredBrandRules = formData.brand_rules.filter(item => item.trim() !== '');
+      const filteredGoodSamples = formData.good_samples.filter(item => Object.keys(item).length > 0);
+      const filteredAdditionalInfo = formData.additional_info.filter(item => item.trim() !== '');
+
       const request: CreateCategoryRequest = {
         organization_id: organizationId,
         name: formData.name,
         goal: formData.goal || undefined,
         prompt_for_image_style: formData.prompt_for_image_style || undefined,
-        structure_skeleton: formData.structure_skeleton.length > 0 ? formData.structure_skeleton : undefined,
+        structure_skeleton: filteredStructureSkeleton.length > 0 ? filteredStructureSkeleton : undefined,
         structure_flex_level_min: formData.structure_flex_level_min ? parseInt(formData.structure_flex_level_min) : undefined,
         structure_flex_level_max: formData.structure_flex_level_max ? parseInt(formData.structure_flex_level_max) : undefined,
         structure_flex_level_comment: formData.structure_flex_level_comment || undefined,
-        must_have: formData.must_have.length > 0 ? formData.must_have : undefined,
-        must_avoid: formData.must_avoid.length > 0 ? formData.must_avoid : undefined,
+        must_have: filteredMustHave.length > 0 ? filteredMustHave : undefined,
+        must_avoid: filteredMustAvoid.length > 0 ? filteredMustAvoid : undefined,
         social_networks_rules: formData.social_networks_rules || undefined,
         len_min: formData.len_min ? parseInt(formData.len_min) : undefined,
         len_max: formData.len_max ? parseInt(formData.len_max) : undefined,
         n_hashtags_min: formData.n_hashtags_min ? parseInt(formData.n_hashtags_min) : undefined,
         n_hashtags_max: formData.n_hashtags_max ? parseInt(formData.n_hashtags_max) : undefined,
         cta_type: formData.cta_type || undefined,
-        tone_of_voice: formData.tone_of_voice.length > 0 ? formData.tone_of_voice : undefined,
-        brand_rules: formData.brand_rules.length > 0 ? formData.brand_rules : undefined,
-        good_samples: formData.good_samples.length > 0 ? formData.good_samples : undefined,
-        additional_info: formData.additional_info.length > 0 ? formData.additional_info : undefined,
+        tone_of_voice: filteredToneOfVoice.length > 0 ? filteredToneOfVoice : undefined,
+        brand_rules: filteredBrandRules.length > 0 ? filteredBrandRules : undefined,
+        good_samples: filteredGoodSamples.length > 0 ? filteredGoodSamples : undefined,
+        additional_info: filteredAdditionalInfo.length > 0 ? filteredAdditionalInfo : undefined,
       };
 
       await categoryApi.create(request);
@@ -273,26 +281,34 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
     try {
       setSubmitting(true);
 
+      const filteredStructureSkeleton = editFormData.structure_skeleton.filter(item => item.trim() !== '');
+      const filteredMustHave = editFormData.must_have.filter(item => item.trim() !== '');
+      const filteredMustAvoid = editFormData.must_avoid.filter(item => item.trim() !== '');
+      const filteredToneOfVoice = editFormData.tone_of_voice.filter(item => item.trim() !== '');
+      const filteredBrandRules = editFormData.brand_rules.filter(item => item.trim() !== '');
+      const filteredGoodSamples = editFormData.good_samples.filter(item => Object.keys(item).length > 0);
+      const filteredAdditionalInfo = editFormData.additional_info.filter(item => item.trim() !== '');
+
       const request: UpdateCategoryRequest = {
         name: editFormData.name,
         goal: editFormData.goal || undefined,
         prompt_for_image_style: editFormData.prompt_for_image_style || undefined,
-        structure_skeleton: editFormData.structure_skeleton,
+        structure_skeleton: filteredStructureSkeleton,
         structure_flex_level_min: editFormData.structure_flex_level_min ? parseInt(editFormData.structure_flex_level_min) : undefined,
         structure_flex_level_max: editFormData.structure_flex_level_max ? parseInt(editFormData.structure_flex_level_max) : undefined,
         structure_flex_level_comment: editFormData.structure_flex_level_comment || undefined,
-        must_have: editFormData.must_have,
-        must_avoid: editFormData.must_avoid,
+        must_have: filteredMustHave,
+        must_avoid: filteredMustAvoid,
         social_networks_rules: editFormData.social_networks_rules || undefined,
         len_min: editFormData.len_min ? parseInt(editFormData.len_min) : undefined,
         len_max: editFormData.len_max ? parseInt(editFormData.len_max) : undefined,
         n_hashtags_min: editFormData.n_hashtags_min ? parseInt(editFormData.n_hashtags_min) : undefined,
         n_hashtags_max: editFormData.n_hashtags_max ? parseInt(editFormData.n_hashtags_max) : undefined,
         cta_type: editFormData.cta_type || undefined,
-        tone_of_voice: editFormData.tone_of_voice,
-        brand_rules: editFormData.brand_rules,
-        good_samples: editFormData.good_samples,
-        additional_info: editFormData.additional_info,
+        tone_of_voice: filteredToneOfVoice,
+        brand_rules: filteredBrandRules,
+        good_samples: filteredGoodSamples,
+        additional_info: filteredAdditionalInfo,
       };
 
       await categoryApi.update(editingCategory.id, request);
