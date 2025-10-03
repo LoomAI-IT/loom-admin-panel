@@ -141,7 +141,7 @@ export const EmployeesSection = ({ organizationId }: EmployeesSectionProps) => {
             <select
               className="input"
               value={formData.role}
-              onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value as EmployeeRole })}
             >
               <option value={EmployeeRole.EMPLOYEE}>Сотрудник</option>
               <option value={EmployeeRole.MODERATOR}>Модератор</option>

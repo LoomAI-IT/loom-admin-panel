@@ -360,9 +360,9 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
                 <TableCell header>ID</TableCell>
                 <TableCell header>Название</TableCell>
                 <TableCell header>Дата создания</TableCell>
-                <TableCell header className="table-cell-action"></TableCell>
-                <TableCell header className="table-cell-action"></TableCell>
-                <TableCell header className="table-cell-action"></TableCell>
+                <TableCell header className="table-cell-action">{''}</TableCell>
+                <TableCell header className="table-cell-action">{''}</TableCell>
+                <TableCell header className="table-cell-action">{''}</TableCell>
               </TableRow>
             </TableHeader>
             <TableBody>
