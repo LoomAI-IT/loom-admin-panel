@@ -174,6 +174,7 @@ export const OrganizationForm = ({ organization, onUpdate }: OrganizationFormPro
         isOpen={jsonViewModal.isOpen}
         onClose={jsonViewModal.close}
         data={formData}
+        organizationId={organization.id}
       />
     </div>
   );
