@@ -17,7 +17,11 @@ export const EmployeesSection = ({ organizationId }: EmployeesSectionProps) => {
   const [submitting, setSubmitting] = useState(false);
   const addModal = useModal();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    account_id: string;
+    name: string;
+    role: EmployeeRole;
+  }>({
     account_id: '',
     name: '',
     role: EmployeeRole.EMPLOYEE,
