@@ -77,59 +77,61 @@ export const ObjectListEditor = ({ title, items, isEditing, onChange }: ObjectLi
           ))}
         </div>
       ) : (
-        <div className="object-list-edit">
-          {items.map((item, itemIdx) => (
-            <div key={itemIdx} className="object-item-edit-card">
-              <div className="object-item-edit-header">
-                <span className="object-item-title">Элемент {itemIdx + 1}</span>
-                <Button
-                  type="button"
-                  variant="danger"
-                  size="small"
-                  onClick={() => removeItem(itemIdx)}
-                  className="remove-item-button"
-                >
-                  ×
-                </Button>
-              </div>
+        <>
+          <div className="object-list-edit">
+            {items.map((item, itemIdx) => (
+              <div key={itemIdx} className="object-item-edit-card">
+                <div className="object-item-edit-header">
+                  <span className="object-item-title">Элемент {itemIdx + 1}</span>
+                  <Button
+                    type="button"
+                    variant="danger"
+                    size="small"
+                    onClick={() => removeItem(itemIdx)}
+                    className="remove-item-button"
+                  >
+                    ×
+                  </Button>
+                </div>
 
-              <div className="object-item-edit-fields">
-                {Object.entries(item).map(([key, value]) => (
-                  <div key={key} className="object-field-row">
-                    <input
-                      type="text"
-                      className="field-key-input"
-                      placeholder="Ключ"
-                      value={key}
-                      onChange={(e) => updateItemKey(itemIdx, key, e.target.value)}
-                    />
-                    <Textarea
-                      placeholder="Значение"
-                      value={typeof value === 'string' ? value : JSON.stringify(value)}
-                      onChange={(e) => updateItemValue(itemIdx, key, e.target.value)}
-                    />
-                    <Button
-                      type="button"
-                      variant="danger"
-                      size="small"
-                      onClick={() => removeFieldFromItem(itemIdx, key)}
-                      className="remove-field-button"
-                    >
-                      ×
-                    </Button>
-                  </div>
-                ))}
-                <Button
-                  type="button"
-                  size="small"
-                  onClick={() => addFieldToItem(itemIdx)}
-                  className="add-field-button"
-                >
-                  + Добавить поле
-                </Button>
+                <div className="object-item-edit-fields">
+                  {Object.entries(item).map(([key, value]) => (
+                    <div key={key} className="object-field-row">
+                      <input
+                        type="text"
+                        className="field-key-input"
+                        placeholder="Ключ"
+                        value={key}
+                        onChange={(e) => updateItemKey(itemIdx, key, e.target.value)}
+                      />
+                      <Textarea
+                        placeholder="Значение"
+                        value={typeof value === 'string' ? value : JSON.stringify(value)}
+                        onChange={(e) => updateItemValue(itemIdx, key, e.target.value)}
+                      />
+                      <Button
+                        type="button"
+                        variant="danger"
+                        size="small"
+                        onClick={() => removeFieldFromItem(itemIdx, key)}
+                        className="remove-field-button"
+                      >
+                        ×
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    size="small"
+                    onClick={() => addFieldToItem(itemIdx)}
+                    className="add-field-button"
+                  >
+                    + Добавить поле
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
           <Button
             type="button"
             size="small"
@@ -138,7 +140,7 @@ export const ObjectListEditor = ({ title, items, isEditing, onChange }: ObjectLi
           >
             + Добавить элемент
           </Button>
-        </div>
+        </>
       )}
     </div>
   );

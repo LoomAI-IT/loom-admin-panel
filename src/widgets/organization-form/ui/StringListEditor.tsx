@@ -42,26 +42,28 @@ export const StringListEditor = ({ title, items, isEditing, onChange }: StringLi
           ))}
         </div>
       ) : (
-        <div className="string-list-edit">
-          {items.map((item, idx) => (
-            <div key={idx} className="string-item-row">
-              <Textarea
-                value={item}
-                onChange={(e) => handleItemChange(idx, e.target.value)}
-                placeholder={`Элемент ${idx + 1}`}
-                rows={3}
-              />
-              <Button
-                type="button"
-                variant="danger"
-                size="small"
-                onClick={() => handleRemoveItem(idx)}
-                className="remove-item-button"
-              >
-                ×
-              </Button>
-            </div>
-          ))}
+        <>
+          <div className="string-list-edit">
+            {items.map((item, idx) => (
+              <div key={idx} className="string-item-row">
+                <Textarea
+                  value={item}
+                  onChange={(e) => handleItemChange(idx, e.target.value)}
+                  placeholder={`Элемент ${idx + 1}`}
+                  rows={3}
+                />
+                <Button
+                  type="button"
+                  variant="danger"
+                  size="small"
+                  onClick={() => handleRemoveItem(idx)}
+                  className="remove-item-button"
+                >
+                  ×
+                </Button>
+              </div>
+            ))}
+          </div>
           <Button
             type="button"
             size="small"
@@ -70,7 +72,7 @@ export const StringListEditor = ({ title, items, isEditing, onChange }: StringLi
           >
             + Добавить элемент
           </Button>
-        </div>
+        </>
       )}
     </div>
   );
