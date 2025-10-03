@@ -7,6 +7,19 @@
   overflow-x: auto;
 }
 
+.categories-section .table {
+  table-layout: auto;
+}
+
+.categories-section .table-cell-action {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.categories-section .table-cell-name {
+  white-space: nowrap;
+}
+
 .section-header {
   display: flex;
   justify-content: space-between;

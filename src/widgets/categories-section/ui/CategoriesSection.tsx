@@ -359,43 +359,41 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
               <TableRow>
                 <TableCell header>ID</TableCell>
                 <TableCell header>Название</TableCell>
-                <TableCell header>Цель</TableCell>
                 <TableCell header>Дата создания</TableCell>
-                <TableCell header>Действия</TableCell>
+                <TableCell header className="table-cell-action"></TableCell>
+                <TableCell header className="table-cell-action"></TableCell>
+                <TableCell header className="table-cell-action"></TableCell>
               </TableRow>
             </TableHeader>
             <TableBody>
               {categories.map((category) => (
                 <TableRow key={category.id}>
                   <TableCell>{category.id}</TableCell>
-                  <TableCell>
+                  <TableCell className="table-cell-name">
                     <span className="category-name">{category.name}</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="category-goal" title={category.goal || 'Не указана'}>
-                      {category.goal || 'Не указана'}
-                    </span>
                   </TableCell>
                   <TableCell>
                     <span className="category-date">
                       {new Date(category.created_at).toLocaleString('ru-RU')}
                     </span>
                   </TableCell>
-                  <TableCell>
-                    <div className="category-actions">
-                      <Button size="small" variant="secondary" onClick={() => {
-                        setEditingCategory(category);
-                        jsonViewModal.open();
-                      }}>
-                        Просмотр JSON
-                      </Button>
-                      <Button size="small" onClick={() => handleEdit(category)}>
-                        Редактировать
-                      </Button>
-                      <Button size="small" variant="danger" onClick={() => handleDelete(category)}>
-                        Удалить
-                      </Button>
-                    </div>
+                  <TableCell className="table-cell-action">
+                    <Button size="small" variant="secondary" onClick={() => {
+                      setEditingCategory(category);
+                      jsonViewModal.open();
+                    }}>
+                      Просмотр JSON
+                    </Button>
+                  </TableCell>
+                  <TableCell className="table-cell-action">
+                    <Button size="small" onClick={() => handleEdit(category)}>
+                      Редактировать
+                    </Button>
+                  </TableCell>
+                  <TableCell className="table-cell-action">
+                    <Button size="small" variant="danger" onClick={() => handleDelete(category)}>
+                      Удалить
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
