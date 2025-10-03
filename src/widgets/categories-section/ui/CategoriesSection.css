@@ -1,8 +1,8 @@
 .categories-section {
-  padding: 24px;
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: var(--spacing-2xl);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
   max-width: 100%;
   overflow-x: auto;
 }
@@ -24,48 +24,48 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid #e5e7eb;
-  gap: 12px;
+  margin-bottom: var(--spacing-2xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--color-border);
+  gap: var(--spacing-md);
   flex-wrap: wrap;
 }
 
 .section-header h2 {
   margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  color: #111827;
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
   flex: 1 1 auto;
 }
 
 .categories-section.loading {
-  padding: 60px;
+  padding: var(--spacing-5xl);
   text-align: center;
-  color: #6b7280;
-  font-size: 16px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-base);
 }
 
 .empty-state {
-  padding: 60px 40px;
+  padding: var(--spacing-5xl) var(--spacing-4xl);
   text-align: center;
-  color: #6b7280;
-  font-size: 16px;
-  background-color: #f9fafb;
-  border-radius: 8px;
-  border: 2px dashed #e5e7eb;
+  color: var(--color-text-secondary);
+  font-size: var(--text-base);
+  background-color: var(--color-gray-50);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--color-border);
 }
 
 .category-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--spacing-sm);
   flex-wrap: wrap;
   align-items: center;
 }
 
 .category-name {
-  font-weight: 600;
-  color: #111827;
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
 }
 
 .category-goal {
@@ -76,8 +76,8 @@
 }
 
 .category-date {
-  color: #6b7280;
-  font-size: 14px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
 }
 
 /* Modal Styles */
@@ -100,10 +100,10 @@
 
 .modal-toolbar {
   display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid #e5e7eb;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--color-border);
   justify-content: flex-end;
   flex-wrap: wrap;
 }
@@ -118,8 +118,8 @@
 .form-content {
   flex: 1;
   overflow-y: auto;
-  padding-right: 4px;
-  margin-right: -4px;
+  padding-right: var(--spacing-xs);
+  margin-right: calc(-1 * var(--spacing-xs));
   min-height: 0;
 }
 
@@ -128,27 +128,27 @@
 }
 
 .form-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
+  background: var(--color-gray-100);
+  border-radius: var(--radius-sm);
 }
 
 .form-content::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
+  background: var(--color-gray-500);
+  border-radius: var(--radius-sm);
 }
 
 .form-content::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--color-gray-600);
 }
 
 .form-actions {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-md);
   justify-content: flex-end;
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 2px solid #e5e7eb;
-  background: white;
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 2px solid var(--color-border);
+  background: var(--color-surface);
   flex-shrink: 0;
 }
 
@@ -156,12 +156,12 @@
 .notification {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 14px;
-  animation: slideDown 0.3s ease-out;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-xl);
+  font-size: var(--text-sm);
+  animation: slideDown var(--transition-slow) ease-out;
 }
 
 @keyframes slideDown {
@@ -176,18 +176,18 @@
 }
 
 .notification-success {
-  background-color: #d1fae5;
-  color: #065f46;
-  border: 1px solid #10b981;
+  background-color: var(--color-success-light);
+  color: var(--color-success-dark);
+  border: 1px solid var(--color-success);
 }
 
 .notification-error {
-  background-color: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #ef4444;
+  background-color: var(--color-danger-light);
+  color: var(--color-danger-dark);
+  border: 1px solid var(--color-danger);
 }
 
 .notification-icon {
   font-size: 18px;
-  font-weight: bold;
+  font-weight: var(--font-bold);
 }

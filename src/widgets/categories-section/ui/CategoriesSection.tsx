@@ -4,7 +4,7 @@ import { Table, TableHeader, TableBody, TableRow, TableCell } from '../../../sha
 import { Button } from '../../../shared/ui/Button';
 import { Modal } from '../../../shared/ui/Modal';
 import { useModal } from '../../../shared/lib/hooks/useModal';
-import { JsonImportModal, JsonViewModal, loadJsonFromFile } from '../../../features/json-import';
+import { JsonImportModal, loadJsonFromFile } from '../../../features/json-import';
 import { CategoryFormFields } from './CategoryFormFields';
 import { CategoryDetailsModal } from './CategoryDetailsModal';
 import './CategoriesSection.css';

@@ -1,42 +1,42 @@
 .string-list-editor {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
 }
 
 .editor-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
-  margin: 0 0 16px 0;
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-lg) 0;
 }
 
 /* View mode */
 .string-list-view {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--spacing-sm);
 }
 
 .string-list-item {
   display: flex;
-  gap: 12px;
-  padding: 12px;
-  background: white;
-  border-radius: 4px;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
   align-items: flex-start;
 }
 
 .item-number {
-  font-weight: 600;
-  color: #6b7280;
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
   flex-shrink: 0;
 }
 
 .item-content {
-  color: #374151;
+  color: var(--color-gray-700);
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -45,21 +45,21 @@
 .string-list-edit {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--spacing-md);
 }
 
 .string-item-row {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 12px;
+  gap: var(--spacing-md);
   align-items: start;
 }
 
 .remove-item-button {
-  margin-top: 8px;
+  margin-top: var(--spacing-sm);
 }
 
 .add-item-button {
   align-self: flex-start;
-  margin-top: 4px;
+  margin-top: var(--spacing-xs);
 }
