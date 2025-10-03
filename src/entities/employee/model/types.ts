@@ -1,5 +1,3 @@
-// Типы для работы с сотрудниками
-
 export const EmployeeRole = {
   ADMIN: 'admin',
   MODERATOR: 'moderator',
@@ -24,7 +22,6 @@ export interface Employee {
   created_at: string;
 }
 
-// Request типы
 export interface CreateEmployeeRequest {
   account_id: number;
   organization_id: number;
@@ -48,7 +45,6 @@ export interface UpdateEmployeeRoleRequest {
   role: string;
 }
 
-// Response типы
 export interface CreateEmployeeResponse {
   message: string;
   employee_id: number;

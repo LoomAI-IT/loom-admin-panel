@@ -1,9 +1,6 @@
-export { apiClient } from './base';
-export { accountClient } from './accountClient';
+// Экспортируем только базовые HTTP клиенты
 export { authorizationClient } from './authorizationClient';
+export { accountClient } from './accountClient';
 export { organizationClient } from './organizationClient';
-export { organizationApi } from './organizationApi';
-export { contentClient } from './contentClient';
-export { categoryApi } from './categoryApi';
 export { employeeClient } from './employeeClient';
-export { employeeApi } from './employeeApi';
+export { contentClient } from './contentClient';

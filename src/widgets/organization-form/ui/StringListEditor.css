@@ -1,0 +1,21 @@
+.list-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.list-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.list-item > div:first-child {
+  flex: 1;
+}
+
+.btn-remove {
+  font-size: 24px;
+  line-height: 1;
+  padding: 4px 12px;
+}
