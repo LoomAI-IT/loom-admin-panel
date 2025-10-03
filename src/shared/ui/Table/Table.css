@@ -1,5 +1,7 @@
 .table {
   width: 100%;
+  max-width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   background-color: white;
   border-radius: 8px;
@@ -15,6 +17,9 @@
   padding: 12px 16px;
   text-align: left;
   border-bottom: 1px solid #e5e7eb;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
 }
 
 .table-header .table-cell {

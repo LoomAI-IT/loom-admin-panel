@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { categoryApi, type Category, type CreateCategoryRequest } from '../../../entities/category';
+import { categoryApi, type Category, type CreateCategoryRequest, type UpdateCategoryRequest } from '../../../entities/category';
 import { Table, TableHeader, TableBody, TableRow, TableCell } from '../../../shared/ui/Table';
 import { Button } from '../../../shared/ui/Button';
 import { Modal } from '../../../shared/ui/Modal';
-import { Input } from '../../../shared/ui/Input';
-import { Textarea } from '../../../shared/ui/Textarea';
 import { useModal } from '../../../shared/lib/hooks/useModal';
+import { JsonImportModal, JsonViewModal, loadJsonFromFile } from '../../../features/json-import';
+import { CategoryFormFields } from './CategoryFormFields';
 import './CategoriesSection.css';
 
 interface CategoriesSectionProps {
@@ -16,9 +16,38 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const addModal = useModal();
+  const editModal = useModal();
+  const jsonImportModal = useModal();
+  const editJsonImportModal = useModal();
+  const jsonViewModal = useModal();
 
   const [formData, setFormData] = useState({
+    name: '',
+    goal: '',
+    prompt_for_image_style: '',
+    structure_skeleton: [] as string[],
+    structure_flex_level_min: '',
+    structure_flex_level_max: '',
+    structure_flex_level_comment: '',
+    must_have: [] as string[],
+    must_avoid: [] as string[],
+    social_networks_rules: '',
+    len_min: '',
+    len_max: '',
+    n_hashtags_min: '',
+    n_hashtags_max: '',
+    cta_type: '',
+    tone_of_voice: [] as string[],
+    brand_rules: [] as string[],
+    good_samples: [] as Record<string, any>[],
+    additional_info: [] as string[],
+  });
+
+  const [editFormData, setEditFormData] = useState({
     name: '',
     goal: '',
     prompt_for_image_style: '',
@@ -56,8 +85,114 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
     }
   };
 
+  const handleEdit = (category: Category) => {
+    setError(null);
+    setEditingCategory(category);
+    setEditFormData({
+      name: category.name,
+      goal: category.goal || '',
+      prompt_for_image_style: category.prompt_for_image_style || '',
+      structure_skeleton: category.structure_skeleton || [],
+      structure_flex_level_min: category.structure_flex_level_min?.toString() || '',
+      structure_flex_level_max: category.structure_flex_level_max?.toString() || '',
+      structure_flex_level_comment: category.structure_flex_level_comment || '',
+      must_have: category.must_have || [],
+      must_avoid: category.must_avoid || [],
+      social_networks_rules: category.social_networks_rules || '',
+      len_min: category.len_min?.toString() || '',
+      len_max: category.len_max?.toString() || '',
+      n_hashtags_min: category.n_hashtags_min?.toString() || '',
+      n_hashtags_max: category.n_hashtags_max?.toString() || '',
+      cta_type: category.cta_type || '',
+      tone_of_voice: category.tone_of_voice || [],
+      brand_rules: category.brand_rules || [],
+      good_samples: category.good_samples || [],
+      additional_info: category.additional_info || [],
+    });
+    editModal.open();
+  };
+
+  const handleOpenAddModal = () => {
+    setError(null);
+    addModal.open();
+  };
+
+  const handleJsonImport = (jsonData: any) => {
+    setFormData({
+      name: jsonData.name || '',
+      goal: jsonData.goal || '',
+      prompt_for_image_style: jsonData.prompt_for_image_style || '',
+      structure_skeleton: jsonData.structure_skeleton || [],
+      structure_flex_level_min: jsonData.structure_flex_level_min?.toString() || '',
+      structure_flex_level_max: jsonData.structure_flex_level_max?.toString() || '',
+      structure_flex_level_comment: jsonData.structure_flex_level_comment || '',
+      must_have: jsonData.must_have || [],
+      must_avoid: jsonData.must_avoid || [],
+      social_networks_rules: jsonData.social_networks_rules || '',
+      len_min: jsonData.len_min?.toString() || '',
+      len_max: jsonData.len_max?.toString() || '',
+      n_hashtags_min: jsonData.n_hashtags_min?.toString() || '',
+      n_hashtags_max: jsonData.n_hashtags_max?.toString() || '',
+      cta_type: jsonData.cta_type || '',
+      tone_of_voice: jsonData.tone_of_voice || [],
+      brand_rules: jsonData.brand_rules || [],
+      good_samples: jsonData.good_samples || [],
+      additional_info: jsonData.additional_info || [],
+    });
+  };
+
+  const handleEditJsonImport = (jsonData: any) => {
+    setEditFormData({
+      name: jsonData.name || '',
+      goal: jsonData.goal || '',
+      prompt_for_image_style: jsonData.prompt_for_image_style || '',
+      structure_skeleton: jsonData.structure_skeleton || [],
+      structure_flex_level_min: jsonData.structure_flex_level_min?.toString() || '',
+      structure_flex_level_max: jsonData.structure_flex_level_max?.toString() || '',
+      structure_flex_level_comment: jsonData.structure_flex_level_comment || '',
+      must_have: jsonData.must_have || [],
+      must_avoid: jsonData.must_avoid || [],
+      social_networks_rules: jsonData.social_networks_rules || '',
+      len_min: jsonData.len_min?.toString() || '',
+      len_max: jsonData.len_max?.toString() || '',
+      n_hashtags_min: jsonData.n_hashtags_min?.toString() || '',
+      n_hashtags_max: jsonData.n_hashtags_max?.toString() || '',
+      cta_type: jsonData.cta_type || '',
+      tone_of_voice: jsonData.tone_of_voice || [],
+      brand_rules: jsonData.brand_rules || [],
+      good_samples: jsonData.good_samples || [],
+      additional_info: jsonData.additional_info || [],
+    });
+  };
+
+  const handleLoadJsonFile = async () => {
+    try {
+      const jsonData = await loadJsonFromFile();
+      handleJsonImport(jsonData);
+      alert('Настройки успешно загружены из JSON');
+    } catch (err) {
+      alert('Ошибка при загрузке JSON файла');
+    }
+  };
+
+  const handleLoadEditJsonFile = async () => {
+    try {
+      const jsonData = await loadJsonFromFile();
+      handleEditJsonImport(jsonData);
+      alert('Настройки успешно загружены из JSON');
+    } catch (err) {
+      alert('Ошибка при загрузке JSON файла');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+
+    if (!formData.name.trim()) {
+      setError('Название рубрики обязательно для заполнения');
+      return;
+    }
 
     try {
       setSubmitting(true);
@@ -110,14 +245,83 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
         additional_info: [],
       });
       addModal.close();
+      setSuccess('Рубрика успешно создана');
+      setTimeout(() => setSuccess(null), 3000);
 
       // Reload categories
       await loadCategories();
     } catch (err) {
       console.error('Failed to create category:', err);
-      alert('Ошибка при создании рубрики');
+      setError('Ошибка при создании рубрики. Попробуйте ещё раз.');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!editingCategory) return;
+
+    if (!editFormData.name.trim()) {
+      setError('Название рубрики обязательно для заполнения');
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+
+      const request: UpdateCategoryRequest = {
+        name: editFormData.name,
+        goal: editFormData.goal || undefined,
+        prompt_for_image_style: editFormData.prompt_for_image_style || undefined,
+        structure_skeleton: editFormData.structure_skeleton,
+        structure_flex_level_min: editFormData.structure_flex_level_min ? parseInt(editFormData.structure_flex_level_min) : undefined,
+        structure_flex_level_max: editFormData.structure_flex_level_max ? parseInt(editFormData.structure_flex_level_max) : undefined,
+        structure_flex_level_comment: editFormData.structure_flex_level_comment || undefined,
+        must_have: editFormData.must_have,
+        must_avoid: editFormData.must_avoid,
+        social_networks_rules: editFormData.social_networks_rules || undefined,
+        len_min: editFormData.len_min ? parseInt(editFormData.len_min) : undefined,
+        len_max: editFormData.len_max ? parseInt(editFormData.len_max) : undefined,
+        n_hashtags_min: editFormData.n_hashtags_min ? parseInt(editFormData.n_hashtags_min) : undefined,
+        n_hashtags_max: editFormData.n_hashtags_max ? parseInt(editFormData.n_hashtags_max) : undefined,
+        cta_type: editFormData.cta_type || undefined,
+        tone_of_voice: editFormData.tone_of_voice,
+        brand_rules: editFormData.brand_rules,
+        good_samples: editFormData.good_samples,
+        additional_info: editFormData.additional_info,
+      };
+
+      await categoryApi.update(editingCategory.id, request);
+
+      editModal.close();
+      setEditingCategory(null);
+      setSuccess('Рубрика успешно обновлена');
+      setTimeout(() => setSuccess(null), 3000);
+
+      // Reload categories
+      await loadCategories();
+    } catch (err) {
+      console.error('Failed to update category:', err);
+      setError('Ошибка при обновлении рубрики. Попробуйте ещё раз.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (category: Category) => {
+    if (!confirm(`Вы уверены, что хотите удалить рубрику "${category.name}"?`)) {
+      return;
+    }
+
+    try {
+      await categoryApi.delete(category.id);
+      await loadCategories();
+    } catch (err) {
+      console.error('Failed to delete category:', err);
+      alert('Ошибка при удалении рубрики');
     }
   };
 
@@ -130,8 +334,22 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
       <div className="categories-section">
         <div className="section-header">
           <h2>Рубрики</h2>
-          <Button size="small" onClick={addModal.open}>Добавить рубрику</Button>
+          <Button size="small" onClick={handleOpenAddModal}>Добавить рубрику</Button>
         </div>
+
+        {success && (
+          <div className="notification notification-success">
+            <span className="notification-icon">✓</span>
+            {success}
+          </div>
+        )}
+
+        {error && (
+          <div className="notification notification-error">
+            <span className="notification-icon">⚠</span>
+            {error}
+          </div>
+        )}
 
         {categories.length === 0 ? (
           <div className="empty-state">Рубрики не найдены</div>
@@ -143,15 +361,42 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
                 <TableCell header>Название</TableCell>
                 <TableCell header>Цель</TableCell>
                 <TableCell header>Дата создания</TableCell>
+                <TableCell header>Действия</TableCell>
               </TableRow>
             </TableHeader>
             <TableBody>
               {categories.map((category) => (
                 <TableRow key={category.id}>
                   <TableCell>{category.id}</TableCell>
-                  <TableCell>{category.name}</TableCell>
-                  <TableCell>{category.goal || 'Не указана'}</TableCell>
-                  <TableCell>{new Date(category.created_at).toLocaleString('ru-RU')}</TableCell>
+                  <TableCell>
+                    <span className="category-name">{category.name}</span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="category-goal" title={category.goal || 'Не указана'}>
+                      {category.goal || 'Не указана'}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="category-date">
+                      {new Date(category.created_at).toLocaleString('ru-RU')}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <div className="category-actions">
+                      <Button size="small" variant="secondary" onClick={() => {
+                        setEditingCategory(category);
+                        jsonViewModal.open();
+                      }}>
+                        Просмотр JSON
+                      </Button>
+                      <Button size="small" onClick={() => handleEdit(category)}>
+                        Редактировать
+                      </Button>
+                      <Button size="small" variant="danger" onClick={() => handleDelete(category)}>
+                        Удалить
+                      </Button>
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -159,444 +404,21 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
         )}
       </div>
 
-      <Modal isOpen={addModal.isOpen} onClose={addModal.close} title="Добавить рубрику">
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '70vh', overflowY: 'auto' }}>
-          <Input
-            label="Название рубрики *"
-            type="text"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-            placeholder="Введите название"
-          />
-
-          <div className="input-wrapper">
-            <label className="input-label">Цель</label>
-            <textarea
-              className="input"
-              value={formData.goal}
-              onChange={(e) => setFormData({ ...formData, goal: e.target.value })}
-              placeholder="Введите цель рубрики"
-              rows={2}
-            />
+      <Modal isOpen={addModal.isOpen} onClose={addModal.close} title="Добавить рубрику" className="category-modal">
+        <div className="modal-toolbar">
+          <Button variant="secondary" onClick={jsonImportModal.open} disabled={submitting} size="small">
+            Вставить JSON
+          </Button>
+          <Button variant="secondary" onClick={handleLoadJsonFile} disabled={submitting} size="small">
+            Загрузить JSON
+          </Button>
+        </div>
+        <form onSubmit={handleSubmit} className="category-form">
+          <div className="form-content">
+            <CategoryFormFields formData={formData} onChange={setFormData} />
           </div>
 
-          <div className="input-wrapper">
-            <label className="input-label">Промпт для стиля изображения</label>
-            <textarea
-              className="input"
-              value={formData.prompt_for_image_style}
-              onChange={(e) => setFormData({ ...formData, prompt_for_image_style: e.target.value })}
-              placeholder="Введите промпт для стиля изображения"
-              rows={2}
-            />
-          </div>
-
-          <div className="input-wrapper">
-            <label className="input-label">Структура скелет</label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {formData.structure_skeleton.map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                  <Textarea
-                    value={item}
-                    onChange={(e) => {
-                      const newItems = [...formData.structure_skeleton];
-                      newItems[idx] = e.target.value;
-                      setFormData({ ...formData, structure_skeleton: newItems });
-                    }}
-                    rows={2}
-                  />
-                  <Button
-                    type="button"
-                    variant="danger"
-                    size="small"
-                    onClick={() => {
-                      setFormData({
-                        ...formData,
-                        structure_skeleton: formData.structure_skeleton.filter((_, i) => i !== idx),
-                      });
-                    }}
-                    style={{ fontSize: '24px', lineHeight: 1, padding: '4px 12px' }}
-                  >
-                    ×
-                  </Button>
-                </div>
-              ))}
-              <Button
-                type="button"
-                size="small"
-                onClick={() => setFormData({ ...formData, structure_skeleton: [...formData.structure_skeleton, ''] })}
-              >
-                + Добавить
-              </Button>
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-            <Input
-              label="Мин. уровень гибкости структуры"
-              type="number"
-              value={formData.structure_flex_level_min}
-              onChange={(e) => setFormData({ ...formData, structure_flex_level_min: e.target.value })}
-              placeholder="0"
-            />
-            <Input
-              label="Макс. уровень гибкости структуры"
-              type="number"
-              value={formData.structure_flex_level_max}
-              onChange={(e) => setFormData({ ...formData, structure_flex_level_max: e.target.value })}
-              placeholder="100"
-            />
-          </div>
-
-          <div className="input-wrapper">
-            <label className="input-label">Комментарий к уровню гибкости</label>
-            <textarea
-              className="input"
-              value={formData.structure_flex_level_comment}
-              onChange={(e) => setFormData({ ...formData, structure_flex_level_comment: e.target.value })}
-              placeholder="Комментарий"
-              rows={2}
-            />
-          </div>
-
-          <div className="input-wrapper">
-            <label className="input-label">Обязательные элементы</label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {formData.must_have.map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                  <Textarea
-                    value={item}
-                    onChange={(e) => {
-                      const newItems = [...formData.must_have];
-                      newItems[idx] = e.target.value;
-                      setFormData({ ...formData, must_have: newItems });
-                    }}
-                    rows={2}
-                  />
-                  <Button
-                    type="button"
-                    variant="danger"
-                    size="small"
-                    onClick={() => {
-                      setFormData({
-                        ...formData,
-                        must_have: formData.must_have.filter((_, i) => i !== idx),
-                      });
-                    }}
-                    style={{ fontSize: '24px', lineHeight: 1, padding: '4px 12px' }}
-                  >
-                    ×
-                  </Button>
-                </div>
-              ))}
-              <Button
-                type="button"
-                size="small"
-                onClick={() => setFormData({ ...formData, must_have: [...formData.must_have, ''] })}
-              >
-                + Добавить
-              </Button>
-            </div>
-          </div>
-
-          <div className="input-wrapper">
-            <label className="input-label">Запрещённые элементы</label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {formData.must_avoid.map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                  <Textarea
-                    value={item}
-                    onChange={(e) => {
-                      const newItems = [...formData.must_avoid];
-                      newItems[idx] = e.target.value;
-                      setFormData({ ...formData, must_avoid: newItems });
-                    }}
-                    rows={2}
-                  />
-                  <Button
-                    type="button"
-                    variant="danger"
-                    size="small"
-                    onClick={() => {
-                      setFormData({
-                        ...formData,
-                        must_avoid: formData.must_avoid.filter((_, i) => i !== idx),
-                      });
-                    }}
-                    style={{ fontSize: '24px', lineHeight: 1, padding: '4px 12px' }}
-                  >
-                    ×
-                  </Button>
-                </div>
-              ))}
-              <Button
-                type="button"
-                size="small"
-                onClick={() => setFormData({ ...formData, must_avoid: [...formData.must_avoid, ''] })}
-              >
-                + Добавить
-              </Button>
-            </div>
-          </div>
-
-          <div className="input-wrapper">
-            <label className="input-label">Правила для соцсетей</label>
-            <textarea
-              className="input"
-              value={formData.social_networks_rules}
-              onChange={(e) => setFormData({ ...formData, social_networks_rules: e.target.value })}
-              placeholder="Правила публикации в соцсетях"
-              rows={2}
-            />
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-            <Input
-              label="Мин. длина текста"
-              type="number"
-              value={formData.len_min}
-              onChange={(e) => setFormData({ ...formData, len_min: e.target.value })}
-              placeholder="0"
-            />
-            <Input
-              label="Макс. длина текста"
-              type="number"
-              value={formData.len_max}
-              onChange={(e) => setFormData({ ...formData, len_max: e.target.value })}
-              placeholder="5000"
-            />
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-            <Input
-              label="Мин. количество хэштегов"
-              type="number"
-              value={formData.n_hashtags_min}
-              onChange={(e) => setFormData({ ...formData, n_hashtags_min: e.target.value })}
-              placeholder="0"
-            />
-            <Input
-              label="Макс. количество хэштегов"
-              type="number"
-              value={formData.n_hashtags_max}
-              onChange={(e) => setFormData({ ...formData, n_hashtags_max: e.target.value })}
-              placeholder="10"
-            />
-          </div>
-
-          <Input
-            label="Тип призыва к действию (CTA)"
-            type="text"
-            value={formData.cta_type}
-            onChange={(e) => setFormData({ ...formData, cta_type: e.target.value })}
-            placeholder="Например: подписка, покупка, лайк"
-          />
-
-          <div className="input-wrapper">
-            <label className="input-label">Тон общения</label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {formData.tone_of_voice.map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                  <Textarea
-                    value={item}
-                    onChange={(e) => {
-                      const newItems = [...formData.tone_of_voice];
-                      newItems[idx] = e.target.value;
-                      setFormData({ ...formData, tone_of_voice: newItems });
-                    }}
-                    rows={2}
-                  />
-                  <Button
-                    type="button"
-                    variant="danger"
-                    size="small"
-                    onClick={() => {
-                      setFormData({
-                        ...formData,
-                        tone_of_voice: formData.tone_of_voice.filter((_, i) => i !== idx),
-                      });
-                    }}
-                    style={{ fontSize: '24px', lineHeight: 1, padding: '4px 12px' }}
-                  >
-                    ×
-                  </Button>
-                </div>
-              ))}
-              <Button
-                type="button"
-                size="small"
-                onClick={() => setFormData({ ...formData, tone_of_voice: [...formData.tone_of_voice, ''] })}
-              >
-                + Добавить
-              </Button>
-            </div>
-          </div>
-
-          <div className="input-wrapper">
-            <label className="input-label">Правила бренда</label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {formData.brand_rules.map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                  <Textarea
-                    value={item}
-                    onChange={(e) => {
-                      const newItems = [...formData.brand_rules];
-                      newItems[idx] = e.target.value;
-                      setFormData({ ...formData, brand_rules: newItems });
-                    }}
-                    rows={2}
-                  />
-                  <Button
-                    type="button"
-                    variant="danger"
-                    size="small"
-                    onClick={() => {
-                      setFormData({
-                        ...formData,
-                        brand_rules: formData.brand_rules.filter((_, i) => i !== idx),
-                      });
-                    }}
-                    style={{ fontSize: '24px', lineHeight: 1, padding: '4px 12px' }}
-                  >
-                    ×
-                  </Button>
-                </div>
-              ))}
-              <Button
-                type="button"
-                size="small"
-                onClick={() => setFormData({ ...formData, brand_rules: [...formData.brand_rules, ''] })}
-              >
-                + Добавить
-              </Button>
-            </div>
-          </div>
-
-          <div className="input-wrapper">
-            <label className="input-label">Хорошие примеры (Good Samples)</label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {formData.good_samples.map((sample, sampleIdx) => (
-                <div key={sampleIdx} style={{ border: '1px solid #ddd', padding: '12px', borderRadius: '4px', position: 'relative' }}>
-                  <Button
-                    type="button"
-                    variant="danger"
-                    size="small"
-                    onClick={() => {
-                      setFormData({
-                        ...formData,
-                        good_samples: formData.good_samples.filter((_, i) => i !== sampleIdx),
-                      });
-                    }}
-                    style={{ position: 'absolute', top: '8px', right: '8px', fontSize: '20px', lineHeight: 1, padding: '2px 8px' }}
-                  >
-                    ×
-                  </Button>
-                  <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>Пример {sampleIdx + 1}</div>
-                  {Object.entries(sample).map(([key, value], fieldIdx) => (
-                    <div key={fieldIdx} style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'flex-start' }}>
-                      <Input
-                        placeholder="Ключ"
-                        value={key}
-                        onChange={(e) => {
-                          const newSamples = [...formData.good_samples];
-                          const oldValue = newSamples[sampleIdx][key];
-                          delete newSamples[sampleIdx][key];
-                          newSamples[sampleIdx][e.target.value] = oldValue;
-                          setFormData({ ...formData, good_samples: newSamples });
-                        }}
-                        style={{ flex: '0 0 150px' }}
-                      />
-                      <Textarea
-                        placeholder="Значение"
-                        value={typeof value === 'string' ? value : JSON.stringify(value)}
-                        onChange={(e) => {
-                          const newSamples = [...formData.good_samples];
-                          newSamples[sampleIdx][key] = e.target.value;
-                          setFormData({ ...formData, good_samples: newSamples });
-                        }}
-                        rows={2}
-                      />
-                      <Button
-                        type="button"
-                        variant="danger"
-                        size="small"
-                        onClick={() => {
-                          const newSamples = [...formData.good_samples];
-                          delete newSamples[sampleIdx][key];
-                          setFormData({ ...formData, good_samples: newSamples });
-                        }}
-                        style={{ fontSize: '20px', lineHeight: 1, padding: '4px 10px' }}
-                      >
-                        ×
-                      </Button>
-                    </div>
-                  ))}
-                  <Button
-                    type="button"
-                    size="small"
-                    onClick={() => {
-                      const newSamples = [...formData.good_samples];
-                      const newKey = `key_${Object.keys(newSamples[sampleIdx]).length}`;
-                      newSamples[sampleIdx][newKey] = '';
-                      setFormData({ ...formData, good_samples: newSamples });
-                    }}
-                  >
-                    + Добавить поле
-                  </Button>
-                </div>
-              ))}
-              <Button
-                type="button"
-                size="small"
-                onClick={() => setFormData({ ...formData, good_samples: [...formData.good_samples, {}] })}
-              >
-                + Добавить пример
-              </Button>
-            </div>
-          </div>
-
-          <div className="input-wrapper">
-            <label className="input-label">Дополнительная информация</label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {formData.additional_info.map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                  <Textarea
-                    value={item}
-                    onChange={(e) => {
-                      const newItems = [...formData.additional_info];
-                      newItems[idx] = e.target.value;
-                      setFormData({ ...formData, additional_info: newItems });
-                    }}
-                    rows={2}
-                  />
-                  <Button
-                    type="button"
-                    variant="danger"
-                    size="small"
-                    onClick={() => {
-                      setFormData({
-                        ...formData,
-                        additional_info: formData.additional_info.filter((_, i) => i !== idx),
-                      });
-                    }}
-                    style={{ fontSize: '24px', lineHeight: 1, padding: '4px 12px' }}
-                  >
-                    ×
-                  </Button>
-                </div>
-              ))}
-              <Button
-                type="button"
-                size="small"
-                onClick={() => setFormData({ ...formData, additional_info: [...formData.additional_info, ''] })}
-              >
-                + Добавить
-              </Button>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '8px', position: 'sticky', bottom: 0, background: 'white', paddingTop: '8px' }}>
+          <div className="form-actions">
             <Button type="button" variant="secondary" onClick={addModal.close} disabled={submitting}>
               Отмена
             </Button>
@@ -606,6 +428,59 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
           </div>
         </form>
       </Modal>
+
+      <JsonImportModal
+        isOpen={jsonImportModal.isOpen}
+        onClose={jsonImportModal.close}
+        onImport={handleJsonImport}
+      />
+
+      <JsonImportModal
+        isOpen={editJsonImportModal.isOpen}
+        onClose={editJsonImportModal.close}
+        onImport={handleEditJsonImport}
+        zIndex={1100}
+      />
+
+      {editingCategory && (
+        <JsonViewModal
+          isOpen={jsonViewModal.isOpen}
+          onClose={jsonViewModal.close}
+          data={editingCategory}
+          organizationId={organizationId}
+          zIndex={1100}
+        />
+      )}
+
+      {editingCategory && (
+        <Modal isOpen={editModal.isOpen} onClose={editModal.close} title="Редактировать рубрику" className="category-modal">
+          <div className="modal-toolbar">
+            <Button variant="secondary" onClick={jsonViewModal.open} disabled={submitting} size="small">
+              Просмотр JSON
+            </Button>
+            <Button variant="secondary" onClick={editJsonImportModal.open} disabled={submitting} size="small">
+              Вставить JSON
+            </Button>
+            <Button variant="secondary" onClick={handleLoadEditJsonFile} disabled={submitting} size="small">
+              Загрузить JSON
+            </Button>
+          </div>
+          <form onSubmit={handleEditSubmit} className="category-form">
+            <div className="form-content">
+              <CategoryFormFields formData={editFormData} onChange={setEditFormData} />
+            </div>
+
+            <div className="form-actions">
+              <Button type="button" variant="secondary" onClick={editModal.close} disabled={submitting}>
+                Отмена
+              </Button>
+              <Button type="submit" disabled={submitting}>
+                {submitting ? 'Сохранение...' : 'Сохранить'}
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </>
   );
 };

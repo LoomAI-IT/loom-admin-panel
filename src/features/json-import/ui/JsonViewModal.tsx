@@ -7,9 +7,10 @@ interface JsonViewModalProps {
   onClose: () => void;
   data: any;
   organizationId?: number;
+  zIndex?: number;
 }
 
-export const JsonViewModal = ({ isOpen, onClose, data, organizationId }: JsonViewModalProps) => {
+export const JsonViewModal = ({ isOpen, onClose, data, organizationId, zIndex }: JsonViewModalProps) => {
   const jsonString = JSON.stringify(data, null, 2);
 
   const handleCopy = () => {
@@ -32,7 +33,7 @@ export const JsonViewModal = ({ isOpen, onClose, data, organizationId }: JsonVie
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Просмотр JSON">
+    <Modal isOpen={isOpen} onClose={onClose} title="Просмотр JSON" zIndex={zIndex}>
       <div className="json-view-modal">
         <pre className="json-content">{jsonString}</pre>
         <div className="modal-actions">

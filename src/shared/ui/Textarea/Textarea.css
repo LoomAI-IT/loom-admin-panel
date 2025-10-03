@@ -20,6 +20,9 @@
   resize: vertical;
   min-height: 80px;
   transition: border-color 0.2s;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .textarea:focus {

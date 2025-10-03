@@ -1,5 +1,7 @@
 .organization-detail-page {
   padding: 24px;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .organization-detail-page.loading,
@@ -44,6 +46,8 @@
   font-size: 28px;
   font-weight: 600;
   color: #333;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .actions {
@@ -90,6 +94,8 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .info-section {
@@ -97,6 +103,8 @@
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   padding: 24px;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .info-section h2 {
@@ -110,16 +118,20 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
+  max-width: 100%;
 }
 
 .info-item {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .info-item.full-width {
   grid-column: 1 / -1;
+  max-width: 100%;
 }
 
 .info-item label {
@@ -131,6 +143,8 @@
 .info-item .value {
   font-size: 16px;
   color: #333;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .info-item .value.balance {
@@ -500,11 +514,16 @@ input:checked + .slider:before {
 .value ul {
   margin: 0;
   padding-left: 20px;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .value ul li {
   margin-bottom: 8px;
   color: #333;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .value ul li:last-child {

@@ -8,9 +8,10 @@ interface JsonImportModalProps {
   isOpen: boolean;
   onClose: () => void;
   onImport: (data: any) => void;
+  zIndex?: number;
 }
 
-export const JsonImportModal = ({ isOpen, onClose, onImport }: JsonImportModalProps) => {
+export const JsonImportModal = ({ isOpen, onClose, onImport, zIndex }: JsonImportModalProps) => {
   const [jsonText, setJsonText] = useState('');
   const [error, setError] = useState('');
 
@@ -33,7 +34,7 @@ export const JsonImportModal = ({ isOpen, onClose, onImport }: JsonImportModalPr
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Вставить JSON">
+    <Modal isOpen={isOpen} onClose={handleClose} title="Вставить JSON" zIndex={zIndex}>
       <div className="json-import-modal">
         <Textarea
           value={jsonText}

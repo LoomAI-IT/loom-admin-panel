@@ -1,12 +1,19 @@
 .json-import-modal {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  min-width: 500px;
+  gap: 20px;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .json-import-modal {
+    min-width: 500px;
+  }
 }
 
 .modal-actions {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
+  flex-wrap: wrap;
 }

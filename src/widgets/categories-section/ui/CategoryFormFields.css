@@ -1,0 +1,158 @@
+.category-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.form-section-title {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.input-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.array-input-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.array-input-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.array-input-item textarea,
+.array-input-item input {
+  flex: 1;
+}
+
+.remove-button {
+  flex-shrink: 0;
+  font-size: 24px;
+  line-height: 1;
+  padding: 4px 12px !important;
+  min-width: auto;
+}
+
+.add-button {
+  align-self: flex-start;
+}
+
+/* Good Samples */
+.good-samples-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.good-sample-card {
+  border: 2px solid #e5e7eb;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: white;
+  position: relative;
+  transition: border-color 0.2s;
+}
+
+.good-sample-card:hover {
+  border-color: #d1d5db;
+}
+
+.good-sample-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.good-sample-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+}
+
+.remove-sample-button {
+  font-size: 20px !important;
+  line-height: 1;
+  padding: 2px 8px !important;
+  min-width: auto;
+}
+
+.good-sample-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.good-sample-field {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.field-key-input {
+  flex: 0 0 180px;
+}
+
+.add-field-button {
+  margin-top: 4px;
+}
+
+.input-wrapper {
+  width: 100%;
+}
+
+.input-wrapper .input-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.input-wrapper .input,
+.input-wrapper textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .input-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .field-key-input {
+    flex: 0 0 140px;
+  }
+
+  .good-sample-field {
+    flex-direction: column;
+  }
+
+  .field-key-input {
+    flex: 1 1 100%;
+  }
+}
