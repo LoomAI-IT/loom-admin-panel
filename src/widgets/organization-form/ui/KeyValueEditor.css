@@ -1,0 +1,96 @@
+.key-value-editor {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.editor-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 16px 0;
+}
+
+/* View mode */
+.key-value-view {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.key-value-item {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 12px;
+  padding: 8px;
+  background: white;
+  border-radius: 4px;
+}
+
+.key-label {
+  font-weight: 500;
+  color: #374151;
+}
+
+.value-content {
+  color: #6b7280;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* Edit mode */
+.key-value-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.key-value-field-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.field-key-input {
+  flex: 0 0 180px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.15s ease-in-out;
+}
+
+.field-key-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.field-value-input {
+  flex: 1;
+}
+
+.key-value-field-row .textarea-wrapper {
+  flex: 1;
+}
+
+.key-value-field-row .textarea {
+  min-height: 38px;
+}
+
+.remove-field-button {
+  flex-shrink: 0;
+  font-size: 20px;
+  line-height: 1;
+  padding: 8px 10px !important;
+  min-width: auto;
+  margin-top: 2px;
+}
+
+.add-field-button {
+  align-self: flex-start;
+  margin-top: 8px;
+}

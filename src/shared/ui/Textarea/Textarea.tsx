@@ -1,4 +1,4 @@
-import { type TextareaHTMLAttributes, useRef, useEffect } from 'react';
+import { type TextareaHTMLAttributes, useRef, useLayoutEffect, useCallback } from 'react';
 import './Textarea.css';
 
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -7,25 +7,27 @@ interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   autoResize?: boolean;
 }
 
-export const Textarea = ({ label, error, className = '', autoResize = true, ...props }: TextareaProps) => {
+export const Textarea = ({ label, error, className = '', autoResize = true, onChange, ...props }: TextareaProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
+  const adjustHeight = useCallback(() => {
     const textarea = textareaRef.current;
     if (!textarea || !autoResize) return;
 
-    const adjustHeight = () => {
-      textarea.style.height = 'auto';
-      textarea.style.height = `${textarea.scrollHeight}px`;
-    };
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }, [autoResize]);
 
+  useLayoutEffect(() => {
     adjustHeight();
+  });
 
-    textarea.addEventListener('input', adjustHeight);
-    return () => {
-      textarea.removeEventListener('input', adjustHeight);
-    };
-  }, [autoResize, props.value]);
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    adjustHeight();
+    if (onChange) {
+      onChange(e);
+    }
+  };
 
   return (
     <div className="textarea-wrapper">
@@ -34,6 +36,7 @@ export const Textarea = ({ label, error, className = '', autoResize = true, ...p
         ref={textareaRef}
         className={`textarea ${error ? 'textarea-error' : ''} ${autoResize ? 'textarea-auto-resize' : ''} ${className}`}
         {...props}
+        onChange={handleChange}
       />
       {error && <span className="textarea-error-message">{error}</span>}
     </div>

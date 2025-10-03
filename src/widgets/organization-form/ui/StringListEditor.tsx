@@ -24,47 +24,54 @@ export const StringListEditor = ({ title, items, isEditing, onChange }: StringLi
     onChange([...items, '']);
   };
 
+  if (!isEditing && items.length === 0) {
+    return null;
+  }
+
   return (
-    <div className="info-section">
-      <h2>{title}</h2>
-      <div className="info-item full-width">
-        {isEditing ? (
-          <div className="list-editor">
-            {items.map((item, idx) => (
-              <div key={idx} className="list-item">
-                <Textarea
-                  value={item}
-                  onChange={(e) => handleItemChange(idx, e.target.value)}
-                  rows={3}
-                />
-                <Button
-                  variant="danger"
-                  size="small"
-                  onClick={() => handleRemoveItem(idx)}
-                  className="btn-remove"
-                >
-                  ×
-                </Button>
-              </div>
-            ))}
-            <Button size="small" onClick={handleAddItem}>
-              + Добавить
-            </Button>
-          </div>
-        ) : (
-          <div className="value">
-            {items.length > 0 ? (
-              <ul>
-                {items.map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
-            ) : (
-              'Не задано'
-            )}
-          </div>
-        )}
-      </div>
+    <div className="string-list-editor">
+      <h3 className="editor-title">{title}</h3>
+
+      {!isEditing ? (
+        <div className="string-list-view">
+          {items.map((item, idx) => (
+            <div key={idx} className="string-list-item">
+              <span className="item-number">{idx + 1}.</span>
+              <span className="item-content">{item}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="string-list-edit">
+          {items.map((item, idx) => (
+            <div key={idx} className="string-item-row">
+              <Textarea
+                value={item}
+                onChange={(e) => handleItemChange(idx, e.target.value)}
+                placeholder={`Элемент ${idx + 1}`}
+                rows={3}
+              />
+              <Button
+                type="button"
+                variant="danger"
+                size="small"
+                onClick={() => handleRemoveItem(idx)}
+                className="remove-item-button"
+              >
+                ×
+              </Button>
+            </div>
+          ))}
+          <Button
+            type="button"
+            size="small"
+            onClick={handleAddItem}
+            className="add-item-button"
+          >
+            + Добавить элемент
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

@@ -4,6 +4,8 @@ import { Button } from '../../../shared/ui/Button';
 import { useFormState } from '../../../shared/lib/hooks';
 import { OrganizationBasicInfo } from './OrganizationBasicInfo';
 import { StringListEditor } from './StringListEditor';
+import { KeyValueEditor } from './KeyValueEditor';
+import { ObjectListEditor } from './ObjectListEditor';
 import { JsonImportModal, JsonViewModal, loadJsonFromFile } from '../../../features/json-import';
 import { useModal } from '../../../shared/lib/hooks';
 import './OrganizationForm.css';
@@ -162,6 +164,20 @@ export const OrganizationForm = ({ organization, onUpdate }: OrganizationFormPro
         items={formData.additional_info}
         isEditing={isEditing}
         onChange={(items) => updateField('additional_info', items)}
+      />
+
+      <KeyValueEditor
+        title="Локализация (Locale)"
+        data={formData.locale}
+        isEditing={isEditing}
+        onChange={(data) => updateField('locale', data)}
+      />
+
+      <ObjectListEditor
+        title="Продукты (Products)"
+        items={formData.products}
+        isEditing={isEditing}
+        onChange={(items) => updateField('products', items)}
       />
 
       <JsonImportModal
