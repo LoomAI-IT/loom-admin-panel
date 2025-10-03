@@ -67,25 +67,19 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
           placeholder="Введите название"
         />
 
-        <div className="input-wrapper">
-          <label className="input-label">Цель</label>
-          <textarea
-            className="input"
-            value={formData.goal}
-            onChange={(e) => updateField('goal', e.target.value)}
-            placeholder="Введите цель рубрики"
-          />
-        </div>
+        <Textarea
+          label="Цель"
+          value={formData.goal}
+          onChange={(e) => updateField('goal', e.target.value)}
+          placeholder="Введите цель рубрики"
+        />
 
-        <div className="input-wrapper">
-          <label className="input-label">Промпт для стиля изображения</label>
-          <textarea
-            className="input"
-            value={formData.prompt_for_image_style}
-            onChange={(e) => updateField('prompt_for_image_style', e.target.value)}
-            placeholder="Введите промпт для стиля изображения"
-          />
-        </div>
+        <Textarea
+          label="Промпт для стиля изображения"
+          value={formData.prompt_for_image_style}
+          onChange={(e) => updateField('prompt_for_image_style', e.target.value)}
+          placeholder="Введите промпт для стиля изображения"
+        />
       </section>
 
       {/* Структура контента */}
@@ -145,15 +139,12 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
           />
         </div>
 
-        <div className="input-wrapper">
-          <label className="input-label">Комментарий к уровню гибкости</label>
-          <textarea
-            className="input"
-            value={formData.structure_flex_level_comment}
-            onChange={(e) => updateField('structure_flex_level_comment', e.target.value)}
-            placeholder="Комментарий"
-          />
-        </div>
+        <Textarea
+          label="Комментарий к уровню гибкости"
+          value={formData.structure_flex_level_comment}
+          onChange={(e) => updateField('structure_flex_level_comment', e.target.value)}
+          placeholder="Комментарий"
+        />
       </section>
 
       {/* Правила контента */}
@@ -275,15 +266,12 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
           placeholder="Например: подписка, покупка, лайк"
         />
 
-        <div className="input-wrapper">
-          <label className="input-label">Правила для соцсетей</label>
-          <textarea
-            className="input"
-            value={formData.social_networks_rules}
-            onChange={(e) => updateField('social_networks_rules', e.target.value)}
-            placeholder="Правила публикации в соцсетях"
-          />
-        </div>
+        <Textarea
+          label="Правила для соцсетей"
+          value={formData.social_networks_rules}
+          onChange={(e) => updateField('social_networks_rules', e.target.value)}
+          placeholder="Правила публикации в соцсетях"
+        />
       </section>
 
       {/* Стиль и тон */}
@@ -399,7 +387,6 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
                         newSamples[sampleIdx][key] = e.target.value;
                         updateField('good_samples', newSamples);
                       }}
-                      className="field-value-textarea"
                     />
                     <Button
                       type="button"

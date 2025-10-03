@@ -45,12 +45,10 @@
 .array-input-item textarea,
 .array-input-item input {
   width: 100%;
-  min-height: 60px;
 }
 
-.array-input-item textarea {
-  resize: vertical !important;
-  height: auto !important;
+.array-input-item .textarea-wrapper {
+  width: 100%;
 }
 
 .remove-button {
@@ -148,8 +146,10 @@
 
 .field-value-textarea {
   flex: 1;
-  resize: vertical !important;
-  min-height: 60px;
+}
+
+.good-sample-field-row .textarea-wrapper {
+  flex: 1;
 }
 
 .remove-field-button {
@@ -181,7 +181,6 @@
 .input-wrapper textarea {
   width: 100%;
   box-sizing: border-box;
-  resize: vertical !important;
 }
 
 /* Responsive */
