@@ -87,7 +87,6 @@ export const OrganizationsListPage = () => {
                 <th>ID</th>
                 <th>Название</th>
                 <th>Баланс (₽)</th>
-                <th>Модерация автопостинга</th>
                 <th>Дата создания</th>
               </tr>
             </thead>
@@ -101,11 +100,6 @@ export const OrganizationsListPage = () => {
                   <td>{org.id}</td>
                   <td>{org.name}</td>
                   <td>{parseFloat(org.rub_balance).toFixed(2)}</td>
-                  <td>
-                    <span className={`status ${org.autoposting_moderation ? 'enabled' : 'disabled'}`}>
-                      {org.autoposting_moderation ? 'Включена' : 'Выключена'}
-                    </span>
-                  </td>
                   <td>{new Date(org.created_at).toLocaleString('ru-RU')}</td>
                 </tr>
               ))}

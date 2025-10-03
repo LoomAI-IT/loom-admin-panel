@@ -32,9 +32,15 @@ export const OrganizationDetailPage = () => {
   // Форма редактирования
   const [formData, setFormData] = useState({
     name: '',
-    autoposting_moderation: false,
     video_cut_description_end_sample: '',
     publication_text_end_sample: '',
+    tone_of_voice: [] as string[],
+    brand_rules: [] as string[],
+    compliance_rules: [] as string[],
+    audience_insights: [] as string[],
+    products: [] as Record<string, any>[],
+    locale: {} as Record<string, any>,
+    additional_info: [] as string[],
   });
 
   useEffect(() => {
@@ -53,9 +59,15 @@ export const OrganizationDetailPage = () => {
       setOrganization(response);
       setFormData({
         name: response.name,
-        autoposting_moderation: response.autoposting_moderation,
         video_cut_description_end_sample: response.video_cut_description_end_sample || '',
         publication_text_end_sample: response.publication_text_end_sample || '',
+        tone_of_voice: response.tone_of_voice || [],
+        brand_rules: response.brand_rules || [],
+        compliance_rules: response.compliance_rules || [],
+        audience_insights: response.audience_insights || [],
+        products: response.products || [],
+        locale: response.locale || {},
+        additional_info: response.additional_info || [],
       });
     } catch (err) {
       setError('Ошибка загрузки организации');
@@ -73,9 +85,15 @@ export const OrganizationDetailPage = () => {
     if (organization) {
       setFormData({
         name: organization.name,
-        autoposting_moderation: organization.autoposting_moderation,
         video_cut_description_end_sample: organization.video_cut_description_end_sample || '',
         publication_text_end_sample: organization.publication_text_end_sample || '',
+        tone_of_voice: organization.tone_of_voice || [],
+        brand_rules: organization.brand_rules || [],
+        compliance_rules: organization.compliance_rules || [],
+        audience_insights: organization.audience_insights || [],
+        products: organization.products || [],
+        locale: organization.locale || {},
+        additional_info: organization.additional_info || [],
       });
     }
     setIsEditing(false);
@@ -89,9 +107,15 @@ export const OrganizationDetailPage = () => {
       const updateData: UpdateOrganizationRequest = {
         organization_id: organization.id,
         name: formData.name,
-        autoposting_moderation: formData.autoposting_moderation,
         video_cut_description_end_sample: formData.video_cut_description_end_sample,
         publication_text_end_sample: formData.publication_text_end_sample,
+        tone_of_voice: formData.tone_of_voice,
+        brand_rules: formData.brand_rules,
+        compliance_rules: formData.compliance_rules,
+        audience_insights: formData.audience_insights,
+        products: formData.products,
+        locale: formData.locale,
+        additional_info: formData.additional_info,
       };
 
       await organizationApi.update(updateData);
@@ -232,26 +256,6 @@ export const OrganizationDetailPage = () => {
             </div>
 
             <div className="info-item">
-              <label>Модерация автопостинга</label>
-              {isEditing ? (
-                <label className="switch">
-                  <input
-                    type="checkbox"
-                    checked={formData.autoposting_moderation}
-                    onChange={(e) =>
-                      setFormData({ ...formData, autoposting_moderation: e.target.checked })
-                    }
-                  />
-                  <span className="slider"></span>
-                </label>
-              ) : (
-                <div className={`value status ${organization.autoposting_moderation ? 'enabled' : 'disabled'}`}>
-                  {organization.autoposting_moderation ? 'Включена' : 'Выключена'}
-                </div>
-              )}
-            </div>
-
-            <div className="info-item">
               <label>Дата создания</label>
               <div className="value">{new Date(organization.created_at).toLocaleString('ru-RU')}</div>
             </div>
@@ -295,6 +299,209 @@ export const OrganizationDetailPage = () => {
             ) : (
               <div className="value text-content">
                 {organization.publication_text_end_sample || 'Не задано'}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="info-section">
+          <h2>Tone of Voice</h2>
+          <div className="info-item full-width">
+            {isEditing ? (
+              <textarea
+                value={formData.tone_of_voice.join('\n')}
+                onChange={(e) =>
+                  setFormData({ ...formData, tone_of_voice: e.target.value.split('\n').filter(s => s.trim()) })
+                }
+                className="edit-textarea"
+                rows={6}
+                placeholder="Введите каждую запись с новой строки..."
+              />
+            ) : (
+              <div className="value">
+                {organization.tone_of_voice.length > 0 ? (
+                  <ul>
+                    {organization.tone_of_voice.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  'Не задано'
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="info-section">
+          <h2>Правила бренда</h2>
+          <div className="info-item full-width">
+            {isEditing ? (
+              <textarea
+                value={formData.brand_rules.join('\n')}
+                onChange={(e) =>
+                  setFormData({ ...formData, brand_rules: e.target.value.split('\n').filter(s => s.trim()) })
+                }
+                className="edit-textarea"
+                rows={6}
+                placeholder="Введите каждое правило с новой строки..."
+              />
+            ) : (
+              <div className="value">
+                {organization.brand_rules.length > 0 ? (
+                  <ul>
+                    {organization.brand_rules.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  'Не задано'
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="info-section">
+          <h2>Правила соответствия</h2>
+          <div className="info-item full-width">
+            {isEditing ? (
+              <textarea
+                value={formData.compliance_rules.join('\n')}
+                onChange={(e) =>
+                  setFormData({ ...formData, compliance_rules: e.target.value.split('\n').filter(s => s.trim()) })
+                }
+                className="edit-textarea"
+                rows={6}
+                placeholder="Введите каждое правило с новой строки..."
+              />
+            ) : (
+              <div className="value">
+                {organization.compliance_rules.length > 0 ? (
+                  <ul>
+                    {organization.compliance_rules.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  'Не задано'
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="info-section">
+          <h2>Информация об аудитории</h2>
+          <div className="info-item full-width">
+            {isEditing ? (
+              <textarea
+                value={formData.audience_insights.join('\n')}
+                onChange={(e) =>
+                  setFormData({ ...formData, audience_insights: e.target.value.split('\n').filter(s => s.trim()) })
+                }
+                className="edit-textarea"
+                rows={6}
+                placeholder="Введите каждый инсайт с новой строки..."
+              />
+            ) : (
+              <div className="value">
+                {organization.audience_insights.length > 0 ? (
+                  <ul>
+                    {organization.audience_insights.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  'Не задано'
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="info-section">
+          <h2>Продукты</h2>
+          <div className="info-item full-width">
+            {isEditing ? (
+              <textarea
+                value={JSON.stringify(formData.products, null, 2)}
+                onChange={(e) => {
+                  try {
+                    setFormData({ ...formData, products: JSON.parse(e.target.value) });
+                  } catch {
+                    // Игнорируем ошибки парсинга во время ввода
+                  }
+                }}
+                className="edit-textarea"
+                rows={8}
+                placeholder="Введите JSON массив продуктов..."
+              />
+            ) : (
+              <div className="value">
+                {organization.products.length > 0 ? (
+                  <pre>{JSON.stringify(organization.products, null, 2)}</pre>
+                ) : (
+                  'Не задано'
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="info-section">
+          <h2>Локаль</h2>
+          <div className="info-item full-width">
+            {isEditing ? (
+              <textarea
+                value={JSON.stringify(formData.locale, null, 2)}
+                onChange={(e) => {
+                  try {
+                    setFormData({ ...formData, locale: JSON.parse(e.target.value) });
+                  } catch {
+                    // Игнорируем ошибки парсинга во время ввода
+                  }
+                }}
+                className="edit-textarea"
+                rows={6}
+                placeholder="Введите JSON объект локали..."
+              />
+            ) : (
+              <div className="value">
+                {Object.keys(organization.locale).length > 0 ? (
+                  <pre>{JSON.stringify(organization.locale, null, 2)}</pre>
+                ) : (
+                  'Не задано'
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="info-section">
+          <h2>Дополнительная информация</h2>
+          <div className="info-item full-width">
+            {isEditing ? (
+              <textarea
+                value={formData.additional_info.join('\n')}
+                onChange={(e) =>
+                  setFormData({ ...formData, additional_info: e.target.value.split('\n').filter(s => s.trim()) })
+                }
+                className="edit-textarea"
+                rows={6}
+                placeholder="Введите каждую запись с новой строки..."
+              />
+            ) : (
+              <div className="value">
+                {organization.additional_info.length > 0 ? (
+                  <ul>
+                    {organization.additional_info.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  'Не задано'
+                )}
               </div>
             )}
           </div>
