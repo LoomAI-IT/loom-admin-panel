@@ -830,6 +830,12 @@ export const OrganizationDetailPage = () => {
               loadCategories(organization.id);
             }
           }}
+          onDelete={() => {
+            if (organization) {
+              loadCategories(organization.id);
+              handleCloseCategoryModal();
+            }
+          }}
         />
       )}
 
@@ -885,15 +891,33 @@ interface CategoryModalProps {
   category: Category;
   onClose: () => void;
   onUpdate: () => void;
+  onDelete: () => void;
 }
 
-const CategoryModal = ({ category, onClose, onUpdate }: CategoryModalProps) => {
+const CategoryModal = ({ category, onClose, onUpdate, onDelete }: CategoryModalProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState({
     name: category.name,
     prompt_for_image_style: category.prompt_for_image_style,
-    prompt_for_text_style: category.prompt_for_text_style,
+    goal: category.goal,
+    structure_skeleton: category.structure_skeleton,
+    structure_flex_level_min: category.structure_flex_level_min,
+    structure_flex_level_max: category.structure_flex_level_max,
+    structure_flex_level_comment: category.structure_flex_level_comment,
+    must_have: category.must_have,
+    must_avoid: category.must_avoid,
+    social_networks_rules: category.social_networks_rules,
+    len_min: category.len_min,
+    len_max: category.len_max,
+    n_hashtags_min: category.n_hashtags_min,
+    n_hashtags_max: category.n_hashtags_max,
+    cta_type: category.cta_type,
+    tone_of_voice: category.tone_of_voice,
+    brand_rules: category.brand_rules,
+    good_samples: category.good_samples,
+    additional_info: category.additional_info,
   });
 
   const handleSave = async () => {
@@ -911,11 +935,43 @@ const CategoryModal = ({ category, onClose, onUpdate }: CategoryModalProps) => {
     }
   };
 
+  const handleDelete = async () => {
+    if (!confirm(`Вы уверены, что хотите удалить рубрику "${category.name}"?`)) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await categoryApi.delete(category.id);
+      onDelete();
+    } catch (err) {
+      console.error('Failed to delete category:', err);
+      alert('Ошибка при удалении рубрики');
+      setIsDeleting(false);
+    }
+  };
+
   const handleCancel = () => {
     setFormData({
       name: category.name,
       prompt_for_image_style: category.prompt_for_image_style,
-      prompt_for_text_style: category.prompt_for_text_style,
+      goal: category.goal,
+      structure_skeleton: category.structure_skeleton,
+      structure_flex_level_min: category.structure_flex_level_min,
+      structure_flex_level_max: category.structure_flex_level_max,
+      structure_flex_level_comment: category.structure_flex_level_comment,
+      must_have: category.must_have,
+      must_avoid: category.must_avoid,
+      social_networks_rules: category.social_networks_rules,
+      len_min: category.len_min,
+      len_max: category.len_max,
+      n_hashtags_min: category.n_hashtags_min,
+      n_hashtags_max: category.n_hashtags_max,
+      cta_type: category.cta_type,
+      tone_of_voice: category.tone_of_voice,
+      brand_rules: category.brand_rules,
+      good_samples: category.good_samples,
+      additional_info: category.additional_info,
     });
     setIsEditing(false);
   };
@@ -932,6 +988,11 @@ const CategoryModal = ({ category, onClose, onUpdate }: CategoryModalProps) => {
 
         <div className="modal-body">
           <div className="info-item">
+            <label>ID</label>
+            <div className="value">{category.id}</div>
+          </div>
+
+          <div className="info-item">
             <label>Название</label>
             {isEditing ? (
               <input
@@ -945,6 +1006,11 @@ const CategoryModal = ({ category, onClose, onUpdate }: CategoryModalProps) => {
             )}
           </div>
 
+          <div className="info-item">
+            <label>Дата создания</label>
+            <div className="value">{new Date(category.created_at).toLocaleString('ru-RU')}</div>
+          </div>
+
           <div className="info-item full-width">
             <label>Промпт для стиля изображения</label>
             {isEditing ? (
@@ -954,38 +1020,615 @@ const CategoryModal = ({ category, onClose, onUpdate }: CategoryModalProps) => {
                   setFormData({ ...formData, prompt_for_image_style: e.target.value })
                 }
                 className="edit-textarea"
-                rows={6}
+                rows={4}
+                placeholder="Введите промпт для стиля изображения..."
               />
             ) : (
-              <div className="value text-content">{category.prompt_for_image_style}</div>
+              <div className="value text-content">{category.prompt_for_image_style || 'Не задано'}</div>
             )}
           </div>
 
           <div className="info-item full-width">
-            <label>Промпт для стиля текста</label>
+            <label>Цель рубрики</label>
             {isEditing ? (
               <textarea
-                value={formData.prompt_for_text_style}
+                value={formData.goal}
                 onChange={(e) =>
-                  setFormData({ ...formData, prompt_for_text_style: e.target.value })
+                  setFormData({ ...formData, goal: e.target.value })
                 }
                 className="edit-textarea"
-                rows={6}
+                rows={4}
+                placeholder="Введите цель рубрики..."
               />
             ) : (
-              <div className="value text-content">{category.prompt_for_text_style}</div>
+              <div className="value text-content">{category.goal || 'Не задано'}</div>
+            )}
+          </div>
+
+          <div className="info-item full-width">
+            <label>Структура контента (скелет)</label>
+            {isEditing ? (
+              <div className="list-editor">
+                {formData.structure_skeleton.map((item, idx) => (
+                  <div key={idx} className="list-item">
+                    <textarea
+                      value={item}
+                      onChange={(e) => {
+                        const newList = [...formData.structure_skeleton];
+                        newList[idx] = e.target.value;
+                        setFormData({ ...formData, structure_skeleton: newList });
+                      }}
+                      className="edit-textarea"
+                      rows={2}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newList = formData.structure_skeleton.filter((_, i) => i !== idx);
+                        setFormData({ ...formData, structure_skeleton: newList });
+                      }}
+                      className="btn-remove"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, structure_skeleton: [...formData.structure_skeleton, ''] });
+                  }}
+                  className="btn-add"
+                >
+                  + Добавить
+                </button>
+              </div>
+            ) : (
+              <div className="value">
+                {category.structure_skeleton.length > 0 ? (
+                  <ul>
+                    {category.structure_skeleton.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  'Не задано'
+                )}
+              </div>
             )}
           </div>
 
           <div className="info-item">
-            <label>Дата создания</label>
-            <div className="value">{new Date(category.created_at).toLocaleString('ru-RU')}</div>
+            <label>Гибкость структуры (мин)</label>
+            {isEditing ? (
+              <input
+                type="number"
+                value={formData.structure_flex_level_min}
+                onChange={(e) =>
+                  setFormData({ ...formData, structure_flex_level_min: parseInt(e.target.value) || 0 })
+                }
+                className="edit-input"
+              />
+            ) : (
+              <div className="value">{category.structure_flex_level_min}</div>
+            )}
+          </div>
+
+          <div className="info-item">
+            <label>Гибкость структуры (макс)</label>
+            {isEditing ? (
+              <input
+                type="number"
+                value={formData.structure_flex_level_max}
+                onChange={(e) =>
+                  setFormData({ ...formData, structure_flex_level_max: parseInt(e.target.value) || 0 })
+                }
+                className="edit-input"
+              />
+            ) : (
+              <div className="value">{category.structure_flex_level_max}</div>
+            )}
+          </div>
+
+          <div className="info-item full-width">
+            <label>Комментарий к гибкости структуры</label>
+            {isEditing ? (
+              <textarea
+                value={formData.structure_flex_level_comment}
+                onChange={(e) =>
+                  setFormData({ ...formData, structure_flex_level_comment: e.target.value })
+                }
+                className="edit-textarea"
+                rows={3}
+                placeholder="Введите комментарий..."
+              />
+            ) : (
+              <div className="value text-content">{category.structure_flex_level_comment || 'Не задано'}</div>
+            )}
+          </div>
+
+          <div className="info-item full-width">
+            <label>Обязательные элементы (Must Have)</label>
+            {isEditing ? (
+              <div className="list-editor">
+                {formData.must_have.map((item, idx) => (
+                  <div key={idx} className="list-item">
+                    <textarea
+                      value={item}
+                      onChange={(e) => {
+                        const newList = [...formData.must_have];
+                        newList[idx] = e.target.value;
+                        setFormData({ ...formData, must_have: newList });
+                      }}
+                      className="edit-textarea"
+                      rows={2}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newList = formData.must_have.filter((_, i) => i !== idx);
+                        setFormData({ ...formData, must_have: newList });
+                      }}
+                      className="btn-remove"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, must_have: [...formData.must_have, ''] });
+                  }}
+                  className="btn-add"
+                >
+                  + Добавить
+                </button>
+              </div>
+            ) : (
+              <div className="value">
+                {category.must_have.length > 0 ? (
+                  <ul>
+                    {category.must_have.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  'Не задано'
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="info-item full-width">
+            <label>Запрещённые элементы (Must Avoid)</label>
+            {isEditing ? (
+              <div className="list-editor">
+                {formData.must_avoid.map((item, idx) => (
+                  <div key={idx} className="list-item">
+                    <textarea
+                      value={item}
+                      onChange={(e) => {
+                        const newList = [...formData.must_avoid];
+                        newList[idx] = e.target.value;
+                        setFormData({ ...formData, must_avoid: newList });
+                      }}
+                      className="edit-textarea"
+                      rows={2}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newList = formData.must_avoid.filter((_, i) => i !== idx);
+                        setFormData({ ...formData, must_avoid: newList });
+                      }}
+                      className="btn-remove"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, must_avoid: [...formData.must_avoid, ''] });
+                  }}
+                  className="btn-add"
+                >
+                  + Добавить
+                </button>
+              </div>
+            ) : (
+              <div className="value">
+                {category.must_avoid.length > 0 ? (
+                  <ul>
+                    {category.must_avoid.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  'Не задано'
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="info-item full-width">
+            <label>Правила для соцсетей</label>
+            {isEditing ? (
+              <textarea
+                value={formData.social_networks_rules}
+                onChange={(e) =>
+                  setFormData({ ...formData, social_networks_rules: e.target.value })
+                }
+                className="edit-textarea"
+                rows={4}
+                placeholder="Введите правила для соцсетей..."
+              />
+            ) : (
+              <div className="value text-content">{category.social_networks_rules || 'Не задано'}</div>
+            )}
+          </div>
+
+          <div className="info-item">
+            <label>Минимальная длина текста</label>
+            {isEditing ? (
+              <input
+                type="number"
+                value={formData.len_min}
+                onChange={(e) =>
+                  setFormData({ ...formData, len_min: parseInt(e.target.value) || 0 })
+                }
+                className="edit-input"
+              />
+            ) : (
+              <div className="value">{category.len_min}</div>
+            )}
+          </div>
+
+          <div className="info-item">
+            <label>Максимальная длина текста</label>
+            {isEditing ? (
+              <input
+                type="number"
+                value={formData.len_max}
+                onChange={(e) =>
+                  setFormData({ ...formData, len_max: parseInt(e.target.value) || 0 })
+                }
+                className="edit-input"
+              />
+            ) : (
+              <div className="value">{category.len_max}</div>
+            )}
+          </div>
+
+          <div className="info-item">
+            <label>Мин. кол-во хештегов</label>
+            {isEditing ? (
+              <input
+                type="number"
+                value={formData.n_hashtags_min}
+                onChange={(e) =>
+                  setFormData({ ...formData, n_hashtags_min: parseInt(e.target.value) || 0 })
+                }
+                className="edit-input"
+              />
+            ) : (
+              <div className="value">{category.n_hashtags_min}</div>
+            )}
+          </div>
+
+          <div className="info-item">
+            <label>Макс. кол-во хештегов</label>
+            {isEditing ? (
+              <input
+                type="number"
+                value={formData.n_hashtags_max}
+                onChange={(e) =>
+                  setFormData({ ...formData, n_hashtags_max: parseInt(e.target.value) || 0 })
+                }
+                className="edit-input"
+              />
+            ) : (
+              <div className="value">{category.n_hashtags_max}</div>
+            )}
+          </div>
+
+          <div className="info-item full-width">
+            <label>Тип призыва к действию (CTA)</label>
+            {isEditing ? (
+              <textarea
+                value={formData.cta_type}
+                onChange={(e) =>
+                  setFormData({ ...formData, cta_type: e.target.value })
+                }
+                className="edit-textarea"
+                rows={3}
+                placeholder="Введите тип CTA..."
+              />
+            ) : (
+              <div className="value text-content">{category.cta_type || 'Не задано'}</div>
+            )}
+          </div>
+
+          <div className="info-item full-width">
+            <label>Tone of Voice</label>
+            {isEditing ? (
+              <div className="list-editor">
+                {formData.tone_of_voice.map((item, idx) => (
+                  <div key={idx} className="list-item">
+                    <textarea
+                      value={item}
+                      onChange={(e) => {
+                        const newList = [...formData.tone_of_voice];
+                        newList[idx] = e.target.value;
+                        setFormData({ ...formData, tone_of_voice: newList });
+                      }}
+                      className="edit-textarea"
+                      rows={2}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newList = formData.tone_of_voice.filter((_, i) => i !== idx);
+                        setFormData({ ...formData, tone_of_voice: newList });
+                      }}
+                      className="btn-remove"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, tone_of_voice: [...formData.tone_of_voice, ''] });
+                  }}
+                  className="btn-add"
+                >
+                  + Добавить
+                </button>
+              </div>
+            ) : (
+              <div className="value">
+                {category.tone_of_voice.length > 0 ? (
+                  <ul>
+                    {category.tone_of_voice.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  'Не задано'
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="info-item full-width">
+            <label>Правила бренда</label>
+            {isEditing ? (
+              <div className="list-editor">
+                {formData.brand_rules.map((item, idx) => (
+                  <div key={idx} className="list-item">
+                    <textarea
+                      value={item}
+                      onChange={(e) => {
+                        const newList = [...formData.brand_rules];
+                        newList[idx] = e.target.value;
+                        setFormData({ ...formData, brand_rules: newList });
+                      }}
+                      className="edit-textarea"
+                      rows={2}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newList = formData.brand_rules.filter((_, i) => i !== idx);
+                        setFormData({ ...formData, brand_rules: newList });
+                      }}
+                      className="btn-remove"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, brand_rules: [...formData.brand_rules, ''] });
+                  }}
+                  className="btn-add"
+                >
+                  + Добавить
+                </button>
+              </div>
+            ) : (
+              <div className="value">
+                {category.brand_rules.length > 0 ? (
+                  <ul>
+                    {category.brand_rules.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  'Не задано'
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="info-item full-width">
+            <label>Хорошие примеры</label>
+            {isEditing ? (
+              <div className="dict-list-editor">
+                {formData.good_samples.map((sample, sampleIdx) => (
+                  <div key={sampleIdx} className="dict-item">
+                    <div className="dict-item-header">
+                      <h4>Пример #{sampleIdx + 1}</h4>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newList = formData.good_samples.filter((_, i) => i !== sampleIdx);
+                          setFormData({ ...formData, good_samples: newList });
+                        }}
+                        className="btn-remove"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div className="key-value-pairs">
+                      {Object.entries(sample).map(([key, value], pairIdx) => (
+                        <div key={pairIdx} className="key-value-pair">
+                          <input
+                            type="text"
+                            value={key}
+                            onChange={(e) => {
+                              const newSamples = [...formData.good_samples];
+                              const newSample = { ...sample };
+                              delete newSample[key];
+                              newSample[e.target.value] = value;
+                              newSamples[sampleIdx] = newSample;
+                              setFormData({ ...formData, good_samples: newSamples });
+                            }}
+                            placeholder="Ключ"
+                            className="edit-input key-input"
+                          />
+                          <textarea
+                            value={String(value)}
+                            onChange={(e) => {
+                              const newSamples = [...formData.good_samples];
+                              newSamples[sampleIdx] = { ...sample, [key]: e.target.value };
+                              setFormData({ ...formData, good_samples: newSamples });
+                            }}
+                            placeholder="Значение"
+                            className="edit-textarea value-textarea"
+                            rows={2}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newSamples = [...formData.good_samples];
+                              const newSample = { ...sample };
+                              delete newSample[key];
+                              newSamples[sampleIdx] = newSample;
+                              setFormData({ ...formData, good_samples: newSamples });
+                            }}
+                            className="btn-remove-small"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newSamples = [...formData.good_samples];
+                          newSamples[sampleIdx] = { ...sample, '': '' };
+                          setFormData({ ...formData, good_samples: newSamples });
+                        }}
+                        className="btn-add-small"
+                      >
+                        + Добавить поле
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, good_samples: [...formData.good_samples, {}] });
+                  }}
+                  className="btn-add"
+                >
+                  + Добавить пример
+                </button>
+              </div>
+            ) : (
+              <div className="value">
+                {category.good_samples.length > 0 ? (
+                  <div className="dict-list-display">
+                    {category.good_samples.map((sample, idx) => (
+                      <div key={idx} className="dict-display-item">
+                        <h4>Пример #{idx + 1}</h4>
+                        <div className="dict-display-content">
+                          {Object.entries(sample).map(([key, value]) => (
+                            <div key={key} className="dict-display-pair">
+                              <span className="dict-key">{key}:</span>
+                              <span className="dict-value">{String(value)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  'Не задано'
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="info-item full-width">
+            <label>Дополнительная информация</label>
+            {isEditing ? (
+              <div className="list-editor">
+                {formData.additional_info.map((item, idx) => (
+                  <div key={idx} className="list-item">
+                    <textarea
+                      value={item}
+                      onChange={(e) => {
+                        const newList = [...formData.additional_info];
+                        newList[idx] = e.target.value;
+                        setFormData({ ...formData, additional_info: newList });
+                      }}
+                      className="edit-textarea"
+                      rows={2}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newList = formData.additional_info.filter((_, i) => i !== idx);
+                        setFormData({ ...formData, additional_info: newList });
+                      }}
+                      className="btn-remove"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, additional_info: [...formData.additional_info, ''] });
+                  }}
+                  className="btn-add"
+                >
+                  + Добавить
+                </button>
+              </div>
+            ) : (
+              <div className="value">
+                {category.additional_info.length > 0 ? (
+                  <ul>
+                    {category.additional_info.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  'Не задано'
+                )}
+              </div>
+            )}
           </div>
         </div>
 
         <div className="modal-footer">
           {!isEditing ? (
             <>
+              <button onClick={handleDelete} className="btn-danger" disabled={isDeleting}>
+                {isDeleting ? 'Удаление...' : 'Удалить'}
+              </button>
+              <div style={{ flex: 1 }} />
               <button onClick={onClose} className="btn-secondary">
                 Закрыть
               </button>
@@ -1287,7 +1930,23 @@ const AddCategoryModal = ({ organizationId, onClose, onAdd }: AddCategoryModalPr
   const [formData, setFormData] = useState({
     name: '',
     prompt_for_image_style: '',
-    prompt_for_text_style: '',
+    goal: '',
+    structure_skeleton: [] as string[],
+    structure_flex_level_min: 0,
+    structure_flex_level_max: 0,
+    structure_flex_level_comment: '',
+    must_have: [] as string[],
+    must_avoid: [] as string[],
+    social_networks_rules: '',
+    len_min: 0,
+    len_max: 0,
+    n_hashtags_min: 0,
+    n_hashtags_max: 0,
+    cta_type: '',
+    tone_of_voice: [] as string[],
+    brand_rules: [] as string[],
+    good_samples: [] as Record<string, any>[],
+    additional_info: [] as string[],
   });
 
   const handleSave = async () => {
@@ -1302,7 +1961,23 @@ const AddCategoryModal = ({ organizationId, onClose, onAdd }: AddCategoryModalPr
         organization_id: organizationId,
         name: formData.name.trim(),
         prompt_for_image_style: formData.prompt_for_image_style,
-        prompt_for_text_style: formData.prompt_for_text_style,
+        goal: formData.goal,
+        structure_skeleton: formData.structure_skeleton,
+        structure_flex_level_min: formData.structure_flex_level_min,
+        structure_flex_level_max: formData.structure_flex_level_max,
+        structure_flex_level_comment: formData.structure_flex_level_comment,
+        must_have: formData.must_have,
+        must_avoid: formData.must_avoid,
+        social_networks_rules: formData.social_networks_rules,
+        len_min: formData.len_min,
+        len_max: formData.len_max,
+        n_hashtags_min: formData.n_hashtags_min,
+        n_hashtags_max: formData.n_hashtags_max,
+        cta_type: formData.cta_type,
+        tone_of_voice: formData.tone_of_voice,
+        brand_rules: formData.brand_rules,
+        good_samples: formData.good_samples,
+        additional_info: formData.additional_info,
       });
       onAdd();
     } catch (err) {
@@ -1342,20 +2017,434 @@ const AddCategoryModal = ({ organizationId, onClose, onAdd }: AddCategoryModalPr
               value={formData.prompt_for_image_style}
               onChange={(e) => setFormData({ ...formData, prompt_for_image_style: e.target.value })}
               className="edit-textarea"
-              rows={6}
-              placeholder="Введите промпт для стиля изображения"
+              rows={4}
+              placeholder="Введите промпт для стиля изображения..."
             />
           </div>
 
           <div className="info-item full-width">
-            <label>Промпт для стиля текста</label>
+            <label>Цель рубрики</label>
             <textarea
-              value={formData.prompt_for_text_style}
-              onChange={(e) => setFormData({ ...formData, prompt_for_text_style: e.target.value })}
+              value={formData.goal}
+              onChange={(e) => setFormData({ ...formData, goal: e.target.value })}
               className="edit-textarea"
-              rows={6}
-              placeholder="Введите промпт для стиля текста"
+              rows={4}
+              placeholder="Введите цель рубрики..."
             />
+          </div>
+
+          <div className="info-item full-width">
+            <label>Структура контента (скелет)</label>
+            <div className="list-editor">
+              {formData.structure_skeleton.map((item, idx) => (
+                <div key={idx} className="list-item">
+                  <textarea
+                    value={item}
+                    onChange={(e) => {
+                      const newList = [...formData.structure_skeleton];
+                      newList[idx] = e.target.value;
+                      setFormData({ ...formData, structure_skeleton: newList });
+                    }}
+                    className="edit-textarea"
+                    rows={2}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newList = formData.structure_skeleton.filter((_, i) => i !== idx);
+                      setFormData({ ...formData, structure_skeleton: newList });
+                    }}
+                    className="btn-remove"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData({ ...formData, structure_skeleton: [...formData.structure_skeleton, ''] });
+                }}
+                className="btn-add"
+              >
+                + Добавить
+              </button>
+            </div>
+          </div>
+
+          <div className="info-item">
+            <label>Гибкость структуры (мин)</label>
+            <input
+              type="number"
+              value={formData.structure_flex_level_min}
+              onChange={(e) => setFormData({ ...formData, structure_flex_level_min: parseInt(e.target.value) || 0 })}
+              className="edit-input"
+            />
+          </div>
+
+          <div className="info-item">
+            <label>Гибкость структуры (макс)</label>
+            <input
+              type="number"
+              value={formData.structure_flex_level_max}
+              onChange={(e) => setFormData({ ...formData, structure_flex_level_max: parseInt(e.target.value) || 0 })}
+              className="edit-input"
+            />
+          </div>
+
+          <div className="info-item full-width">
+            <label>Комментарий к гибкости структуры</label>
+            <textarea
+              value={formData.structure_flex_level_comment}
+              onChange={(e) => setFormData({ ...formData, structure_flex_level_comment: e.target.value })}
+              className="edit-textarea"
+              rows={3}
+              placeholder="Введите комментарий..."
+            />
+          </div>
+
+          <div className="info-item full-width">
+            <label>Обязательные элементы (Must Have)</label>
+            <div className="list-editor">
+              {formData.must_have.map((item, idx) => (
+                <div key={idx} className="list-item">
+                  <textarea
+                    value={item}
+                    onChange={(e) => {
+                      const newList = [...formData.must_have];
+                      newList[idx] = e.target.value;
+                      setFormData({ ...formData, must_have: newList });
+                    }}
+                    className="edit-textarea"
+                    rows={2}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newList = formData.must_have.filter((_, i) => i !== idx);
+                      setFormData({ ...formData, must_have: newList });
+                    }}
+                    className="btn-remove"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData({ ...formData, must_have: [...formData.must_have, ''] });
+                }}
+                className="btn-add"
+              >
+                + Добавить
+              </button>
+            </div>
+          </div>
+
+          <div className="info-item full-width">
+            <label>Запрещённые элементы (Must Avoid)</label>
+            <div className="list-editor">
+              {formData.must_avoid.map((item, idx) => (
+                <div key={idx} className="list-item">
+                  <textarea
+                    value={item}
+                    onChange={(e) => {
+                      const newList = [...formData.must_avoid];
+                      newList[idx] = e.target.value;
+                      setFormData({ ...formData, must_avoid: newList });
+                    }}
+                    className="edit-textarea"
+                    rows={2}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newList = formData.must_avoid.filter((_, i) => i !== idx);
+                      setFormData({ ...formData, must_avoid: newList });
+                    }}
+                    className="btn-remove"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData({ ...formData, must_avoid: [...formData.must_avoid, ''] });
+                }}
+                className="btn-add"
+              >
+                + Добавить
+              </button>
+            </div>
+          </div>
+
+          <div className="info-item full-width">
+            <label>Правила для соцсетей</label>
+            <textarea
+              value={formData.social_networks_rules}
+              onChange={(e) => setFormData({ ...formData, social_networks_rules: e.target.value })}
+              className="edit-textarea"
+              rows={4}
+              placeholder="Введите правила для соцсетей..."
+            />
+          </div>
+
+          <div className="info-item">
+            <label>Минимальная длина текста</label>
+            <input
+              type="number"
+              value={formData.len_min}
+              onChange={(e) => setFormData({ ...formData, len_min: parseInt(e.target.value) || 0 })}
+              className="edit-input"
+            />
+          </div>
+
+          <div className="info-item">
+            <label>Максимальная длина текста</label>
+            <input
+              type="number"
+              value={formData.len_max}
+              onChange={(e) => setFormData({ ...formData, len_max: parseInt(e.target.value) || 0 })}
+              className="edit-input"
+            />
+          </div>
+
+          <div className="info-item">
+            <label>Мин. кол-во хештегов</label>
+            <input
+              type="number"
+              value={formData.n_hashtags_min}
+              onChange={(e) => setFormData({ ...formData, n_hashtags_min: parseInt(e.target.value) || 0 })}
+              className="edit-input"
+            />
+          </div>
+
+          <div className="info-item">
+            <label>Макс. кол-во хештегов</label>
+            <input
+              type="number"
+              value={formData.n_hashtags_max}
+              onChange={(e) => setFormData({ ...formData, n_hashtags_max: parseInt(e.target.value) || 0 })}
+              className="edit-input"
+            />
+          </div>
+
+          <div className="info-item full-width">
+            <label>Тип призыва к действию (CTA)</label>
+            <textarea
+              value={formData.cta_type}
+              onChange={(e) => setFormData({ ...formData, cta_type: e.target.value })}
+              className="edit-textarea"
+              rows={3}
+              placeholder="Введите тип CTA..."
+            />
+          </div>
+
+          <div className="info-item full-width">
+            <label>Tone of Voice</label>
+            <div className="list-editor">
+              {formData.tone_of_voice.map((item, idx) => (
+                <div key={idx} className="list-item">
+                  <textarea
+                    value={item}
+                    onChange={(e) => {
+                      const newList = [...formData.tone_of_voice];
+                      newList[idx] = e.target.value;
+                      setFormData({ ...formData, tone_of_voice: newList });
+                    }}
+                    className="edit-textarea"
+                    rows={2}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newList = formData.tone_of_voice.filter((_, i) => i !== idx);
+                      setFormData({ ...formData, tone_of_voice: newList });
+                    }}
+                    className="btn-remove"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData({ ...formData, tone_of_voice: [...formData.tone_of_voice, ''] });
+                }}
+                className="btn-add"
+              >
+                + Добавить
+              </button>
+            </div>
+          </div>
+
+          <div className="info-item full-width">
+            <label>Правила бренда</label>
+            <div className="list-editor">
+              {formData.brand_rules.map((item, idx) => (
+                <div key={idx} className="list-item">
+                  <textarea
+                    value={item}
+                    onChange={(e) => {
+                      const newList = [...formData.brand_rules];
+                      newList[idx] = e.target.value;
+                      setFormData({ ...formData, brand_rules: newList });
+                    }}
+                    className="edit-textarea"
+                    rows={2}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newList = formData.brand_rules.filter((_, i) => i !== idx);
+                      setFormData({ ...formData, brand_rules: newList });
+                    }}
+                    className="btn-remove"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData({ ...formData, brand_rules: [...formData.brand_rules, ''] });
+                }}
+                className="btn-add"
+              >
+                + Добавить
+              </button>
+            </div>
+          </div>
+
+          <div className="info-item full-width">
+            <label>Хорошие примеры</label>
+            <div className="dict-list-editor">
+              {formData.good_samples.map((sample, sampleIdx) => (
+                <div key={sampleIdx} className="dict-item">
+                  <div className="dict-item-header">
+                    <h4>Пример #{sampleIdx + 1}</h4>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newList = formData.good_samples.filter((_, i) => i !== sampleIdx);
+                        setFormData({ ...formData, good_samples: newList });
+                      }}
+                      className="btn-remove"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div className="key-value-pairs">
+                    {Object.entries(sample).map(([key, value], pairIdx) => (
+                      <div key={pairIdx} className="key-value-pair">
+                        <input
+                          type="text"
+                          value={key}
+                          onChange={(e) => {
+                            const newSamples = [...formData.good_samples];
+                            const newSample = { ...sample };
+                            delete newSample[key];
+                            newSample[e.target.value] = value;
+                            newSamples[sampleIdx] = newSample;
+                            setFormData({ ...formData, good_samples: newSamples });
+                          }}
+                          placeholder="Ключ"
+                          className="edit-input key-input"
+                        />
+                        <textarea
+                          value={String(value)}
+                          onChange={(e) => {
+                            const newSamples = [...formData.good_samples];
+                            newSamples[sampleIdx] = { ...sample, [key]: e.target.value };
+                            setFormData({ ...formData, good_samples: newSamples });
+                          }}
+                          placeholder="Значение"
+                          className="edit-textarea value-textarea"
+                          rows={2}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newSamples = [...formData.good_samples];
+                            const newSample = { ...sample };
+                            delete newSample[key];
+                            newSamples[sampleIdx] = newSample;
+                            setFormData({ ...formData, good_samples: newSamples });
+                          }}
+                          className="btn-remove-small"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newSamples = [...formData.good_samples];
+                        newSamples[sampleIdx] = { ...sample, '': '' };
+                        setFormData({ ...formData, good_samples: newSamples });
+                      }}
+                      className="btn-add-small"
+                    >
+                      + Добавить поле
+                    </button>
+                  </div>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData({ ...formData, good_samples: [...formData.good_samples, {}] });
+                }}
+                className="btn-add"
+              >
+                + Добавить пример
+              </button>
+            </div>
+          </div>
+
+          <div className="info-item full-width">
+            <label>Дополнительная информация</label>
+            <div className="list-editor">
+              {formData.additional_info.map((item, idx) => (
+                <div key={idx} className="list-item">
+                  <textarea
+                    value={item}
+                    onChange={(e) => {
+                      const newList = [...formData.additional_info];
+                      newList[idx] = e.target.value;
+                      setFormData({ ...formData, additional_info: newList });
+                    }}
+                    className="edit-textarea"
+                    rows={2}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newList = formData.additional_info.filter((_, i) => i !== idx);
+                      setFormData({ ...formData, additional_info: newList });
+                    }}
+                    className="btn-remove"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData({ ...formData, additional_info: [...formData.additional_info, ''] });
+                }}
+                className="btn-add"
+              >
+                + Добавить
+              </button>
+            </div>
           </div>
         </div>
 
