@@ -50,7 +50,7 @@ export const EmployeesSection = ({ organizationId }: EmployeesSectionProps) => {
       setSubmitting(true);
 
       // TODO: Replace with actual current user account ID
-      const currentAccountId = 1;
+      const currentAccountId = 0;
 
       const request: CreateEmployeeRequest = {
         account_id: parseInt(formData.account_id),
