@@ -979,6 +979,7 @@ export const OrganizationDetailPage = () => {
             locale: organization.locale,
             additional_info: organization.additional_info,
           }}
+          filename={`organization_${organization.id}.json`}
           onClose={handleCloseViewJsonModal}
         />
       )}
@@ -1856,6 +1857,7 @@ const CategoryModal = ({ category, onClose, onUpdate, onDelete }: CategoryModalP
               good_samples: category.good_samples,
               additional_info: category.additional_info,
             }}
+            filename={`category_${category.id}.json`}
             onClose={handleCloseViewJsonModal}
           />
         )}
@@ -2140,6 +2142,7 @@ interface AddCategoryModalProps {
 const AddCategoryModal = ({ organizationId, onClose, onAdd }: AddCategoryModalProps) => {
   const [isSaving, setIsSaving] = useState(false);
   const [showJsonModal, setShowJsonModal] = useState(false);
+  const [showViewJsonModal, setShowViewJsonModal] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     prompt_for_image_style: '',
@@ -2213,6 +2216,14 @@ const AddCategoryModal = ({ organizationId, onClose, onAdd }: AddCategoryModalPr
 
   const handleCloseJsonModal = () => {
     setShowJsonModal(false);
+  };
+
+  const handleViewJson = () => {
+    setShowViewJsonModal(true);
+  };
+
+  const handleCloseViewJsonModal = () => {
+    setShowViewJsonModal(false);
   };
 
   const handleSave = async () => {
@@ -2715,6 +2726,9 @@ const AddCategoryModal = ({ organizationId, onClose, onAdd }: AddCategoryModalPr
         </div>
 
         <div className="modal-footer">
+          <button onClick={handleViewJson} className="btn-secondary" disabled={isSaving}>
+            Просмотр JSON
+          </button>
           <button onClick={handlePasteJson} className="btn-secondary" disabled={isSaving}>
             Вставить JSON
           </button>
@@ -2738,6 +2752,35 @@ const AddCategoryModal = ({ organizationId, onClose, onAdd }: AddCategoryModalPr
               setShowJsonModal(false);
               alert('Настройки рубрики успешно загружены из JSON');
             }}
+          />
+        )}
+
+        {showViewJsonModal && (
+          <JsonViewModal
+            title="Конфигурация новой рубрики"
+            jsonData={{
+              name: formData.name,
+              prompt_for_image_style: formData.prompt_for_image_style,
+              goal: formData.goal,
+              structure_skeleton: formData.structure_skeleton,
+              structure_flex_level_min: formData.structure_flex_level_min,
+              structure_flex_level_max: formData.structure_flex_level_max,
+              structure_flex_level_comment: formData.structure_flex_level_comment,
+              must_have: formData.must_have,
+              must_avoid: formData.must_avoid,
+              social_networks_rules: formData.social_networks_rules,
+              len_min: formData.len_min,
+              len_max: formData.len_max,
+              n_hashtags_min: formData.n_hashtags_min,
+              n_hashtags_max: formData.n_hashtags_max,
+              cta_type: formData.cta_type,
+              tone_of_voice: formData.tone_of_voice,
+              brand_rules: formData.brand_rules,
+              good_samples: formData.good_samples,
+              additional_info: formData.additional_info,
+            }}
+            filename="category_new.json"
+            onClose={handleCloseViewJsonModal}
           />
         )}
       </div>
@@ -2911,9 +2954,10 @@ interface JsonViewModalProps {
   title: string;
   jsonData: any;
   onClose: () => void;
+  filename?: string;
 }
 
-const JsonViewModal = ({ title, jsonData, onClose }: JsonViewModalProps) => {
+const JsonViewModal = ({ title, jsonData, onClose, filename }: JsonViewModalProps) => {
   const jsonText = JSON.stringify(jsonData, null, 2);
 
   const handleCopy = () => {
@@ -2930,7 +2974,7 @@ const JsonViewModal = ({ title, jsonData, onClose }: JsonViewModalProps) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'organization-config.json';
+    a.download = filename || 'config.json';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
