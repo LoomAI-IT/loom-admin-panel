@@ -29,6 +29,12 @@ export const OrganizationDetailPage = () => {
   const [showEmployeeModal, setShowEmployeeModal] = useState(false);
   const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false);
 
+  // Состояние для модального окна вставки JSON
+  const [showJsonModal, setShowJsonModal] = useState(false);
+
+  // Состояние для модального окна просмотра JSON
+  const [showViewJsonModal, setShowViewJsonModal] = useState(false);
+
   // Форма редактирования
   const [formData, setFormData] = useState({
     name: '',
@@ -97,6 +103,59 @@ export const OrganizationDetailPage = () => {
       });
     }
     setIsEditing(false);
+  };
+
+  const applyJsonData = (jsonData: any) => {
+    // Полностью заменяем все поля на данные из JSON, сбрасывая остальные в значения по умолчанию
+    setFormData({
+      name: jsonData.name || '',
+      video_cut_description_end_sample: jsonData.video_cut_description_end_sample || '',
+      publication_text_end_sample: jsonData.publication_text_end_sample || '',
+      tone_of_voice: jsonData.tone_of_voice || [],
+      brand_rules: jsonData.brand_rules || [],
+      compliance_rules: jsonData.compliance_rules || [],
+      audience_insights: jsonData.audience_insights || [],
+      products: jsonData.products || [],
+      locale: jsonData.locale || {},
+      additional_info: jsonData.additional_info || [],
+    });
+  };
+
+  const handleLoadJson = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const jsonData = JSON.parse(text);
+        applyJsonData(jsonData);
+        alert('Настройки успешно загружены из JSON');
+      } catch (err) {
+        console.error('Failed to load JSON:', err);
+        alert('Ошибка при загрузке JSON файла. Проверьте формат файла.');
+      }
+    };
+    input.click();
+  };
+
+  const handlePasteJson = () => {
+    setShowJsonModal(true);
+  };
+
+  const handleCloseJsonModal = () => {
+    setShowJsonModal(false);
+  };
+
+  const handleViewJson = () => {
+    setShowViewJsonModal(true);
+  };
+
+  const handleCloseViewJsonModal = () => {
+    setShowViewJsonModal(false);
   };
 
   const handleSave = async () => {
@@ -211,11 +270,22 @@ export const OrganizationDetailPage = () => {
         <h1>Организация #{organization.id}</h1>
         <div className="actions">
           {!isEditing ? (
-            <button onClick={handleEdit} className="btn-primary">
-              Редактировать
-            </button>
+            <>
+              <button onClick={handleViewJson} className="btn-secondary">
+                Просмотр JSON
+              </button>
+              <button onClick={handleEdit} className="btn-primary">
+                Редактировать
+              </button>
+            </>
           ) : (
             <>
+              <button onClick={handlePasteJson} className="btn-secondary" disabled={isSaving}>
+                Вставить JSON
+              </button>
+              <button onClick={handleLoadJson} className="btn-secondary" disabled={isSaving}>
+                Загрузить JSON
+              </button>
               <button onClick={handleCancel} className="btn-secondary" disabled={isSaving}>
                 Отмена
               </button>
@@ -882,6 +952,36 @@ export const OrganizationDetailPage = () => {
           }}
         />
       )}
+
+      {showJsonModal && (
+        <JsonPasteModal
+          onClose={handleCloseJsonModal}
+          onApply={(jsonData) => {
+            applyJsonData(jsonData);
+            setShowJsonModal(false);
+            alert('Настройки успешно загружены из JSON');
+          }}
+        />
+      )}
+
+      {showViewJsonModal && organization && (
+        <JsonViewModal
+          title="Конфигурация организации"
+          jsonData={{
+            name: organization.name,
+            video_cut_description_end_sample: organization.video_cut_description_end_sample,
+            publication_text_end_sample: organization.publication_text_end_sample,
+            tone_of_voice: organization.tone_of_voice,
+            brand_rules: organization.brand_rules,
+            compliance_rules: organization.compliance_rules,
+            audience_insights: organization.audience_insights,
+            products: organization.products,
+            locale: organization.locale,
+            additional_info: organization.additional_info,
+          }}
+          onClose={handleCloseViewJsonModal}
+        />
+      )}
     </div>
   );
 };
@@ -898,6 +998,8 @@ const CategoryModal = ({ category, onClose, onUpdate, onDelete }: CategoryModalP
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showJsonModal, setShowJsonModal] = useState(false);
+  const [showViewJsonModal, setShowViewJsonModal] = useState(false);
   const [formData, setFormData] = useState({
     name: category.name,
     prompt_for_image_style: category.prompt_for_image_style,
@@ -974,6 +1076,67 @@ const CategoryModal = ({ category, onClose, onUpdate, onDelete }: CategoryModalP
       additional_info: category.additional_info,
     });
     setIsEditing(false);
+  };
+
+  const applyCategoryJsonData = (jsonData: any) => {
+    setFormData({
+      name: jsonData.name || '',
+      prompt_for_image_style: jsonData.prompt_for_image_style || '',
+      goal: jsonData.goal || '',
+      structure_skeleton: jsonData.structure_skeleton || [],
+      structure_flex_level_min: jsonData.structure_flex_level_min || 0,
+      structure_flex_level_max: jsonData.structure_flex_level_max || 0,
+      structure_flex_level_comment: jsonData.structure_flex_level_comment || '',
+      must_have: jsonData.must_have || [],
+      must_avoid: jsonData.must_avoid || [],
+      social_networks_rules: jsonData.social_networks_rules || '',
+      len_min: jsonData.len_min || 0,
+      len_max: jsonData.len_max || 0,
+      n_hashtags_min: jsonData.n_hashtags_min || 0,
+      n_hashtags_max: jsonData.n_hashtags_max || 0,
+      cta_type: jsonData.cta_type || '',
+      tone_of_voice: jsonData.tone_of_voice || [],
+      brand_rules: jsonData.brand_rules || [],
+      good_samples: jsonData.good_samples || [],
+      additional_info: jsonData.additional_info || [],
+    });
+  };
+
+  const handleLoadJson = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const jsonData = JSON.parse(text);
+        applyCategoryJsonData(jsonData);
+        alert('Настройки рубрики успешно загружены из JSON');
+      } catch (err) {
+        console.error('Failed to load JSON:', err);
+        alert('Ошибка при загрузке JSON файла. Проверьте формат файла.');
+      }
+    };
+    input.click();
+  };
+
+  const handlePasteJson = () => {
+    setShowJsonModal(true);
+  };
+
+  const handleCloseJsonModal = () => {
+    setShowJsonModal(false);
+  };
+
+  const handleViewJson = () => {
+    setShowViewJsonModal(true);
+  };
+
+  const handleCloseViewJsonModal = () => {
+    setShowViewJsonModal(false);
   };
 
   return (
@@ -1629,6 +1792,9 @@ const CategoryModal = ({ category, onClose, onUpdate, onDelete }: CategoryModalP
                 {isDeleting ? 'Удаление...' : 'Удалить'}
               </button>
               <div style={{ flex: 1 }} />
+              <button onClick={handleViewJson} className="btn-secondary">
+                Просмотр JSON
+              </button>
               <button onClick={onClose} className="btn-secondary">
                 Закрыть
               </button>
@@ -1638,6 +1804,13 @@ const CategoryModal = ({ category, onClose, onUpdate, onDelete }: CategoryModalP
             </>
           ) : (
             <>
+              <button onClick={handlePasteJson} className="btn-secondary" disabled={isSaving}>
+                Вставить JSON
+              </button>
+              <button onClick={handleLoadJson} className="btn-secondary" disabled={isSaving}>
+                Загрузить JSON
+              </button>
+              <div style={{ flex: 1 }} />
               <button onClick={handleCancel} className="btn-secondary" disabled={isSaving}>
                 Отмена
               </button>
@@ -1647,6 +1820,45 @@ const CategoryModal = ({ category, onClose, onUpdate, onDelete }: CategoryModalP
             </>
           )}
         </div>
+
+        {showJsonModal && (
+          <JsonPasteModal
+            onClose={handleCloseJsonModal}
+            onApply={(jsonData) => {
+              applyCategoryJsonData(jsonData);
+              setShowJsonModal(false);
+              alert('Настройки рубрики успешно загружены из JSON');
+            }}
+          />
+        )}
+
+        {showViewJsonModal && (
+          <JsonViewModal
+            title={`Конфигурация рубрики "${category.name}"`}
+            jsonData={{
+              name: category.name,
+              prompt_for_image_style: category.prompt_for_image_style,
+              goal: category.goal,
+              structure_skeleton: category.structure_skeleton,
+              structure_flex_level_min: category.structure_flex_level_min,
+              structure_flex_level_max: category.structure_flex_level_max,
+              structure_flex_level_comment: category.structure_flex_level_comment,
+              must_have: category.must_have,
+              must_avoid: category.must_avoid,
+              social_networks_rules: category.social_networks_rules,
+              len_min: category.len_min,
+              len_max: category.len_max,
+              n_hashtags_min: category.n_hashtags_min,
+              n_hashtags_max: category.n_hashtags_max,
+              cta_type: category.cta_type,
+              tone_of_voice: category.tone_of_voice,
+              brand_rules: category.brand_rules,
+              good_samples: category.good_samples,
+              additional_info: category.additional_info,
+            }}
+            onClose={handleCloseViewJsonModal}
+          />
+        )}
       </div>
     </div>
   );
@@ -1927,6 +2139,7 @@ interface AddCategoryModalProps {
 
 const AddCategoryModal = ({ organizationId, onClose, onAdd }: AddCategoryModalProps) => {
   const [isSaving, setIsSaving] = useState(false);
+  const [showJsonModal, setShowJsonModal] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     prompt_for_image_style: '',
@@ -1948,6 +2161,59 @@ const AddCategoryModal = ({ organizationId, onClose, onAdd }: AddCategoryModalPr
     good_samples: [] as Record<string, any>[],
     additional_info: [] as string[],
   });
+
+  const applyCategoryJsonData = (jsonData: any) => {
+    setFormData({
+      name: jsonData.name || '',
+      prompt_for_image_style: jsonData.prompt_for_image_style || '',
+      goal: jsonData.goal || '',
+      structure_skeleton: jsonData.structure_skeleton || [],
+      structure_flex_level_min: jsonData.structure_flex_level_min || 0,
+      structure_flex_level_max: jsonData.structure_flex_level_max || 0,
+      structure_flex_level_comment: jsonData.structure_flex_level_comment || '',
+      must_have: jsonData.must_have || [],
+      must_avoid: jsonData.must_avoid || [],
+      social_networks_rules: jsonData.social_networks_rules || '',
+      len_min: jsonData.len_min || 0,
+      len_max: jsonData.len_max || 0,
+      n_hashtags_min: jsonData.n_hashtags_min || 0,
+      n_hashtags_max: jsonData.n_hashtags_max || 0,
+      cta_type: jsonData.cta_type || '',
+      tone_of_voice: jsonData.tone_of_voice || [],
+      brand_rules: jsonData.brand_rules || [],
+      good_samples: jsonData.good_samples || [],
+      additional_info: jsonData.additional_info || [],
+    });
+  };
+
+  const handleLoadJson = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const jsonData = JSON.parse(text);
+        applyCategoryJsonData(jsonData);
+        alert('Настройки рубрики успешно загружены из JSON');
+      } catch (err) {
+        console.error('Failed to load JSON:', err);
+        alert('Ошибка при загрузке JSON файла. Проверьте формат файла.');
+      }
+    };
+    input.click();
+  };
+
+  const handlePasteJson = () => {
+    setShowJsonModal(true);
+  };
+
+  const handleCloseJsonModal = () => {
+    setShowJsonModal(false);
+  };
 
   const handleSave = async () => {
     if (!formData.name.trim()) {
@@ -2449,6 +2715,13 @@ const AddCategoryModal = ({ organizationId, onClose, onAdd }: AddCategoryModalPr
         </div>
 
         <div className="modal-footer">
+          <button onClick={handlePasteJson} className="btn-secondary" disabled={isSaving}>
+            Вставить JSON
+          </button>
+          <button onClick={handleLoadJson} className="btn-secondary" disabled={isSaving}>
+            Загрузить JSON
+          </button>
+          <div style={{ flex: 1 }} />
           <button onClick={onClose} className="btn-secondary" disabled={isSaving}>
             Отмена
           </button>
@@ -2456,6 +2729,17 @@ const AddCategoryModal = ({ organizationId, onClose, onAdd }: AddCategoryModalPr
             {isSaving ? 'Создание...' : 'Создать'}
           </button>
         </div>
+
+        {showJsonModal && (
+          <JsonPasteModal
+            onClose={handleCloseJsonModal}
+            onApply={(jsonData) => {
+              applyCategoryJsonData(jsonData);
+              setShowJsonModal(false);
+              alert('Настройки рубрики успешно загружены из JSON');
+            }}
+          />
+        )}
       </div>
     </div>
   );
@@ -2553,6 +2837,138 @@ const AddEmployeeModal = ({ organizationId, onClose, onAdd }: AddEmployeeModalPr
           </button>
           <button onClick={handleSave} className="btn-primary" disabled={isSaving}>
             {isSaving ? 'Создание...' : 'Создать'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Модальное окно для вставки JSON
+interface JsonPasteModalProps {
+  onClose: () => void;
+  onApply: (jsonData: any) => void;
+}
+
+const JsonPasteModal = ({ onClose, onApply }: JsonPasteModalProps) => {
+  const [jsonText, setJsonText] = useState('');
+  const [error, setError] = useState<string | null>(null);
+
+  const handleApply = () => {
+    try {
+      setError(null);
+      const jsonData = JSON.parse(jsonText);
+      onApply(jsonData);
+    } catch (err) {
+      setError('Ошибка парсинга JSON. Проверьте формат.');
+      console.error('Failed to parse JSON:', err);
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Вставить JSON</h2>
+          <button className="close-button" onClick={onClose}>
+            ×
+          </button>
+        </div>
+
+        <div className="modal-body">
+          <div className="info-item full-width">
+            <label>JSON данные организации</label>
+            <textarea
+              value={jsonText}
+              onChange={(e) => {
+                setJsonText(e.target.value);
+                setError(null);
+              }}
+              className="edit-textarea"
+              rows={20}
+              placeholder='{"name": "Название организации", "tone_of_voice": ["пункт 1", "пункт 2"], ...}'
+              style={{ fontFamily: 'monospace', fontSize: '13px' }}
+            />
+            {error && <div style={{ color: 'red', marginTop: '8px' }}>{error}</div>}
+          </div>
+        </div>
+
+        <div className="modal-footer">
+          <button onClick={onClose} className="btn-secondary">
+            Отмена
+          </button>
+          <button onClick={handleApply} className="btn-primary" disabled={!jsonText.trim()}>
+            Применить
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Модальное окно для просмотра JSON
+interface JsonViewModalProps {
+  title: string;
+  jsonData: any;
+  onClose: () => void;
+}
+
+const JsonViewModal = ({ title, jsonData, onClose }: JsonViewModalProps) => {
+  const jsonText = JSON.stringify(jsonData, null, 2);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(jsonText).then(() => {
+      alert('JSON скопирован в буфер обмена');
+    }).catch((err) => {
+      console.error('Failed to copy:', err);
+      alert('Ошибка при копировании в буфер обмена');
+    });
+  };
+
+  const handleExport = () => {
+    const blob = new Blob([jsonText], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'organization-config.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>{title}</h2>
+          <button className="close-button" onClick={onClose}>
+            ×
+          </button>
+        </div>
+
+        <div className="modal-body">
+          <div className="info-item full-width">
+            <textarea
+              value={jsonText}
+              readOnly
+              className="edit-textarea"
+              rows={20}
+              style={{ fontFamily: 'monospace', fontSize: '13px', backgroundColor: '#f5f5f5' }}
+            />
+          </div>
+        </div>
+
+        <div className="modal-footer">
+          <button onClick={handleCopy} className="btn-secondary">
+            Копировать
+          </button>
+          <button onClick={handleExport} className="btn-secondary">
+            Экспортировать
+          </button>
+          <div style={{ flex: 1 }} />
+          <button onClick={onClose} className="btn-primary">
+            Закрыть
           </button>
         </div>
       </div>
