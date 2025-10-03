@@ -74,7 +74,6 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
             value={formData.goal}
             onChange={(e) => updateField('goal', e.target.value)}
             placeholder="Введите цель рубрики"
-            rows={3}
           />
         </div>
 
@@ -85,7 +84,6 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
             value={formData.prompt_for_image_style}
             onChange={(e) => updateField('prompt_for_image_style', e.target.value)}
             placeholder="Введите промпт для стиля изображения"
-            rows={3}
           />
         </div>
       </section>
@@ -102,7 +100,6 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
                 <Textarea
                   value={item}
                   onChange={(e) => updateArrayItem('structure_skeleton', idx, e.target.value)}
-                  rows={2}
                   placeholder={`Элемент структуры ${idx + 1}`}
                 />
                 <Button
@@ -155,7 +152,6 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
             value={formData.structure_flex_level_comment}
             onChange={(e) => updateField('structure_flex_level_comment', e.target.value)}
             placeholder="Комментарий"
-            rows={2}
           />
         </div>
       </section>
@@ -172,7 +168,6 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
                 <Textarea
                   value={item}
                   onChange={(e) => updateArrayItem('must_have', idx, e.target.value)}
-                  rows={2}
                   placeholder={`Обязательный элемент ${idx + 1}`}
                 />
                 <Button
@@ -205,7 +200,6 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
                 <Textarea
                   value={item}
                   onChange={(e) => updateArrayItem('must_avoid', idx, e.target.value)}
-                  rows={2}
                   placeholder={`Запрещённый элемент ${idx + 1}`}
                 />
                 <Button
@@ -288,7 +282,6 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
             value={formData.social_networks_rules}
             onChange={(e) => updateField('social_networks_rules', e.target.value)}
             placeholder="Правила публикации в соцсетях"
-            rows={3}
           />
         </div>
       </section>
@@ -305,7 +298,6 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
                 <Textarea
                   value={item}
                   onChange={(e) => updateArrayItem('tone_of_voice', idx, e.target.value)}
-                  rows={2}
                   placeholder={`Тон общения ${idx + 1}`}
                 />
                 <Button
@@ -338,7 +330,6 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
                 <Textarea
                   value={item}
                   onChange={(e) => updateArrayItem('brand_rules', idx, e.target.value)}
-                  rows={2}
                   placeholder={`Правило бренда ${idx + 1}`}
                 />
                 <Button
@@ -386,8 +377,10 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
 
               <div className="good-sample-fields">
                 {Object.entries(sample).map(([key, value], fieldIdx) => (
-                  <div key={fieldIdx} className="good-sample-field">
-                    <Input
+                  <div key={fieldIdx} className="good-sample-field-row">
+                    <input
+                      type="text"
+                      className="field-key-input"
                       placeholder="Ключ"
                       value={key}
                       onChange={(e) => {
@@ -397,7 +390,6 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
                         newSamples[sampleIdx][e.target.value] = oldValue;
                         updateField('good_samples', newSamples);
                       }}
-                      className="field-key-input"
                     />
                     <Textarea
                       placeholder="Значение"
@@ -407,7 +399,7 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
                         newSamples[sampleIdx][key] = e.target.value;
                         updateField('good_samples', newSamples);
                       }}
-                      rows={2}
+                      className="field-value-textarea"
                     />
                     <Button
                       type="button"
@@ -418,7 +410,7 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
                         delete newSamples[sampleIdx][key];
                         updateField('good_samples', newSamples);
                       }}
-                      className="remove-button"
+                      className="remove-field-button"
                     >
                       ×
                     </Button>
@@ -429,8 +421,7 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
                   size="small"
                   onClick={() => {
                     const newSamples = [...formData.good_samples];
-                    const newKey = `key_${Object.keys(newSamples[sampleIdx]).length}`;
-                    newSamples[sampleIdx][newKey] = '';
+                    newSamples[sampleIdx][''] = '';
                     updateField('good_samples', newSamples);
                   }}
                   className="add-field-button"
@@ -462,7 +453,6 @@ export const CategoryFormFields = ({ formData, onChange }: CategoryFormFieldsPro
                 <Textarea
                   value={item}
                   onChange={(e) => updateArrayItem('additional_info', idx, e.target.value)}
-                  rows={2}
                   placeholder={`Доп. информация ${idx + 1}`}
                 />
                 <Button

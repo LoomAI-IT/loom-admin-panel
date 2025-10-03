@@ -6,6 +6,7 @@ import { Modal } from '../../../shared/ui/Modal';
 import { useModal } from '../../../shared/lib/hooks/useModal';
 import { JsonImportModal, JsonViewModal, loadJsonFromFile } from '../../../features/json-import';
 import { CategoryFormFields } from './CategoryFormFields';
+import { CategoryDetailsModal } from './CategoryDetailsModal';
 import './CategoriesSection.css';
 
 interface CategoriesSectionProps {
@@ -23,7 +24,7 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
   const editModal = useModal();
   const jsonImportModal = useModal();
   const editJsonImportModal = useModal();
-  const jsonViewModal = useModal();
+  const detailsModal = useModal();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -380,9 +381,9 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
                   <TableCell className="table-cell-action">
                     <Button size="small" variant="secondary" onClick={() => {
                       setEditingCategory(category);
-                      jsonViewModal.open();
+                      detailsModal.open();
                     }}>
-                      Просмотр JSON
+                      Детали
                     </Button>
                   </TableCell>
                   <TableCell className="table-cell-action">
@@ -441,20 +442,22 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
       />
 
       {editingCategory && (
-        <JsonViewModal
-          isOpen={jsonViewModal.isOpen}
-          onClose={jsonViewModal.close}
-          data={editingCategory}
+        <CategoryDetailsModal
+          isOpen={detailsModal.isOpen}
+          onClose={detailsModal.close}
+          category={editingCategory}
           organizationId={organizationId}
-          zIndex={1100}
         />
       )}
 
       {editingCategory && (
         <Modal isOpen={editModal.isOpen} onClose={editModal.close} title="Редактировать рубрику" className="category-modal">
           <div className="modal-toolbar">
-            <Button variant="secondary" onClick={jsonViewModal.open} disabled={submitting} size="small">
-              Просмотр JSON
+            <Button variant="secondary" onClick={() => {
+              setEditingCategory(editingCategory);
+              detailsModal.open();
+            }} disabled={submitting} size="small">
+              Детали
             </Button>
             <Button variant="secondary" onClick={editJsonImportModal.open} disabled={submitting} size="small">
               Вставить JSON

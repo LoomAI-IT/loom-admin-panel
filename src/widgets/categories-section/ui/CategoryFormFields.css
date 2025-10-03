@@ -36,14 +36,21 @@
 }
 
 .array-input-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
   gap: 8px;
-  align-items: flex-start;
+  align-items: start;
 }
 
 .array-input-item textarea,
 .array-input-item input {
-  flex: 1;
+  width: 100%;
+  min-height: 60px;
+}
+
+.array-input-item textarea {
+  resize: vertical !important;
+  height: auto !important;
 }
 
 .remove-button {
@@ -82,15 +89,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #e5e7eb;
+  margin: -16px -16px 12px -16px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px 8px 0 0;
 }
 
 .good-sample-title {
   font-weight: 600;
   font-size: 14px;
-  color: #374151;
+  color: white;
 }
 
 .remove-sample-button {
@@ -112,8 +120,45 @@
   align-items: flex-start;
 }
 
+.good-sample-field-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
 .field-key-input {
   flex: 0 0 180px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.15s ease-in-out;
+}
+
+.field-key-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.field-value-input {
+  flex: 1;
+}
+
+.field-value-textarea {
+  flex: 1;
+  resize: vertical !important;
+  min-height: 60px;
+}
+
+.remove-field-button {
+  flex-shrink: 0;
+  font-size: 20px;
+  line-height: 1;
+  padding: 8px 10px !important;
+  min-width: auto;
+  margin-top: 2px;
 }
 
 .add-field-button {
@@ -136,6 +181,7 @@
 .input-wrapper textarea {
   width: 100%;
   box-sizing: border-box;
+  resize: vertical !important;
 }
 
 /* Responsive */
@@ -148,11 +194,16 @@
     flex: 0 0 140px;
   }
 
-  .good-sample-field {
+  .good-sample-field,
+  .good-sample-field-row {
     flex-direction: column;
   }
 
   .field-key-input {
+    flex: 1 1 100%;
+  }
+
+  .field-value-input {
     flex: 1 1 100%;
   }
 }

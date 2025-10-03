@@ -16,3 +16,8 @@ body {
 * {
   box-sizing: border-box;
 }
+
+textarea {
+  resize: vertical !important;
+  overflow: auto !important;
+}
