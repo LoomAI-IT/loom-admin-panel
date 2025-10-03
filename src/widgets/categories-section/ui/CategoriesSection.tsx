@@ -375,7 +375,7 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
                   </TableCell>
                   <TableCell>
                     <span className="category-date">
-                      {new Date(category.created_at).toLocaleString('ru-RU')}
+                      {new Date(category.created_at).toLocaleDateString('ru-RU')}
                     </span>
                   </TableCell>
                   <TableCell className="table-cell-action">

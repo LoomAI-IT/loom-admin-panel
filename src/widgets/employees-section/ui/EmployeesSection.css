@@ -29,3 +29,13 @@
   text-align: center;
   color: #6b7280;
 }
+
+.employees-section .table {
+  table-layout: auto;
+}
+
+.employees-section .table-cell-action {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+}
