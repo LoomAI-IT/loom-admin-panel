@@ -66,7 +66,6 @@ export const KeyValueEditor = ({ title, data, isEditing, onChange }: KeyValueEdi
                 placeholder="Значение"
                 value={typeof value === 'string' ? value : JSON.stringify(value)}
                 onChange={(e) => updateValue(key, e.target.value)}
-                className="field-value-input"
               />
               <Button
                 type="button"

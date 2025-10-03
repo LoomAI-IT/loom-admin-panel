@@ -107,7 +107,6 @@ export const ObjectListEditor = ({ title, items, isEditing, onChange }: ObjectLi
                       placeholder="Значение"
                       value={typeof value === 'string' ? value : JSON.stringify(value)}
                       onChange={(e) => updateItemValue(itemIdx, key, e.target.value)}
-                      className="field-value-input"
                     />
                     <Button
                       type="button"
