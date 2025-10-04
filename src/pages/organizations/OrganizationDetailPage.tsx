@@ -6,6 +6,8 @@ import { CategoriesSection } from '../../widgets/categories-section';
 import { AutopostingSection } from '../../widgets/autoposting-section';
 import { EmployeesSection } from '../../widgets/employees-section';
 import { Button } from '../../shared/ui/Button';
+import { Modal } from '../../shared/ui/Modal';
+import { useModal } from '../../shared/lib/hooks';
 import './OrganizationDetailPage.css';
 
 export const OrganizationDetailPage = () => {
@@ -14,6 +16,9 @@ export const OrganizationDetailPage = () => {
   const [organization, setOrganization] = useState<Organization | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const deleteModal = useModal();
 
   useEffect(() => {
     if (id) {
@@ -32,6 +37,20 @@ export const OrganizationDetailPage = () => {
       console.error('Failed to load organization:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteOrganization = async () => {
+    if (!organization) return;
+
+    try {
+      setDeleting(true);
+      await organizationApi.delete(organization.id);
+      navigate('/organizations');
+    } catch (err) {
+      console.error('Failed to delete organization:', err);
+      alert('Ошибка удаления организации');
+      setDeleting(false);
     }
   };
 
@@ -55,6 +74,9 @@ export const OrganizationDetailPage = () => {
           ← Назад к списку
         </Button>
         <h1>Организация #{organization.id} - {organization.name}</h1>
+        <Button variant="danger" onClick={deleteModal.open}>
+          Удалить организацию
+        </Button>
       </div>
 
       <div className="organization-content">
@@ -69,6 +91,30 @@ export const OrganizationDetailPage = () => {
 
         <EmployeesSection organizationId={organization.id} />
       </div>
+
+      <Modal isOpen={deleteModal.isOpen} onClose={deleteModal.close} title="Удалить организацию">
+        <div>
+          <p>Вы уверены, что хотите удалить организацию <strong>{organization.name}</strong>?</p>
+          <p>Это действие нельзя отменить.</p>
+          <div className="modal-actions">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={deleteModal.close}
+              disabled={deleting}
+            >
+              Отмена
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleDeleteOrganization}
+              disabled={deleting}
+            >
+              {deleting ? 'Удаление...' : 'Удалить'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

@@ -15,8 +15,11 @@ export const OrganizationsListPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [newOrgName, setNewOrgName] = useState('');
   const [creating, setCreating] = useState(false);
+  const [deleting, setDeleting] = useState<number | null>(null);
 
   const createModal = useModal();
+  const deleteModal = useModal();
+  const [orgToDelete, setOrgToDelete] = useState<Organization | null>(null);
 
   useEffect(() => {
     loadOrganizations();
@@ -54,6 +57,29 @@ export const OrganizationsListPage = () => {
     }
   };
 
+  const handleDeleteClick = (org: Organization, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setOrgToDelete(org);
+    deleteModal.open();
+  };
+
+  const handleDeleteOrganization = async () => {
+    if (!orgToDelete) return;
+
+    try {
+      setDeleting(orgToDelete.id);
+      await organizationApi.delete(orgToDelete.id);
+      deleteModal.close();
+      setOrgToDelete(null);
+      await loadOrganizations();
+    } catch (err) {
+      console.error('Failed to delete organization:', err);
+      alert('Ошибка удаления организации');
+    } finally {
+      setDeleting(null);
+    }
+  };
+
   if (loading) {
     return <div className="organizations-list-page loading">Загрузка...</div>;
   }
@@ -87,6 +113,7 @@ export const OrganizationsListPage = () => {
                 <TableCell header>Название</TableCell>
                 <TableCell header>Баланс (₽)</TableCell>
                 <TableCell header>Дата создания</TableCell>
+                <TableCell header>Действия</TableCell>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -99,6 +126,16 @@ export const OrganizationsListPage = () => {
                   <TableCell>{org.name}</TableCell>
                   <TableCell>{parseFloat(org.rub_balance).toFixed(2)}</TableCell>
                   <TableCell>{new Date(org.created_at).toLocaleString('ru-RU')}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="danger"
+                      size="small"
+                      onClick={(e) => handleDeleteClick(org, e)}
+                      disabled={deleting === org.id}
+                    >
+                      {deleting === org.id ? 'Удаление...' : 'Удалить'}
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -130,6 +167,30 @@ export const OrganizationsListPage = () => {
             </Button>
           </div>
         </form>
+      </Modal>
+
+      <Modal isOpen={deleteModal.isOpen} onClose={deleteModal.close} title="Удалить организацию">
+        <div>
+          <p>Вы уверены, что хотите удалить организацию <strong>{orgToDelete?.name}</strong>?</p>
+          <p>Это действие нельзя отменить.</p>
+          <div className="modal-actions">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={deleteModal.close}
+              disabled={deleting !== null}
+            >
+              Отмена
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleDeleteOrganization}
+              disabled={deleting !== null}
+            >
+              {deleting !== null ? 'Удаление...' : 'Удалить'}
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );
