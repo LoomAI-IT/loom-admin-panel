@@ -41,7 +41,7 @@ export const autopostingApi = {
   },
 
   getByOrganization: async (organizationId: number): Promise<Autoposting[]> => {
-    const response = await contentClient.get<{ autoposting: Autoposting[] }>(`/publication/organization/${organizationId}/autopostings`);
+    const response = await contentClient.get<{ autopostings: Autoposting[] }>(`/publication/organization/${organizationId}/autopostings`);
     return response.data.autopostings || [];
   },
 
