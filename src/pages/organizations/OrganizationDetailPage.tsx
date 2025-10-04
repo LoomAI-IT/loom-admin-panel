@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { organizationApi, type Organization } from '../../entities/organization';
 import { OrganizationForm } from '../../widgets/organization-form';
 import { CategoriesSection } from '../../widgets/categories-section';
+import { AutopostingSection } from '../../widgets/autoposting-section';
 import { EmployeesSection } from '../../widgets/employees-section';
 import { Button } from '../../shared/ui/Button';
 import './OrganizationDetailPage.css';
@@ -63,6 +64,8 @@ export const OrganizationDetailPage = () => {
         />
 
         <CategoriesSection organizationId={organization.id} />
+
+        <AutopostingSection organizationId={organization.id} />
 
         <EmployeesSection organizationId={organization.id} />
       </div>
