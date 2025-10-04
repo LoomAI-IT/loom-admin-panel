@@ -1,7 +1,258 @@
+import { useCallback, memo, useRef, useState, useEffect } from 'react';
 import { Input } from '../../../shared/ui/Input';
 import { Textarea } from '../../../shared/ui/Textarea';
 import { Button } from '../../../shared/ui/Button';
 import '../../../widgets/categories-section/ui/CategoryFormFields.css';
+
+// Оптимизированный Textarea с локальным состоянием
+const OptimizedTextarea = memo(({
+  value,
+  onChange,
+  ...props
+}: React.ComponentProps<typeof Textarea>) => {
+  const [localValue, setLocalValue] = useState(value);
+
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setLocalValue(e.target.value);
+    onChange?.(e);
+  }, [onChange]);
+
+  return <Textarea {...props} value={localValue} onChange={handleChange} />;
+});
+
+OptimizedTextarea.displayName = 'OptimizedTextarea';
+
+// Мемоизированный компонент для элемента массива
+const ArrayInputItem = memo(({
+  value,
+  index,
+  onUpdate,
+  onRemove,
+  placeholder,
+  useTextarea = true
+}: {
+  value: string;
+  index: number;
+  onUpdate: (index: number, value: string) => void;
+  onRemove: (index: number) => void;
+  placeholder: string;
+  useTextarea?: boolean;
+}) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    onUpdate(index, e.target.value);
+  }, [index, onUpdate]);
+
+  const handleClick = useCallback(() => {
+    onRemove(index);
+  }, [index, onRemove]);
+
+  return (
+    <div className="array-input-item">
+      {useTextarea ? (
+        <OptimizedTextarea
+          value={value}
+          onChange={handleChange as any}
+          placeholder={`${placeholder} ${index + 1}`}
+        />
+      ) : (
+        <Input
+          type="text"
+          value={value}
+          onChange={handleChange as any}
+          placeholder={placeholder}
+        />
+      )}
+      <Button
+        type="button"
+        variant="danger"
+        size="small"
+        onClick={handleClick}
+        className="remove-button"
+      >
+        ×
+      </Button>
+    </div>
+  );
+});
+
+ArrayInputItem.displayName = 'ArrayInputItem';
+
+// Мемоизированный компонент для секции с массивом
+const ArrayInputSection = memo(({
+  label,
+  items,
+  onUpdate,
+  onRemove,
+  onAdd,
+  placeholder,
+  useTextarea = true
+}: {
+  label: string;
+  items: string[];
+  onUpdate: (index: number, value: string) => void;
+  onRemove: (index: number) => void;
+  onAdd: () => void;
+  placeholder: string;
+  useTextarea?: boolean;
+}) => {
+  return (
+    <div className="input-wrapper">
+      <label className="input-label">{label}</label>
+      <div className="array-input-list">
+        {items.map((item, idx) => (
+          <ArrayInputItem
+            key={idx}
+            value={item}
+            index={idx}
+            onUpdate={onUpdate}
+            onRemove={onRemove}
+            placeholder={placeholder}
+            useTextarea={useTextarea}
+          />
+        ))}
+        <Button
+          type="button"
+          size="small"
+          onClick={onAdd}
+          className="add-button"
+        >
+          + Добавить {placeholder.toLowerCase()}
+        </Button>
+      </div>
+    </div>
+  );
+});
+
+ArrayInputSection.displayName = 'ArrayInputSection';
+
+// Мемоизированный компонент для поля в good_sample
+const GoodSampleField = memo(({
+  sampleKey,
+  value,
+  sampleIdx,
+  onKeyChange,
+  onValueChange,
+  onRemove
+}: {
+  sampleKey: string;
+  value: any;
+  sampleIdx: number;
+  onKeyChange: (sampleIdx: number, oldKey: string, newKey: string) => void;
+  onValueChange: (sampleIdx: number, key: string, value: string) => void;
+  onRemove: (sampleIdx: number, key: string) => void;
+}) => {
+  const handleKeyChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    onKeyChange(sampleIdx, sampleKey, e.target.value);
+  }, [sampleIdx, sampleKey, onKeyChange]);
+
+  const handleValueChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    onValueChange(sampleIdx, sampleKey, e.target.value);
+  }, [sampleIdx, sampleKey, onValueChange]);
+
+  const handleRemove = useCallback(() => {
+    onRemove(sampleIdx, sampleKey);
+  }, [sampleIdx, sampleKey, onRemove]);
+
+  return (
+    <div className="good-sample-field-row">
+      <input
+        type="text"
+        className="field-key-input"
+        placeholder="Ключ"
+        value={sampleKey}
+        onChange={handleKeyChange}
+      />
+      <OptimizedTextarea
+        placeholder="Значение"
+        value={typeof value === 'string' ? value : JSON.stringify(value)}
+        onChange={handleValueChange}
+      />
+      <Button
+        type="button"
+        variant="danger"
+        size="small"
+        onClick={handleRemove}
+        className="remove-field-button"
+      >
+        ×
+      </Button>
+    </div>
+  );
+});
+
+GoodSampleField.displayName = 'GoodSampleField';
+
+// Мемоизированный компонент для одного good_sample
+const GoodSampleCard = memo(({
+  sample,
+  sampleIdx,
+  onKeyChange,
+  onValueChange,
+  onFieldRemove,
+  onAddField,
+  onRemoveSample
+}: {
+  sample: Record<string, any>;
+  sampleIdx: number;
+  onKeyChange: (sampleIdx: number, oldKey: string, newKey: string) => void;
+  onValueChange: (sampleIdx: number, key: string, value: string) => void;
+  onFieldRemove: (sampleIdx: number, key: string) => void;
+  onAddField: (sampleIdx: number) => void;
+  onRemoveSample: (sampleIdx: number) => void;
+}) => {
+  const handleAddField = useCallback(() => {
+    onAddField(sampleIdx);
+  }, [sampleIdx, onAddField]);
+
+  const handleRemoveSample = useCallback(() => {
+    onRemoveSample(sampleIdx);
+  }, [sampleIdx, onRemoveSample]);
+
+  return (
+    <div className="good-sample-card">
+      <div className="good-sample-header">
+        <span className="good-sample-title">Пример {sampleIdx + 1}</span>
+        <Button
+          type="button"
+          variant="danger"
+          size="small"
+          onClick={handleRemoveSample}
+          className="remove-sample-button"
+        >
+          ×
+        </Button>
+      </div>
+
+      <div className="good-sample-fields">
+        {Object.entries(sample).map(([key, value]) => (
+          <GoodSampleField
+            key={key}
+            sampleKey={key}
+            value={value}
+            sampleIdx={sampleIdx}
+            onKeyChange={onKeyChange}
+            onValueChange={onValueChange}
+            onRemove={onFieldRemove}
+          />
+        ))}
+        <Button
+          type="button"
+          size="small"
+          onClick={handleAddField}
+          className="add-field-button"
+        >
+          + Добавить поле
+        </Button>
+      </div>
+    </div>
+  );
+});
+
+GoodSampleCard.displayName = 'GoodSampleCard';
 
 export interface AutopostingFormData {
   name: string;
@@ -36,26 +287,149 @@ interface AutopostingFormFieldsProps {
 }
 
 export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFieldsProps) => {
-  const updateField = <K extends keyof AutopostingFormData>(field: K, value: AutopostingFormData[K]) => {
-    onChange({ ...formData, [field]: value });
-  };
+  const formDataRef = useRef(formData);
+  formDataRef.current = formData;
 
-  const addArrayItem = (field: keyof AutopostingFormData) => {
-    const currentArray = formData[field] as any[];
-    updateField(field, [...currentArray, ''] as any);
-  };
+  const updateField = useCallback(<K extends keyof AutopostingFormData>(field: K, value: AutopostingFormData[K]) => {
+    onChange({ ...formDataRef.current, [field]: value });
+  }, [onChange]);
 
-  const removeArrayItem = (field: keyof AutopostingFormData, index: number) => {
-    const currentArray = formData[field] as any[];
-    updateField(field, currentArray.filter((_, i) => i !== index) as any);
-  };
+  const addArrayItem = useCallback((field: keyof AutopostingFormData) => {
+    const currentArray = formDataRef.current[field] as any[];
+    onChange({ ...formDataRef.current, [field]: [...currentArray, ''] });
+  }, [onChange]);
 
-  const updateArrayItem = (field: keyof AutopostingFormData, index: number, value: any) => {
-    const currentArray = formData[field] as any[];
+  const removeArrayItem = useCallback((field: keyof AutopostingFormData, index: number) => {
+    const currentArray = formDataRef.current[field] as any[];
+    onChange({ ...formDataRef.current, [field]: currentArray.filter((_, i) => i !== index) });
+  }, [onChange]);
+
+  const updateArrayItem = useCallback((field: keyof AutopostingFormData, index: number, value: any) => {
+    const currentArray = formDataRef.current[field] as any[];
     const newArray = [...currentArray];
     newArray[index] = value;
-    updateField(field, newArray as any);
-  };
+    onChange({ ...formDataRef.current, [field]: newArray });
+  }, [onChange]);
+
+  // Обработчики для good_samples
+  const handleSampleKeyChange = useCallback((sampleIdx: number, oldKey: string, newKey: string) => {
+    const newSamples = [...formDataRef.current.good_samples];
+    const oldValue = newSamples[sampleIdx][oldKey];
+    delete newSamples[sampleIdx][oldKey];
+    newSamples[sampleIdx][newKey] = oldValue;
+    onChange({ ...formDataRef.current, good_samples: newSamples });
+  }, [onChange]);
+
+  const handleSampleValueChange = useCallback((sampleIdx: number, key: string, value: string) => {
+    const newSamples = [...formDataRef.current.good_samples];
+    newSamples[sampleIdx][key] = value;
+    onChange({ ...formDataRef.current, good_samples: newSamples });
+  }, [onChange]);
+
+  const handleSampleFieldRemove = useCallback((sampleIdx: number, key: string) => {
+    const newSamples = [...formDataRef.current.good_samples];
+    delete newSamples[sampleIdx][key];
+    onChange({ ...formDataRef.current, good_samples: newSamples });
+  }, [onChange]);
+
+  const handleSampleAddField = useCallback((sampleIdx: number) => {
+    const newSamples = [...formDataRef.current.good_samples];
+    newSamples[sampleIdx][''] = '';
+    onChange({ ...formDataRef.current, good_samples: newSamples });
+  }, [onChange]);
+
+  const handleAddSample = useCallback(() => {
+    onChange({ ...formDataRef.current, good_samples: [...formDataRef.current.good_samples, {}] });
+  }, [onChange]);
+
+  const handleRemoveSample = useCallback((sampleIdx: number) => {
+    removeArrayItem('good_samples', sampleIdx);
+  }, [removeArrayItem]);
+
+  // Обработчики для массивов
+  const handleTgChannelsUpdate = useCallback((index: number, value: string) => {
+    updateArrayItem('tg_channels', index, value);
+  }, [updateArrayItem]);
+
+  const handleTgChannelsRemove = useCallback((index: number) => {
+    removeArrayItem('tg_channels', index);
+  }, [removeArrayItem]);
+
+  const handleTgChannelsAdd = useCallback(() => {
+    addArrayItem('tg_channels');
+  }, [addArrayItem]);
+
+  const handleStructureSkeletonUpdate = useCallback((index: number, value: string) => {
+    updateArrayItem('structure_skeleton', index, value);
+  }, [updateArrayItem]);
+
+  const handleStructureSkeletonRemove = useCallback((index: number) => {
+    removeArrayItem('structure_skeleton', index);
+  }, [removeArrayItem]);
+
+  const handleStructureSkeletonAdd = useCallback(() => {
+    addArrayItem('structure_skeleton');
+  }, [addArrayItem]);
+
+  const handleMustHaveUpdate = useCallback((index: number, value: string) => {
+    updateArrayItem('must_have', index, value);
+  }, [updateArrayItem]);
+
+  const handleMustHaveRemove = useCallback((index: number) => {
+    removeArrayItem('must_have', index);
+  }, [removeArrayItem]);
+
+  const handleMustHaveAdd = useCallback(() => {
+    addArrayItem('must_have');
+  }, [addArrayItem]);
+
+  const handleMustAvoidUpdate = useCallback((index: number, value: string) => {
+    updateArrayItem('must_avoid', index, value);
+  }, [updateArrayItem]);
+
+  const handleMustAvoidRemove = useCallback((index: number) => {
+    removeArrayItem('must_avoid', index);
+  }, [removeArrayItem]);
+
+  const handleMustAvoidAdd = useCallback(() => {
+    addArrayItem('must_avoid');
+  }, [addArrayItem]);
+
+  const handleToneOfVoiceUpdate = useCallback((index: number, value: string) => {
+    updateArrayItem('tone_of_voice', index, value);
+  }, [updateArrayItem]);
+
+  const handleToneOfVoiceRemove = useCallback((index: number) => {
+    removeArrayItem('tone_of_voice', index);
+  }, [removeArrayItem]);
+
+  const handleToneOfVoiceAdd = useCallback(() => {
+    addArrayItem('tone_of_voice');
+  }, [addArrayItem]);
+
+  const handleBrandRulesUpdate = useCallback((index: number, value: string) => {
+    updateArrayItem('brand_rules', index, value);
+  }, [updateArrayItem]);
+
+  const handleBrandRulesRemove = useCallback((index: number) => {
+    removeArrayItem('brand_rules', index);
+  }, [removeArrayItem]);
+
+  const handleBrandRulesAdd = useCallback(() => {
+    addArrayItem('brand_rules');
+  }, [addArrayItem]);
+
+  const handleAdditionalInfoUpdate = useCallback((index: number, value: string) => {
+    updateArrayItem('additional_info', index, value);
+  }, [updateArrayItem]);
+
+  const handleAdditionalInfoRemove = useCallback((index: number) => {
+    removeArrayItem('additional_info', index);
+  }, [removeArrayItem]);
+
+  const handleAdditionalInfoAdd = useCallback(() => {
+    addArrayItem('additional_info');
+  }, [addArrayItem]);
 
   return (
     <div className="category-form-fields">
@@ -73,7 +447,7 @@ export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFie
           min="1"
         />
 
-        <Textarea
+        <OptimizedTextarea
           label="Промпт фильтра *"
           value={formData.filter_prompt}
           onChange={(e) => updateField('filter_prompt', e.target.value)}
@@ -81,38 +455,15 @@ export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFie
           required
         />
 
-        <div className="input-wrapper">
-          <label className="input-label">Telegram каналы</label>
-          <div className="array-input-list">
-            {formData.tg_channels.map((item, idx) => (
-              <div key={idx} className="array-input-item">
-                <Input
-                  type="text"
-                  value={item}
-                  onChange={(e) => updateArrayItem('tg_channels', idx, e.target.value)}
-                  placeholder="@channel_name"
-                />
-                <Button
-                  type="button"
-                  variant="danger"
-                  size="small"
-                  onClick={() => removeArrayItem('tg_channels', idx)}
-                  className="remove-button"
-                >
-                  ×
-                </Button>
-              </div>
-            ))}
-            <Button
-              type="button"
-              size="small"
-              onClick={() => addArrayItem('tg_channels')}
-              className="add-button"
-            >
-              + Добавить канал
-            </Button>
-          </div>
-        </div>
+        <ArrayInputSection
+          label="Telegram каналы"
+          items={formData.tg_channels}
+          onUpdate={handleTgChannelsUpdate}
+          onRemove={handleTgChannelsRemove}
+          onAdd={handleTgChannelsAdd}
+          placeholder="@channel_name"
+          useTextarea={false}
+        />
 
         <div className="input-wrapper">
           <label className="input-label">
@@ -152,7 +503,7 @@ export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFie
           placeholder="Введите название"
         />
 
-        <Textarea
+        <OptimizedTextarea
           label="Цель *"
           value={formData.goal}
           onChange={(e) => updateField('goal', e.target.value)}
@@ -160,7 +511,7 @@ export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFie
           required
         />
 
-        <Textarea
+        <OptimizedTextarea
           label="Промпт для стиля изображения *"
           value={formData.prompt_for_image_style}
           onChange={(e) => updateField('prompt_for_image_style', e.target.value)}
@@ -173,37 +524,14 @@ export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFie
       <section className="form-section">
         <h3 className="form-section-title">Структура контента</h3>
 
-        <div className="input-wrapper">
-          <label className="input-label">Структура скелет *</label>
-          <div className="array-input-list">
-            {formData.structure_skeleton.map((item, idx) => (
-              <div key={idx} className="array-input-item">
-                <Textarea
-                  value={item}
-                  onChange={(e) => updateArrayItem('structure_skeleton', idx, e.target.value)}
-                  placeholder={`Элемент структуры ${idx + 1}`}
-                />
-                <Button
-                  type="button"
-                  variant="danger"
-                  size="small"
-                  onClick={() => removeArrayItem('structure_skeleton', idx)}
-                  className="remove-button"
-                >
-                  ×
-                </Button>
-              </div>
-            ))}
-            <Button
-              type="button"
-              size="small"
-              onClick={() => addArrayItem('structure_skeleton')}
-              className="add-button"
-            >
-              + Добавить элемент структуры
-            </Button>
-          </div>
-        </div>
+        <ArrayInputSection
+          label="Структура скелет *"
+          items={formData.structure_skeleton}
+          onUpdate={handleStructureSkeletonUpdate}
+          onRemove={handleStructureSkeletonRemove}
+          onAdd={handleStructureSkeletonAdd}
+          placeholder="Элемент структуры"
+        />
 
         <div className="input-grid-2">
           <Input
@@ -228,7 +556,7 @@ export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFie
           />
         </div>
 
-        <Textarea
+        <OptimizedTextarea
           label="Комментарий к уровню гибкости *"
           value={formData.structure_flex_level_comment}
           onChange={(e) => updateField('structure_flex_level_comment', e.target.value)}
@@ -241,69 +569,23 @@ export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFie
       <section className="form-section">
         <h3 className="form-section-title">Правила контента</h3>
 
-        <div className="input-wrapper">
-          <label className="input-label">Обязательные элементы *</label>
-          <div className="array-input-list">
-            {formData.must_have.map((item, idx) => (
-              <div key={idx} className="array-input-item">
-                <Textarea
-                  value={item}
-                  onChange={(e) => updateArrayItem('must_have', idx, e.target.value)}
-                  placeholder={`Обязательный элемент ${idx + 1}`}
-                />
-                <Button
-                  type="button"
-                  variant="danger"
-                  size="small"
-                  onClick={() => removeArrayItem('must_have', idx)}
-                  className="remove-button"
-                >
-                  ×
-                </Button>
-              </div>
-            ))}
-            <Button
-              type="button"
-              size="small"
-              onClick={() => addArrayItem('must_have')}
-              className="add-button"
-            >
-              + Добавить обязательный элемент
-            </Button>
-          </div>
-        </div>
+        <ArrayInputSection
+          label="Обязательные элементы *"
+          items={formData.must_have}
+          onUpdate={handleMustHaveUpdate}
+          onRemove={handleMustHaveRemove}
+          onAdd={handleMustHaveAdd}
+          placeholder="обязательный элемент"
+        />
 
-        <div className="input-wrapper">
-          <label className="input-label">Запрещённые элементы *</label>
-          <div className="array-input-list">
-            {formData.must_avoid.map((item, idx) => (
-              <div key={idx} className="array-input-item">
-                <Textarea
-                  value={item}
-                  onChange={(e) => updateArrayItem('must_avoid', idx, e.target.value)}
-                  placeholder={`Запрещённый элемент ${idx + 1}`}
-                />
-                <Button
-                  type="button"
-                  variant="danger"
-                  size="small"
-                  onClick={() => removeArrayItem('must_avoid', idx)}
-                  className="remove-button"
-                >
-                  ×
-                </Button>
-              </div>
-            ))}
-            <Button
-              type="button"
-              size="small"
-              onClick={() => addArrayItem('must_avoid')}
-              className="add-button"
-            >
-              + Добавить запрещённый элемент
-            </Button>
-          </div>
-        </div>
+        <ArrayInputSection
+          label="Запрещённые элементы *"
+          items={formData.must_avoid}
+          onUpdate={handleMustAvoidUpdate}
+          onRemove={handleMustAvoidRemove}
+          onAdd={handleMustAvoidAdd}
+          placeholder="запрещённый элемент"
+        />
       </section>
 
       {/* Параметры текста */}
@@ -361,7 +643,7 @@ export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFie
           required
         />
 
-        <Textarea
+        <OptimizedTextarea
           label="Правила для соцсетей *"
           value={formData.social_networks_rules}
           onChange={(e) => updateField('social_networks_rules', e.target.value)}
@@ -374,69 +656,23 @@ export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFie
       <section className="form-section">
         <h3 className="form-section-title">Стиль и тон</h3>
 
-        <div className="input-wrapper">
-          <label className="input-label">Тон общения *</label>
-          <div className="array-input-list">
-            {formData.tone_of_voice.map((item, idx) => (
-              <div key={idx} className="array-input-item">
-                <Textarea
-                  value={item}
-                  onChange={(e) => updateArrayItem('tone_of_voice', idx, e.target.value)}
-                  placeholder={`Тон общения ${idx + 1}`}
-                />
-                <Button
-                  type="button"
-                  variant="danger"
-                  size="small"
-                  onClick={() => removeArrayItem('tone_of_voice', idx)}
-                  className="remove-button"
-                >
-                  ×
-                </Button>
-              </div>
-            ))}
-            <Button
-              type="button"
-              size="small"
-              onClick={() => addArrayItem('tone_of_voice')}
-              className="add-button"
-            >
-              + Добавить тон общения
-            </Button>
-          </div>
-        </div>
+        <ArrayInputSection
+          label="Тон общения *"
+          items={formData.tone_of_voice}
+          onUpdate={handleToneOfVoiceUpdate}
+          onRemove={handleToneOfVoiceRemove}
+          onAdd={handleToneOfVoiceAdd}
+          placeholder="тон общения"
+        />
 
-        <div className="input-wrapper">
-          <label className="input-label">Правила бренда *</label>
-          <div className="array-input-list">
-            {formData.brand_rules.map((item, idx) => (
-              <div key={idx} className="array-input-item">
-                <Textarea
-                  value={item}
-                  onChange={(e) => updateArrayItem('brand_rules', idx, e.target.value)}
-                  placeholder={`Правило бренда ${idx + 1}`}
-                />
-                <Button
-                  type="button"
-                  variant="danger"
-                  size="small"
-                  onClick={() => removeArrayItem('brand_rules', idx)}
-                  className="remove-button"
-                >
-                  ×
-                </Button>
-              </div>
-            ))}
-            <Button
-              type="button"
-              size="small"
-              onClick={() => addArrayItem('brand_rules')}
-              className="add-button"
-            >
-              + Добавить правило бренда
-            </Button>
-          </div>
-        </div>
+        <ArrayInputSection
+          label="Правила бренда *"
+          items={formData.brand_rules}
+          onUpdate={handleBrandRulesUpdate}
+          onRemove={handleBrandRulesRemove}
+          onAdd={handleBrandRulesAdd}
+          placeholder="правило бренда"
+        />
       </section>
 
       {/* Примеры */}
@@ -445,79 +681,21 @@ export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFie
 
         <div className="good-samples-list">
           {formData.good_samples.map((sample, sampleIdx) => (
-            <div key={sampleIdx} className="good-sample-card">
-              <div className="good-sample-header">
-                <span className="good-sample-title">Пример {sampleIdx + 1}</span>
-                <Button
-                  type="button"
-                  variant="danger"
-                  size="small"
-                  onClick={() => removeArrayItem('good_samples', sampleIdx)}
-                  className="remove-sample-button"
-                >
-                  ×
-                </Button>
-              </div>
-
-              <div className="good-sample-fields">
-                {Object.entries(sample).map(([key, value], fieldIdx) => (
-                  <div key={fieldIdx} className="good-sample-field-row">
-                    <input
-                      type="text"
-                      className="field-key-input"
-                      placeholder="Ключ"
-                      value={key}
-                      onChange={(e) => {
-                        const newSamples = [...formData.good_samples];
-                        const oldValue = newSamples[sampleIdx][key];
-                        delete newSamples[sampleIdx][key];
-                        newSamples[sampleIdx][e.target.value] = oldValue;
-                        updateField('good_samples', newSamples);
-                      }}
-                    />
-                    <Textarea
-                      placeholder="Значение"
-                      value={typeof value === 'string' ? value : JSON.stringify(value)}
-                      onChange={(e) => {
-                        const newSamples = [...formData.good_samples];
-                        newSamples[sampleIdx][key] = e.target.value;
-                        updateField('good_samples', newSamples);
-                      }}
-                    />
-                    <Button
-                      type="button"
-                      variant="danger"
-                      size="small"
-                      onClick={() => {
-                        const newSamples = [...formData.good_samples];
-                        delete newSamples[sampleIdx][key];
-                        updateField('good_samples', newSamples);
-                      }}
-                      className="remove-field-button"
-                    >
-                      ×
-                    </Button>
-                  </div>
-                ))}
-                <Button
-                  type="button"
-                  size="small"
-                  onClick={() => {
-                    const newSamples = [...formData.good_samples];
-                    newSamples[sampleIdx][''] = '';
-                    updateField('good_samples', newSamples);
-                  }}
-                  className="add-field-button"
-                >
-                  + Добавить поле
-                </Button>
-              </div>
-            </div>
+            <GoodSampleCard
+              key={sampleIdx}
+              sample={sample}
+              sampleIdx={sampleIdx}
+              onKeyChange={handleSampleKeyChange}
+              onValueChange={handleSampleValueChange}
+              onFieldRemove={handleSampleFieldRemove}
+              onAddField={handleSampleAddField}
+              onRemoveSample={handleRemoveSample}
+            />
           ))}
           <Button
             type="button"
             size="small"
-            onClick={() => updateField('good_samples', [...formData.good_samples, {}])}
+            onClick={handleAddSample}
             className="add-button"
           >
             + Добавить пример
@@ -529,36 +707,14 @@ export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFie
       <section className="form-section">
         <h3 className="form-section-title">Дополнительная информация</h3>
 
-        <div className="input-wrapper">
-          <div className="array-input-list">
-            {formData.additional_info.map((item, idx) => (
-              <div key={idx} className="array-input-item">
-                <Textarea
-                  value={item}
-                  onChange={(e) => updateArrayItem('additional_info', idx, e.target.value)}
-                  placeholder={`Доп. информация ${idx + 1}`}
-                />
-                <Button
-                  type="button"
-                  variant="danger"
-                  size="small"
-                  onClick={() => removeArrayItem('additional_info', idx)}
-                  className="remove-button"
-                >
-                  ×
-                </Button>
-              </div>
-            ))}
-            <Button
-              type="button"
-              size="small"
-              onClick={() => addArrayItem('additional_info')}
-              className="add-button"
-            >
-              + Добавить информацию
-            </Button>
-          </div>
-        </div>
+        <ArrayInputSection
+          label=""
+          items={formData.additional_info}
+          onUpdate={handleAdditionalInfoUpdate}
+          onRemove={handleAdditionalInfoRemove}
+          onAdd={handleAdditionalInfoAdd}
+          placeholder="информацию"
+        />
       </section>
     </div>
   );
