@@ -62,6 +62,7 @@ export const AutopostingSection = ({ organizationId }: AutopostingSectionProps) 
     filter_prompt: '',
     tg_channels: [],
     required_moderation: false,
+    need_image: false,
   });
 
   const [editFormData, setEditFormData] = useState<AutopostingFormData>({
@@ -88,6 +89,7 @@ export const AutopostingSection = ({ organizationId }: AutopostingSectionProps) 
     filter_prompt: '',
     tg_channels: [],
     required_moderation: false,
+    need_image: false,
   });
 
   useEffect(() => {
@@ -151,6 +153,7 @@ export const AutopostingSection = ({ organizationId }: AutopostingSectionProps) 
         filter_prompt: autoposting.filter_prompt || '',
         tg_channels: autoposting.tg_channels || [],
         required_moderation: autoposting.required_moderation || false,
+        need_image: autoposting.need_image || false,
       });
       editModal.open();
     } catch (err) {
@@ -189,6 +192,7 @@ export const AutopostingSection = ({ organizationId }: AutopostingSectionProps) 
       filter_prompt: jsonData.filter_prompt || '',
       tg_channels: jsonData.tg_channels || [],
       required_moderation: jsonData.required_moderation || false,
+      need_image: jsonData.need_image || false,
     });
   };
 
@@ -217,6 +221,7 @@ export const AutopostingSection = ({ organizationId }: AutopostingSectionProps) 
       filter_prompt: jsonData.filter_prompt || '',
       tg_channels: jsonData.tg_channels || [],
       required_moderation: jsonData.required_moderation || false,
+      need_image: jsonData.need_image || false,
     });
   };
 
@@ -307,6 +312,7 @@ export const AutopostingSection = ({ organizationId }: AutopostingSectionProps) 
           ? formData.tg_channels.filter(item => item.trim() !== '')
           : null,
         required_moderation: formData.required_moderation,
+        need_image: formData.need_image,
       };
 
       await autopostingApi.create(autopostingRequest);
@@ -336,6 +342,7 @@ export const AutopostingSection = ({ organizationId }: AutopostingSectionProps) 
         filter_prompt: '',
         tg_channels: [],
         required_moderation: false,
+        need_image: false,
       });
       addModal.close();
       setSuccess('Автопостинг успешно создан');
@@ -397,6 +404,7 @@ export const AutopostingSection = ({ organizationId }: AutopostingSectionProps) 
           ? editFormData.tg_channels.filter(item => item.trim() !== '')
           : null,
         required_moderation: editFormData.required_moderation,
+        need_image: editFormData.need_image,
       };
 
       await autopostingApi.update(editingAutoposting.id, autopostingRequest);

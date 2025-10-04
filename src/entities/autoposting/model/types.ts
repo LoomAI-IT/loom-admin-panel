@@ -84,6 +84,7 @@ export interface Autoposting {
   tg_channels: string[] | null;
   enabled: boolean;
   required_moderation: boolean;
+  need_image: boolean;
   created_at: string;
 }
 
@@ -94,6 +95,7 @@ export interface CreateAutopostingRequest {
   filter_prompt: string;
   tg_channels?: string[] | null;
   required_moderation?: boolean;
+  need_image?: boolean;
 }
 
 export interface UpdateAutopostingRequest {
@@ -103,6 +105,7 @@ export interface UpdateAutopostingRequest {
   enabled?: boolean;
   tg_channels?: string[] | null;
   required_moderation?: boolean;
+  need_image?: boolean;
 }
 
 export interface AutopostingResponse {

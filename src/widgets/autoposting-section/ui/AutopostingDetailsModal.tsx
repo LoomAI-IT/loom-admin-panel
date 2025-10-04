@@ -123,6 +123,7 @@ export const AutopostingDetailsModal = ({
               renderField('Telegram каналы', autoposting.tg_channels),
               renderField('Включён', autoposting.enabled, true),
               renderField('Требуется модерация', autoposting.required_moderation),
+              renderField('Требуется изображение', autoposting.need_image),
               renderField('Дата создания', new Date(autoposting.created_at).toLocaleString('ru-RU')),
             ])}
 

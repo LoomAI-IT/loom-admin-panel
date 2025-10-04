@@ -27,6 +27,7 @@ export interface AutopostingFormData {
   filter_prompt: string;
   tg_channels: string[];
   required_moderation: boolean;
+  need_image: boolean;
 }
 
 interface AutopostingFormFieldsProps {
@@ -122,6 +123,18 @@ export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFie
               style={{ marginRight: '8px' }}
             />
             Требуется модерация
+          </label>
+        </div>
+
+        <div className="input-wrapper">
+          <label className="input-label">
+            <input
+              type="checkbox"
+              checked={formData.need_image}
+              onChange={(e) => updateField('need_image', e.target.checked)}
+              style={{ marginRight: '8px' }}
+            />
+            Требуется изображение
           </label>
         </div>
       </section>
