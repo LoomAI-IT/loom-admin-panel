@@ -435,8 +435,6 @@ export const AutopostingSection = ({ organizationId }: AutopostingSectionProps) 
 
     try {
       await autopostingApi.delete(autoposting.id);
-      // Удаляем также категорию
-      await autopostingCategoryApi.delete(autoposting.autoposting_category_id);
       await loadAutopostings();
     } catch (err) {
       console.error('Failed to delete autoposting:', err);
