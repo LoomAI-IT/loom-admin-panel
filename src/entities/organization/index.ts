@@ -7,4 +7,6 @@ export type {
   UpdateOrganizationRequest,
   UpdateOrganizationResponse,
   DeleteOrganizationResponse,
+  CostMultiplier,
+  UpdateCostMultiplierRequest,
 } from './model/types';
