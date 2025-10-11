@@ -439,12 +439,12 @@ export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFie
 
         <Input
           label="Период в часах *"
-          type="number"
+          type="text"
+          inputMode="numeric"
           value={formData.period_in_hours}
           onChange={(e) => updateField('period_in_hours', e.target.value)}
           required
           placeholder="24"
-          min="1"
         />
 
         <OptimizedTextarea
@@ -536,22 +536,20 @@ export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFie
         <div className="input-grid-2">
           <Input
             label="Мин. уровень гибкости *"
-            type="number"
+            type="text"
+            inputMode="numeric"
             value={formData.structure_flex_level_min}
             onChange={(e) => updateField('structure_flex_level_min', e.target.value)}
             placeholder="0"
-            min="0"
-            max="100"
             required
           />
           <Input
             label="Макс. уровень гибкости *"
-            type="number"
+            type="text"
+            inputMode="numeric"
             value={formData.structure_flex_level_max}
             onChange={(e) => updateField('structure_flex_level_max', e.target.value)}
             placeholder="100"
-            min="0"
-            max="100"
             required
           />
         </div>
@@ -595,20 +593,20 @@ export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFie
         <div className="input-grid-2">
           <Input
             label="Мин. длина текста *"
-            type="number"
+            type="text"
+            inputMode="numeric"
             value={formData.len_min}
             onChange={(e) => updateField('len_min', e.target.value)}
             placeholder="0"
-            min="0"
             required
           />
           <Input
             label="Макс. длина текста *"
-            type="number"
+            type="text"
+            inputMode="numeric"
             value={formData.len_max}
             onChange={(e) => updateField('len_max', e.target.value)}
             placeholder="5000"
-            min="0"
             required
           />
         </div>
@@ -616,20 +614,20 @@ export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFie
         <div className="input-grid-2">
           <Input
             label="Мин. количество хэштегов *"
-            type="number"
+            type="text"
+            inputMode="numeric"
             value={formData.n_hashtags_min}
             onChange={(e) => updateField('n_hashtags_min', e.target.value)}
             placeholder="0"
-            min="0"
             required
           />
           <Input
             label="Макс. количество хэштегов *"
-            type="number"
+            type="text"
+            inputMode="numeric"
             value={formData.n_hashtags_max}
             onChange={(e) => updateField('n_hashtags_max', e.target.value)}
             placeholder="10"
-            min="0"
             required
           />
         </div>

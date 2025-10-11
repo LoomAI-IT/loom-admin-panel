@@ -248,7 +248,8 @@ export const EmployeesSection = ({ organizationId }: EmployeesSectionProps) => {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <Input
             label="Account ID"
-            type="number"
+            type="text"
+            inputMode="numeric"
             value={formData.account_id}
             onChange={(e) => setFormData({ ...formData, account_id: e.target.value })}
             required
