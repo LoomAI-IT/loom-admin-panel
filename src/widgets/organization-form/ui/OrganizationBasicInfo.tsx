@@ -1,6 +1,7 @@
 import { Input } from '../../../shared/ui/Input';
 import { Textarea } from '../../../shared/ui/Textarea';
 import type { Organization } from '../../../entities/organization';
+import { CostMultiplierEditor } from './CostMultiplierEditor';
 
 interface FormData {
   name: string;
@@ -13,6 +14,10 @@ interface FormData {
   products: Record<string, any>[];
   locale: Record<string, any>;
   additional_info: string[];
+  generate_text_cost_multiplier: number;
+  generate_image_cost_multiplier: number;
+  generate_vizard_video_cut_cost_multiplier: number;
+  transcribe_audio_cost_multiplier: number;
 }
 
 interface OrganizationBasicInfoProps {
@@ -62,6 +67,12 @@ export const OrganizationBasicInfo = ({
           <div className="field-value">{new Date(organization.created_at).toLocaleString('ru-RU')}</div>
         </div>
       </div>
+
+      <CostMultiplierEditor
+        isEditing={isEditing}
+        formData={formData}
+        onChange={onChange}
+      />
 
       <div className="templates-section">
         <h4 className="subsection-title">Шаблоны</h4>

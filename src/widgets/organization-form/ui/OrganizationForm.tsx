@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { organizationApi, type Organization, type UpdateOrganizationRequest } from '../../../entities/organization';
+import { organizationApi, type Organization, type UpdateOrganizationRequest, type CostMultiplier } from '../../../entities/organization';
 import { Button } from '../../../shared/ui/Button';
 import { useFormState } from '../../../shared/lib/hooks';
 import { OrganizationBasicInfo } from './OrganizationBasicInfo';
@@ -12,10 +12,11 @@ import './OrganizationForm.css';
 
 interface OrganizationFormProps {
   organization: Organization;
+  costMultiplier: CostMultiplier | null;
   onUpdate: () => void;
 }
 
-export const OrganizationForm = ({ organization, onUpdate }: OrganizationFormProps) => {
+export const OrganizationForm = ({ organization, costMultiplier, onUpdate }: OrganizationFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -33,6 +34,10 @@ export const OrganizationForm = ({ organization, onUpdate }: OrganizationFormPro
     products: organization.products || [],
     locale: organization.locale || {},
     additional_info: organization.additional_info || [],
+    generate_text_cost_multiplier: costMultiplier?.generate_text_cost_multiplier ?? 1,
+    generate_image_cost_multiplier: costMultiplier?.generate_image_cost_multiplier ?? 1,
+    generate_vizard_video_cut_cost_multiplier: costMultiplier?.generate_vizard_video_cut_cost_multiplier ?? 1,
+    transcribe_audio_cost_multiplier: costMultiplier?.transcribe_audio_cost_multiplier ?? 1,
   });
 
   const handleEdit = () => setIsEditing(true);
@@ -49,6 +54,10 @@ export const OrganizationForm = ({ organization, onUpdate }: OrganizationFormPro
       products: organization.products || [],
       locale: organization.locale || {},
       additional_info: organization.additional_info || [],
+      generate_text_cost_multiplier: costMultiplier?.generate_text_cost_multiplier ?? 1,
+      generate_image_cost_multiplier: costMultiplier?.generate_image_cost_multiplier ?? 1,
+      generate_vizard_video_cut_cost_multiplier: costMultiplier?.generate_vizard_video_cut_cost_multiplier ?? 1,
+      transcribe_audio_cost_multiplier: costMultiplier?.transcribe_audio_cost_multiplier ?? 1,
     });
     setIsEditing(false);
   };
@@ -58,15 +67,30 @@ export const OrganizationForm = ({ organization, onUpdate }: OrganizationFormPro
       setIsSaving(true);
       const updateData: UpdateOrganizationRequest = {
         organization_id: organization.id,
-        ...formData,
+        name: formData.name,
+        video_cut_description_end_sample: formData.video_cut_description_end_sample,
+        publication_text_end_sample: formData.publication_text_end_sample,
         tone_of_voice: formData.tone_of_voice.filter(item => item.trim() !== ''),
         brand_rules: formData.brand_rules.filter(item => item.trim() !== ''),
         compliance_rules: formData.compliance_rules.filter(item => item.trim() !== ''),
         audience_insights: formData.audience_insights.filter(item => item.trim() !== ''),
         additional_info: formData.additional_info.filter(item => item.trim() !== ''),
         products: formData.products.filter(item => Object.keys(item).length > 0),
+        locale: formData.locale,
       };
-      await organizationApi.update(updateData);
+
+      // Обновляем организацию и cost multiplier параллельно
+      await Promise.all([
+        organizationApi.update(updateData),
+        organizationApi.updateCostMultiplier({
+          organization_id: organization.id,
+          generate_text_cost_multiplier: formData.generate_text_cost_multiplier,
+          generate_image_cost_multiplier: formData.generate_image_cost_multiplier,
+          generate_vizard_video_cut_cost_multiplier: formData.generate_vizard_video_cut_cost_multiplier,
+          transcribe_audio_cost_multiplier: formData.transcribe_audio_cost_multiplier,
+        }),
+      ]);
+
       setIsEditing(false);
       onUpdate();
     } catch (err) {
@@ -89,6 +113,10 @@ export const OrganizationForm = ({ organization, onUpdate }: OrganizationFormPro
       products: jsonData.products || [],
       locale: jsonData.locale || {},
       additional_info: jsonData.additional_info || [],
+      generate_text_cost_multiplier: jsonData.generate_text_cost_multiplier ?? costMultiplier?.generate_text_cost_multiplier ?? 1,
+      generate_image_cost_multiplier: jsonData.generate_image_cost_multiplier ?? costMultiplier?.generate_image_cost_multiplier ?? 1,
+      generate_vizard_video_cut_cost_multiplier: jsonData.generate_vizard_video_cut_cost_multiplier ?? costMultiplier?.generate_vizard_video_cut_cost_multiplier ?? 1,
+      transcribe_audio_cost_multiplier: jsonData.transcribe_audio_cost_multiplier ?? costMultiplier?.transcribe_audio_cost_multiplier ?? 1,
     });
   };
 

@@ -7,6 +7,8 @@ import type {
   UpdateOrganizationResponse,
   DeleteOrganizationResponse,
   Organization,
+  CostMultiplier,
+  UpdateCostMultiplierRequest,
 } from '../model/types';
 
 export const organizationApi = {
@@ -33,5 +35,14 @@ export const organizationApi = {
   delete: async (organizationId: number): Promise<DeleteOrganizationResponse> => {
     const response = await organizationClient.delete<DeleteOrganizationResponse>(`/${organizationId}`);
     return response.data;
+  },
+
+  getCostMultiplier: async (organizationId: number): Promise<CostMultiplier> => {
+    const response = await organizationClient.get<CostMultiplier>(`/cost-multiplier/${organizationId}`);
+    return response.data;
+  },
+
+  updateCostMultiplier: async (data: UpdateCostMultiplierRequest): Promise<void> => {
+    await organizationClient.put('/cost-multiplier', data);
   },
 };

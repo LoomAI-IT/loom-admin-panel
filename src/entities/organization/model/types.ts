@@ -49,3 +49,20 @@ export interface UpdateOrganizationResponse {
 export interface DeleteOrganizationResponse {
   message: string;
 }
+
+export interface CostMultiplier {
+  id: number;
+  organization_id: number;
+  generate_text_cost_multiplier: number;
+  generate_image_cost_multiplier: number;
+  generate_vizard_video_cut_cost_multiplier: number;
+  transcribe_audio_cost_multiplier: number;
+}
+
+export interface UpdateCostMultiplierRequest {
+  organization_id: number;
+  generate_text_cost_multiplier?: number;
+  generate_image_cost_multiplier?: number;
+  generate_vizard_video_cut_cost_multiplier?: number;
+  transcribe_audio_cost_multiplier?: number;
+}
