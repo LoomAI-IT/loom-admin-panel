@@ -10,13 +10,11 @@ import {
     jsonToForm,
     validateCategoryForm,
 } from '../../../entities/category';
-import {Button, Modal, Table, TableBody, TableCell, TableHeader, TableRow} from '../../../shared/ui';
+import {Button, DataTable, type DataTableAction, type DataTableColumn, Modal} from '../../../shared/ui';
 import {useConfirmDialog, useEntityForm, useEntityList, useModal, useNotification} from '../../../shared/lib/hooks';
 import {JsonImportModal, loadJsonFromFile} from '../../../features/json-import';
 import {NotificationContainer} from '../../../features/notification';
 import {ConfirmDialog} from '../../../features/confirmation-dialog';
-import {CategoryFormFields} from './CategoryFormFields';
-import {CategoryDetailsModal} from './CategoryDetailsModal';
 import './CategoriesTable.css';
 
 interface CategoriesTableProps {
@@ -130,9 +128,44 @@ export const CategoriesTable = ({organizationId}: CategoriesTableProps) => {
         }
     };
 
-    if (categoryList.loading) {
-        return <div className="categories-section loading">Загрузка рубрик...</div>;
-    }
+    // Конфигурация колонок для DataTable
+    const columns: DataTableColumn<Category>[] = [
+        {
+            header: 'ID',
+            key: 'id',
+        },
+        {
+            header: 'Название',
+            render: (category) => <span className="category-name">{category.name}</span>,
+            className: 'table-cell-name',
+        },
+        {
+            header: 'Дата создания',
+            render: (category) => (
+                <span className="category-date">
+                    {new Date(category.created_at).toLocaleDateString('ru-RU')}
+                </span>
+            ),
+        },
+    ];
+
+    // Конфигурация действий для DataTable
+    const actions: DataTableAction<Category>[] = [
+        {
+            label: 'Детали',
+            onClick: handleOpenDetails,
+            variant: 'secondary',
+        },
+        {
+            label: 'Редактировать',
+            onClick: handleEdit,
+        },
+        {
+            label: 'Удалить',
+            onClick: handleDelete,
+            variant: 'danger',
+        },
+    ];
 
     return (
         <>
@@ -147,69 +180,18 @@ export const CategoriesTable = ({organizationId}: CategoriesTableProps) => {
                 onCancel={confirmDialog.handleCancel}
             />
 
-            <div className="categories-section">
-                <div className="section-header">
-                    <h2>Рубрики</h2>
-                    <Button size="small" onClick={handleOpenAddModal}>
-                        Добавить рубрику
-                    </Button>
-                </div>
-
-                {categoryList.error && (
-                    <div className="notification notification-error">
-                        <span className="notification-icon">⚠</span>
-                        {categoryList.error}
-                    </div>
-                )}
-
-                {categoryList.entities.length === 0 ? (
-                    <div className="empty-state">Рубрики не найдены</div>
-                ) : (
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableCell header>ID</TableCell>
-                                <TableCell header>Название</TableCell>
-                                <TableCell header>Дата создания</TableCell>
-                                <TableCell header className="table-cell-action">{''}</TableCell>
-                                <TableCell header className="table-cell-action">{''}</TableCell>
-                                <TableCell header className="table-cell-action">{''}</TableCell>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {categoryList.entities.map((category) => (
-                                <TableRow key={category.id}>
-                                    <TableCell>{category.id}</TableCell>
-                                    <TableCell className="table-cell-name">
-                                        <span className="category-name">{category.name}</span>
-                                    </TableCell>
-                                    <TableCell>
-                                        <span className="category-date">
-                                          {new Date(category.created_at).toLocaleDateString('ru-RU')}
-                                        </span>
-                                    </TableCell>
-                                    <TableCell className="table-cell-action">
-                                        <Button size="small" variant="secondary"
-                                                onClick={() => handleOpenDetails(category)}>
-                                            Детали
-                                        </Button>
-                                    </TableCell>
-                                    <TableCell className="table-cell-action">
-                                        <Button size="small" onClick={() => handleEdit(category)}>
-                                            Редактировать
-                                        </Button>
-                                    </TableCell>
-                                    <TableCell className="table-cell-action">
-                                        <Button size="small" variant="danger" onClick={() => handleDelete(category)}>
-                                            Удалить
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                )}
-            </div>
+            <DataTable
+                title="Рубрики"
+                data={categoryList.entities}
+                columns={columns}
+                actions={actions}
+                loading={categoryList.loading}
+                error={categoryList.error}
+                emptyMessage="Рубрики не найдены"
+                onAdd={handleOpenAddModal}
+                addButtonLabel="Добавить рубрику"
+                getRowKey={(category) => category.id}
+            />
 
             {/* Модальное окно создания */}
             <Modal isOpen={addModal.isOpen} onClose={addModal.close} title="Добавить рубрику"

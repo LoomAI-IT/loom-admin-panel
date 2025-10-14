@@ -14,7 +14,7 @@ import {
     jsonToForm,
     validateAutopostingForm,
 } from '../../../entities/autoposting';
-import {Button, Modal, Table, TableBody, TableCell, TableHeader, TableRow} from '../../../shared/ui';
+import {Button, Modal, DataTable, type DataTableColumn, type DataTableAction} from '../../../shared/ui';
 import {useConfirmDialog, useEntityForm, useEntityList, useModal, useNotification,} from '../../../shared/lib/hooks';
 import {JsonImportModal, loadJsonFromFile} from '../../../features/json-import';
 import {NotificationContainer} from '../../../features/notification';
@@ -218,9 +218,76 @@ export const AutopostingTable = ({organizationId}: AutopostingTableProps) => {
         }
     };
 
-    if (autopostingList.loading) {
-        return <div className="categories-section loading">Загрузка автопостингов...</div>;
-    }
+    // Конфигурация колонок для DataTable
+    const columns: DataTableColumn<Autoposting>[] = [
+        {
+            header: 'ID',
+            key: 'id',
+        },
+        {
+            header: 'Название',
+            render: (autoposting) => {
+                const category = categoryCache.get(autoposting.autoposting_category_id);
+                if (!category) {
+                    loadCategory(autoposting.autoposting_category_id);
+                }
+                return <span className="category-name">{category?.name || 'Загрузка...'}</span>;
+            },
+            className: 'table-cell-name',
+        },
+        {
+            header: 'Период (ч)',
+            key: 'period_in_hours',
+        },
+        {
+            header: 'Статус',
+            render: (autoposting) => (
+                <span style={{color: autoposting.enabled ? 'green' : 'red'}}>
+                    {autoposting.enabled ? 'Включён' : 'Выключен'}
+                </span>
+            ),
+        },
+        {
+            header: 'Дата создания',
+            render: (autoposting) => (
+                <span className="category-date">
+                    {new Date(autoposting.created_at).toLocaleDateString('ru-RU')}
+                </span>
+            ),
+        },
+    ];
+
+    // Конфигурация действий для DataTable
+    const actions: DataTableAction<Autoposting>[] = [
+        {
+            label: 'Детали',
+            onClick: handleOpenDetails,
+            variant: 'secondary',
+        },
+        {
+            label: 'Редактировать',
+            onClick: handleEdit,
+        },
+        {
+            label: 'Включить/Отключить',
+            onClick: () => {}, // пустой onClick, т.к. используем custom render
+            render: (autoposting) => (
+                <Button
+                    size="small"
+                    variant={autoposting.enabled ? 'danger' : 'secondary'}
+                    onClick={() => handleToggleEnabled(autoposting)}
+                    disabled={togglingId === autoposting.id}
+                >
+                    {togglingId === autoposting.id ? '...' : autoposting.enabled ? 'Отключить' : 'Включить'}
+                </Button>
+            ),
+        },
+        {
+            label: 'Удалить',
+            onClick: handleDelete,
+            variant: 'danger',
+        },
+    ];
 
     return (
         <>
@@ -235,102 +302,18 @@ export const AutopostingTable = ({organizationId}: AutopostingTableProps) => {
                 onCancel={confirmDialog.handleCancel}
             />
 
-            <div className="categories-section">
-                <div className="section-header">
-                    <h2>Автопостинг</h2>
-                    <Button size="small" onClick={handleOpenAddModal}>
-                        Добавить автопостинг
-                    </Button>
-                </div>
-
-                {autopostingList.error && (
-                    <div className="notification notification-error">
-                        <span className="notification-icon">⚠</span>
-                        {autopostingList.error}
-                    </div>
-                )}
-
-                {autopostingList.entities.length === 0 ? (
-                    <div className="empty-state">Автопостинги не найдены</div>
-                ) : (
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableCell header>ID</TableCell>
-                                <TableCell header>Название</TableCell>
-                                <TableCell header>Период (ч)</TableCell>
-                                <TableCell header>Статус</TableCell>
-                                <TableCell header>Дата создания</TableCell>
-                                <TableCell header className="table-cell-action">{''}</TableCell>
-                                <TableCell header className="table-cell-action">{''}</TableCell>
-                                <TableCell header className="table-cell-action">{''}</TableCell>
-                                <TableCell header className="table-cell-action">{''}</TableCell>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {autopostingList.entities.map((autoposting) => {
-                                const category = categoryCache.get(autoposting.autoposting_category_id);
-
-                                // Загружаем категорию если её нет в кэше
-                                if (!category) {
-                                    loadCategory(autoposting.autoposting_category_id);
-                                }
-
-                                return (
-                                    <TableRow key={autoposting.id}>
-                                        <TableCell>{autoposting.id}</TableCell>
-                                        <TableCell className="table-cell-name">
-                                            <span className="category-name">{category?.name || 'Загрузка...'}</span>
-                                        </TableCell>
-                                        <TableCell>{autoposting.period_in_hours}</TableCell>
-                                        <TableCell>
-                      <span style={{color: autoposting.enabled ? 'green' : 'red'}}>
-                        {autoposting.enabled ? 'Включён' : 'Выключен'}
-                      </span>
-                                        </TableCell>
-                                        <TableCell>
-                      <span className="category-date">
-                        {new Date(autoposting.created_at).toLocaleDateString('ru-RU')}
-                      </span>
-                                        </TableCell>
-                                        <TableCell className="table-cell-action">
-                                            <Button size="small" variant="secondary"
-                                                    onClick={() => handleOpenDetails(autoposting)}>
-                                                Детали
-                                            </Button>
-                                        </TableCell>
-                                        <TableCell className="table-cell-action">
-                                            <Button size="small" onClick={() => handleEdit(autoposting)}>
-                                                Редактировать
-                                            </Button>
-                                        </TableCell>
-                                        <TableCell className="table-cell-action">
-                                            <Button
-                                                size="small"
-                                                variant={autoposting.enabled ? 'danger' : 'secondary'}
-                                                onClick={() => handleToggleEnabled(autoposting)}
-                                                disabled={togglingId === autoposting.id}
-                                            >
-                                                {togglingId === autoposting.id
-                                                    ? '...'
-                                                    : autoposting.enabled
-                                                        ? 'Отключить'
-                                                        : 'Включить'}
-                                            </Button>
-                                        </TableCell>
-                                        <TableCell className="table-cell-action">
-                                            <Button size="small" variant="danger"
-                                                    onClick={() => handleDelete(autoposting)}>
-                                                Удалить
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
-                )}
-            </div>
+            <DataTable
+                title="Автопостинг"
+                data={autopostingList.entities}
+                columns={columns}
+                actions={actions}
+                loading={autopostingList.loading}
+                error={autopostingList.error}
+                emptyMessage="Автопостинги не найдены"
+                onAdd={handleOpenAddModal}
+                addButtonLabel="Добавить автопостинг"
+                getRowKey={(autoposting) => autoposting.id}
+            />
 
             {/* Модальное окно создания */}
             <Modal isOpen={addModal.isOpen} onClose={addModal.close} title="Добавить автопостинг"

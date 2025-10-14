@@ -1,0 +1,97 @@
+.data-table-section {
+    padding: var(--spacing-2xl);
+    background-color: var(--color-surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.data-table-section .table {
+    table-layout: auto;
+}
+
+.data-table-section .table-cell-action {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.data-table-section .table-cell-name {
+    white-space: nowrap;
+}
+
+.data-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-2xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 2px solid var(--color-border);
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.data-table-header h2 {
+    margin: 0;
+    font-size: var(--text-2xl);
+    font-weight: var(--font-bold);
+    color: var(--color-text-primary);
+    flex: 1 1 auto;
+}
+
+.data-table-section.loading {
+    padding: var(--spacing-5xl);
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: var(--text-base);
+}
+
+.empty-state {
+    padding: var(--spacing-5xl) var(--spacing-4xl);
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: var(--text-base);
+    background-color: var(--color-gray-50);
+    border-radius: var(--radius-lg);
+    border: 2px dashed var(--color-border);
+}
+
+/* Notifications */
+.notification {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-xl);
+    font-size: var(--text-sm);
+    animation: slideDown var(--transition-slow) ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.notification-success {
+    background-color: var(--color-success-light);
+    color: var(--color-success-dark);
+    border: 1px solid var(--color-success);
+}
+
+.notification-error {
+    background-color: var(--color-danger-light);
+    color: var(--color-danger-dark);
+    border: 1px solid var(--color-danger);
+}
+
+.notification-icon {
+    font-size: 18px;
+    font-weight: var(--font-bold);
+}
