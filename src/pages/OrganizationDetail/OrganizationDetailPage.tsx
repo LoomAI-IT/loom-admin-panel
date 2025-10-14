@@ -1,24 +1,36 @@
 import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
+
 import {CategoriesTable} from '../../widgets/CategoriesTable';
+
+import {NotificationContainer} from '../../features/notification';
+
 import {
+    type Organization,
     type CostMultiplier,
+    type OrganizationFormData,
+    organizationApi,
+    organizationFormSections,
+    organizationDetailsSections,
+    organizationToForm,
+    jsonToOrganizationForm,
+    validateOrganizationForm,
     createEmptyOrganizationForm,
     formToUpdateCostMultiplierRequest,
-    formToUpdateOrganizationRequest,
-    jsonToOrganizationForm,
-    type Organization,
-    organizationApi,
-    organizationDetailsSections,
-    type OrganizationFormData,
-    organizationFormSections,
-    organizationToForm,
-    validateOrganizationForm
+    formToUpdateOrganizationRequest
 } from '../../entities/organization';
-import {DetailsViewer, FormBuilder,} from '../../shared/ui';
-import {useEntityForm, useModal, useNotification} from '../../shared/lib/hooks';
-import {NotificationContainer} from '../../features/notification';
+
+import {
+    DetailsViewer,
+    FormBuilder,
+} from '../../shared/ui';
+
+import {
+    useEntityForm,
+    useModal,
+    useNotification
+} from '../../shared/lib/hooks';
 
 export const OrganizationDetailPage = () => {
     const {organizationId} = useParams<{ organizationId: string }>();

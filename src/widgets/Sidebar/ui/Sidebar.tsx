@@ -1,16 +1,18 @@
+import {JSX} from "react";
 import {Link, useLocation} from 'react-router-dom';
 import {Building2, LayoutDashboard} from 'lucide-react';
+
 import './Sidebar.css';
 
 interface MenuItem {
     path: string;
     label: string;
-    icon: React.ReactNode;
+    icon: JSX.Element;
 }
 
 const menuItems: MenuItem[] = [
-    {path: '/', label: 'Главная', icon: <LayoutDashboard />},
-    {path: '/organizations', label: 'Организации', icon: <Building2 />},
+    {path: '/', label: 'Главная', icon: <LayoutDashboard/>},
+    {path: '/organizations', label: 'Организации', icon: <Building2/>},
 ];
 
 export const Sidebar = () => {
@@ -20,7 +22,7 @@ export const Sidebar = () => {
         <aside className="sidebar">
             <div className="sidebar-header">
                 <h2 className="sidebar-title">
-                    <Building2 />
+                    <Building2/>
                     Админ панель
                 </h2>
             </div>

@@ -6,9 +6,9 @@ import {ConfirmDialog} from '../../../features/confirmation-dialog';
 
 import {
     type Category,
+    type CategoryFormData,
     categoryApi,
     categoryDetailsSections,
-    type CategoryFormData,
     categoryFormSections,
     categoryToForm,
     createEmptyCategoryForm,
@@ -18,9 +18,21 @@ import {
     validateCategoryForm
 } from '../../../entities/category';
 
-import {DataTable, type DataTableAction, type DataTableColumn, DetailsViewer, FormBuilder,} from '../../../shared/ui';
+import {
+    type DataTableAction,
+    type DataTableColumn,
+    DataTable,
+    DetailsViewer,
+    FormBuilder,
+} from '../../../shared/ui';
 
-import {useConfirmDialog, useEntityForm, useEntityList, useModal, useNotification} from '../../../shared/lib/hooks';
+import {
+    useConfirmDialog,
+    useEntityForm,
+    useEntityList,
+    useModal,
+    useNotification
+} from '../../../shared/lib/hooks';
 
 
 interface CategoriesTableProps {

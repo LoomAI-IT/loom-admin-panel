@@ -6,21 +6,33 @@ import {NotificationContainer} from '../../../features/notification';
 import {ConfirmDialog} from '../../../features/confirmation-dialog';
 
 import {
+    type Organization,
+    type OrganizationFormData,
+    organizationApi,
+    organizationFormSections,
+    organizationToForm,
+    jsonToOrganizationForm,
+    validateOrganizationForm,
     createEmptyOrganizationForm,
     formToCreateOrganizationRequest,
     formToUpdateCostMultiplierRequest,
-    formToUpdateOrganizationRequest,
-    jsonToOrganizationForm,
-    type Organization,
-    organizationApi,
-    type OrganizationFormData,
-    organizationFormSections,
-    organizationToForm,
-    validateOrganizationForm
+    formToUpdateOrganizationRequest
 } from '../../../entities/organization';
 
-import {DataTable, type DataTableAction, type DataTableColumn, FormBuilder,} from '../../../shared/ui';
-import {useConfirmDialog, useEntityForm, useEntityList, useModal, useNotification} from '../../../shared/lib/hooks';
+import {
+    type DataTableAction,
+    type DataTableColumn,
+    DataTable,
+    FormBuilder,
+} from '../../../shared/ui';
+
+import {
+    useConfirmDialog,
+    useEntityForm,
+    useEntityList,
+    useModal,
+    useNotification
+} from '../../../shared/lib/hooks';
 
 
 export const OrganizationsTable = () => {
