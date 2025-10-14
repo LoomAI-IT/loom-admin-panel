@@ -37,33 +37,31 @@ export const LoginPage = () => {
 
     return (
         <div>
-            <div>
-                <h1>Вход в админ панель</h1>
-                <form onSubmit={handleSubmit}>
-                    <DebouncedInput
-                        label="Логин"
-                        type="text"
-                        value={credentials.login}
-                        onChange={(value) => setCredentials({...credentials, login: value})}
-                        disabled={loading}
-                        debounceDelay={300}
-                        required
-                    />
-                    <DebouncedInput
-                        label="Пароль"
-                        type="password"
-                        value={credentials.password}
-                        onChange={(value) => setCredentials({...credentials, password: value})}
-                        disabled={loading}
-                        debounceDelay={300}
-                        required
-                    />
-                    {error && <div>{error}</div>}
-                    <Button type="submit" disabled={loading}>
-                        {loading ? 'Вход...' : 'Войти'}
-                    </Button>
-                </form>
-            </div>
+            <h1>Вход в админ панель</h1>
+            <form onSubmit={handleSubmit}>
+                <DebouncedInput
+                    label="Логин"
+                    type="text"
+                    value={credentials.login}
+                    onChange={(value) => setCredentials({...credentials, login: value})}
+                    disabled={loading}
+                    debounceDelay={300}
+                    required
+                />
+                <DebouncedInput
+                    label="Пароль"
+                    type="password"
+                    value={credentials.password}
+                    onChange={(value) => setCredentials({...credentials, password: value})}
+                    disabled={loading}
+                    debounceDelay={300}
+                    required
+                />
+                {error && <div>{error}</div>}
+                <Button type="submit" disabled={loading}>
+                    {loading ? 'Вход...' : 'Войти'}
+                </Button>
+            </form>
         </div>
     );
 };
