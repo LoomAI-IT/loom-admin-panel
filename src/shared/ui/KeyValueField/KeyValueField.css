@@ -1,0 +1,80 @@
+.key-value-field {
+    background: var(--color-gray-50);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+}
+
+.field-title {
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-lg) 0;
+}
+
+/* View mode */
+.key-value-view {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.key-value-view-item {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm);
+    background: var(--color-surface);
+    border-radius: var(--radius-sm);
+}
+
+.key-label {
+    font-weight: var(--font-medium);
+    color: var(--color-gray-700);
+}
+
+.value-content {
+    color: var(--color-text-secondary);
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+/* Edit mode */
+.key-value-edit {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.key-value-field-row {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: flex-start;
+}
+
+.field-key-input {
+    flex: 0 0 180px;
+}
+
+.key-value-field-row .textarea-wrapper {
+    flex: 1;
+}
+
+.key-value-field-row .textarea {
+    min-height: 38px;
+}
+
+.remove-field-button {
+    flex-shrink: 0;
+    font-size: var(--text-xl);
+    line-height: 1;
+    padding: var(--spacing-sm) 10px !important;
+    min-width: auto;
+    margin-top: 2px;
+}
+
+.add-field-button {
+    align-self: flex-start;
+    margin-top: var(--spacing-sm);
+}
