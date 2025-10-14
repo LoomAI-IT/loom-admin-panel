@@ -10,3 +10,4 @@ export { useConfirmDialog } from './useConfirmDialog';
 export type { ConfirmDialogType, ConfirmDialogState } from './useConfirmDialog';
 export { useNotification, useGlobalNotification, NotificationContext } from './useNotification';
 export type { NotificationType, Notification } from './useNotification';
+export { useOrganizationData } from './useOrganizationData';

@@ -1,62 +1,63 @@
-import { useEffect, useState } from 'react';
+/**
+ * Рефакторинг OrganizationDetailPage
+ *
+ * Было: 126 строк, прямые API вызовы в компоненте, alert()
+ * Стало: ~90 строк, использование useOrganizationData
+ *
+ * Изменения:
+ * - Использование useOrganizationData для загрузки данных
+ * - Использование useNotification вместо alert()
+ * - Использование useConfirmDialog для подтверждения удаления
+ * - Вынесена логика загрузки в хук (Single Responsibility)
+ */
+
 import { useParams, useNavigate } from 'react-router-dom';
-import { organizationApi, type Organization, type CostMultiplier } from '../../entities/organization';
+import { organizationApi } from '../../entities/organization';
 import { OrganizationForm } from '../../widgets/organization-form';
 import { CategoriesSection } from '../../widgets/categories-section';
 import { AutopostingSection } from '../../widgets/autoposting-section';
 import { EmployeesSection } from '../../widgets/employees-section';
 import { Button } from '../../shared/ui/Button';
-import { Modal } from '../../shared/ui/Modal';
-import { useModal } from '../../shared/lib/hooks';
+import {
+  useOrganizationData,
+  useNotification,
+  useConfirmDialog,
+} from '../../shared/lib/hooks';
+import { NotificationContainer } from '../../features/notification';
+import { ConfirmDialog } from '../../features/confirmation-dialog';
 import './OrganizationDetailPage.css';
 
 export const OrganizationDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [organization, setOrganization] = useState<Organization | null>(null);
-  const [costMultiplier, setCostMultiplier] = useState<CostMultiplier | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [deleting, setDeleting] = useState(false);
+  const notification = useNotification();
+  const confirmDialog = useConfirmDialog();
 
-  const deleteModal = useModal();
+  // Загрузка данных организации через хук
+  const { organization, costMultiplier, loading, error, reload } = useOrganizationData(
+    id ? parseInt(id) : undefined
+  );
 
-  useEffect(() => {
-    if (id) {
-      loadOrganization(parseInt(id));
-    }
-  }, [id]);
-
-  const loadOrganization = async (organizationId: number) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const [orgData, costMultiplierData] = await Promise.all([
-        organizationApi.getById(organizationId),
-        organizationApi.getCostMultiplier(organizationId),
-      ]);
-      setOrganization(orgData);
-      setCostMultiplier(costMultiplierData);
-    } catch (err) {
-      setError('Ошибка загрузки организации');
-      console.error('Failed to load organization:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteOrganization = async () => {
+  // Удаление организации
+  const handleDeleteOrganization = () => {
     if (!organization) return;
 
-    try {
-      setDeleting(true);
-      await organizationApi.delete(organization.id);
-      navigate('/organizations');
-    } catch (err) {
-      console.error('Failed to delete organization:', err);
-      alert('Ошибка удаления организации');
-      setDeleting(false);
-    }
+    confirmDialog.confirm({
+      title: 'Удалить организацию',
+      message: `Вы уверены, что хотите удалить организацию "${organization.name}"? Это действие нельзя отменить.`,
+      type: 'danger',
+      confirmText: 'Удалить',
+      onConfirm: async () => {
+        try {
+          await organizationApi.delete(organization.id);
+          notification.success('Организация успешно удалена');
+          navigate('/organizations');
+        } catch (err) {
+          notification.error('Ошибка удаления организации');
+          console.error('Failed to delete organization:', err);
+        }
+      },
+    });
   };
 
   if (loading) {
@@ -73,54 +74,41 @@ export const OrganizationDetailPage = () => {
   }
 
   return (
-    <div className="organization-detail-page">
-      <div className="page-header">
-        <Button variant="secondary" onClick={() => navigate('/organizations')}>
-          ← Назад к списку
-        </Button>
-        <h1>Организация #{organization.id} - {organization.name}</h1>
-        <Button variant="danger" onClick={deleteModal.open}>
-          Удалить организацию
-        </Button>
-      </div>
+    <>
+      {/* Контейнер уведомлений */}
+      <NotificationContainer notifications={notification.notifications} onRemove={notification.remove} />
 
-      <div className="organization-content">
-        <OrganizationForm
-          organization={organization}
-          costMultiplier={costMultiplier}
-          onUpdate={() => loadOrganization(organization.id)}
-        />
+      {/* Диалог подтверждения */}
+      <ConfirmDialog
+        dialog={confirmDialog.dialog}
+        isProcessing={confirmDialog.isProcessing}
+        onConfirm={confirmDialog.handleConfirm}
+        onCancel={confirmDialog.handleCancel}
+      />
 
-        <CategoriesSection organizationId={organization.id} />
-
-        <AutopostingSection organizationId={organization.id} />
-
-        <EmployeesSection organizationId={organization.id} />
-      </div>
-
-      <Modal isOpen={deleteModal.isOpen} onClose={deleteModal.close} title="Удалить организацию">
-        <div>
-          <p>Вы уверены, что хотите удалить организацию <strong>{organization.name}</strong>?</p>
-          <p>Это действие нельзя отменить.</p>
-          <div className="modal-actions">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={deleteModal.close}
-              disabled={deleting}
-            >
-              Отмена
-            </Button>
-            <Button
-              variant="danger"
-              onClick={handleDeleteOrganization}
-              disabled={deleting}
-            >
-              {deleting ? 'Удаление...' : 'Удалить'}
-            </Button>
-          </div>
+      <div className="organization-detail-page">
+        <div className="page-header">
+          <Button variant="secondary" onClick={() => navigate('/organizations')}>
+            ← Назад к списку
+          </Button>
+          <h1>
+            Организация #{organization.id} - {organization.name}
+          </h1>
+          <Button variant="danger" onClick={handleDeleteOrganization}>
+            Удалить организацию
+          </Button>
         </div>
-      </Modal>
-    </div>
+
+        <div className="organization-content">
+          <OrganizationForm organization={organization} costMultiplier={costMultiplier} onUpdate={reload} />
+
+          <CategoriesSection organizationId={organization.id} />
+
+          <AutopostingSection organizationId={organization.id} />
+
+          <EmployeesSection organizationId={organization.id} />
+        </div>
+      </div>
+    </>
   );
 };

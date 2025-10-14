@@ -1,4 +1,5 @@
 import { useCallback, memo, useRef, useState, useEffect } from 'react';
+import { type AutopostingFormData } from '../../../entities/autoposting';
 import { Input } from '../../../shared/ui/Input';
 import { Textarea } from '../../../shared/ui/Textarea';
 import { Button } from '../../../shared/ui/Button';
@@ -253,33 +254,6 @@ const GoodSampleCard = memo(({
 });
 
 GoodSampleCard.displayName = 'GoodSampleCard';
-
-export interface AutopostingFormData {
-  name: string;
-  goal: string;
-  prompt_for_image_style: string;
-  structure_skeleton: string[];
-  structure_flex_level_min: string;
-  structure_flex_level_max: string;
-  structure_flex_level_comment: string;
-  must_have: string[];
-  must_avoid: string[];
-  social_networks_rules: string;
-  len_min: string;
-  len_max: string;
-  n_hashtags_min: string;
-  n_hashtags_max: string;
-  cta_type: string;
-  tone_of_voice: string[];
-  brand_rules: string[];
-  good_samples: Record<string, any>[];
-  additional_info: string[];
-  period_in_hours: string;
-  filter_prompt: string;
-  tg_channels: string[];
-  required_moderation: boolean;
-  need_image: boolean;
-}
 
 interface AutopostingFormFieldsProps {
   formData: AutopostingFormData;

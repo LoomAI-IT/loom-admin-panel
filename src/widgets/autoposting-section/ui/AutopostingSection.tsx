@@ -1,20 +1,47 @@
-import { useState, useEffect } from 'react';
+/**
+ * Рефакторинг AutopostingSection
+ *
+ * Было: 650 строк, дублирование formData/editFormData, ручное управление состоянием
+ * Стало: ~250 строк, использование useEntityForm/useEntityList
+ *
+ * Изменения:
+ * - Использование useEntityList для управления списком автопостингов
+ * - Использование useEntityForm вместо дублирования formData/editFormData
+ * - Использование useNotification вместо alert()
+ * - Использование useConfirmDialog вместо confirm()
+ * - Использование трансформеров из entities/autoposting
+ */
+
+import { useState, useCallback } from 'react';
 import {
   autopostingApi,
   autopostingCategoryApi,
   type Autoposting,
   type AutopostingCategory,
-  type CreateAutopostingCategoryRequest,
-  type CreateAutopostingRequest,
-  type UpdateAutopostingCategoryRequest,
-  type UpdateAutopostingRequest,
+  type AutopostingFormData,
+  createEmptyAutopostingForm,
+  autopostingToForm,
+  jsonToForm,
+  formToCreateCategoryRequest,
+  formToUpdateCategoryRequest,
+  formToCreateAutopostingRequest,
+  formToUpdateAutopostingRequest,
+  validateAutopostingForm,
 } from '../../../entities/autoposting';
 import { Table, TableHeader, TableBody, TableRow, TableCell } from '../../../shared/ui/Table';
 import { Button } from '../../../shared/ui/Button';
 import { Modal } from '../../../shared/ui/Modal';
-import { useModal } from '../../../shared/lib/hooks/useModal';
+import {
+  useModal,
+  useEntityList,
+  useEntityForm,
+  useNotification,
+  useConfirmDialog,
+} from '../../../shared/lib/hooks';
 import { JsonImportModal, loadJsonFromFile } from '../../../features/json-import';
-import { AutopostingFormFields, type AutopostingFormData } from './AutopostingFormFields';
+import { NotificationContainer } from '../../../features/notification';
+import { ConfirmDialog } from '../../../features/confirmation-dialog';
+import { AutopostingFormFields } from './AutopostingFormFields';
 import { AutopostingDetailsModal } from './AutopostingDetailsModal';
 import '../../../widgets/categories-section/ui/CategoriesSection.css';
 
@@ -23,475 +50,229 @@ interface AutopostingSectionProps {
 }
 
 export const AutopostingSection = ({ organizationId }: AutopostingSectionProps) => {
-  const [autopostings, setAutopostings] = useState<Autoposting[]>([]);
-  const [autopostingCategories, setAutopostingCategories] = useState<Map<number, AutopostingCategory>>(new Map());
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [editingAutoposting, setEditingAutoposting] = useState<Autoposting | null>(null);
-  const [editingCategory, setEditingCategory] = useState<AutopostingCategory | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [togglingId, setTogglingId] = useState<number | null>(null);
+  // Управление списком автопостингов
+  const autopostingList = useEntityList<Autoposting>({
+    loadFn: () => autopostingApi.getByOrganization(organizationId),
+  });
+
+  // Кэш категорий для отображения
+  const [categoryCache, setCategoryCache] = useState<Map<number, AutopostingCategory>>(new Map());
+
+  // Загрузка категории для отображения в таблице
+  const loadCategory = useCallback(async (categoryId: number) => {
+    if (categoryCache.has(categoryId)) return categoryCache.get(categoryId)!;
+
+    try {
+      const category = await autopostingCategoryApi.getById(categoryId);
+      setCategoryCache(prev => new Map(prev).set(categoryId, category));
+      return category;
+    } catch (err) {
+      console.error('Failed to load category:', err);
+      return null;
+    }
+  }, [categoryCache]);
+
+  // Загружаем все категории для текущих автопостингов
+  useState(() => {
+    autopostingList.entities.forEach(autoposting => {
+      loadCategory(autoposting.autoposting_category_id);
+    });
+  });
+
+  // Управление формой (единая форма для create и edit)
+  const autopostingForm = useEntityForm<AutopostingFormData>({
+    initialData: createEmptyAutopostingForm(),
+    validateFn: validateAutopostingForm,
+    onSubmit: async (data, mode) => {
+      if (mode === 'create') {
+        // Создаем категорию
+        const categoryRequest = formToCreateCategoryRequest(data, organizationId);
+        const categoryResponse = await autopostingCategoryApi.create(categoryRequest);
+
+        if (!categoryResponse.autoposting_category_id) {
+          throw new Error('Failed to create autoposting category');
+        }
+
+        // Создаем автопостинг
+        const autopostingRequest = formToCreateAutopostingRequest(
+          data,
+          organizationId,
+          categoryResponse.autoposting_category_id
+        );
+        await autopostingApi.create(autopostingRequest);
+        notification.success('Автопостинг успешно создан');
+      } else {
+        // Редактирование
+        if (!selectedAutoposting || !selectedCategory) {
+          throw new Error('No autoposting or category selected');
+        }
+
+        // Обновляем категорию
+        const categoryRequest = formToUpdateCategoryRequest(data);
+        await autopostingCategoryApi.update(selectedCategory.id, categoryRequest);
+
+        // Обновляем автопостинг
+        const autopostingRequest = formToUpdateAutopostingRequest(data);
+        await autopostingApi.update(selectedAutoposting.id, autopostingRequest);
+        notification.success('Автопостинг успешно обновлён');
+      }
+
+      // Обновляем список и закрываем модалки
+      await autopostingList.refresh();
+      addModal.close();
+      editModal.close();
+    },
+  });
+
+  // Модальные окна
   const addModal = useModal();
   const editModal = useModal();
   const jsonImportModal = useModal();
-  const editJsonImportModal = useModal();
   const detailsModal = useModal();
 
-  const [formData, setFormData] = useState<AutopostingFormData>({
-    name: '',
-    goal: '',
-    prompt_for_image_style: '',
-    structure_skeleton: [],
-    structure_flex_level_min: '',
-    structure_flex_level_max: '',
-    structure_flex_level_comment: '',
-    must_have: [],
-    must_avoid: [],
-    social_networks_rules: '',
-    len_min: '',
-    len_max: '',
-    n_hashtags_min: '',
-    n_hashtags_max: '',
-    cta_type: '',
-    tone_of_voice: [],
-    brand_rules: [],
-    good_samples: [],
-    additional_info: [],
-    period_in_hours: '',
-    filter_prompt: '',
-    tg_channels: [],
-    required_moderation: false,
-    need_image: false,
-  });
+  // Уведомления и диалоги
+  const notification = useNotification();
+  const confirmDialog = useConfirmDialog();
 
-  const [editFormData, setEditFormData] = useState<AutopostingFormData>({
-    name: '',
-    goal: '',
-    prompt_for_image_style: '',
-    structure_skeleton: [],
-    structure_flex_level_min: '',
-    structure_flex_level_max: '',
-    structure_flex_level_comment: '',
-    must_have: [],
-    must_avoid: [],
-    social_networks_rules: '',
-    len_min: '',
-    len_max: '',
-    n_hashtags_min: '',
-    n_hashtags_max: '',
-    cta_type: '',
-    tone_of_voice: [],
-    brand_rules: [],
-    good_samples: [],
-    additional_info: [],
-    period_in_hours: '',
-    filter_prompt: '',
-    tg_channels: [],
-    required_moderation: false,
-    need_image: false,
-  });
+  // Текущий выбранный автопостинг и его категория
+  const [selectedAutoposting, setSelectedAutoposting] = useState<Autoposting | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<AutopostingCategory | null>(null);
+  const [togglingId, setTogglingId] = useState<number | null>(null);
 
-  useEffect(() => {
-    loadAutopostings();
-  }, [organizationId]);
-
-  const loadAutopostings = async () => {
-    try {
-      setLoading(true);
-      const data = await autopostingApi.getByOrganization(organizationId);
-      setAutopostings(data);
-
-      // Загружаем категории для каждого автопостинга
-      const categoryMap = new Map<number, AutopostingCategory>();
-      for (const autoposting of data) {
-        try {
-          const category = await autopostingCategoryApi.getById(autoposting.autoposting_category_id);
-          categoryMap.set(autoposting.autoposting_category_id, category);
-        } catch (err) {
-          console.error(`Failed to load category ${autoposting.autoposting_category_id}:`, err);
-        }
-      }
-      setAutopostingCategories(categoryMap);
-    } catch (err) {
-      console.error('Failed to load autopostings:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEdit = async (autoposting: Autoposting) => {
-    setError(null);
-    setEditingAutoposting(autoposting);
-
-    // Загружаем категорию
-    try {
-      const category = await autopostingCategoryApi.getById(autoposting.autoposting_category_id);
-      setEditingCategory(category);
-
-      setEditFormData({
-        name: category.name,
-        goal: category.goal || '',
-        prompt_for_image_style: category.prompt_for_image_style || '',
-        structure_skeleton: category.structure_skeleton || [],
-        structure_flex_level_min: category.structure_flex_level_min?.toString() || '',
-        structure_flex_level_max: category.structure_flex_level_max?.toString() || '',
-        structure_flex_level_comment: category.structure_flex_level_comment || '',
-        must_have: category.must_have || [],
-        must_avoid: category.must_avoid || [],
-        social_networks_rules: category.social_networks_rules || '',
-        len_min: category.len_min?.toString() || '',
-        len_max: category.len_max?.toString() || '',
-        n_hashtags_min: category.n_hashtags_min?.toString() || '',
-        n_hashtags_max: category.n_hashtags_max?.toString() || '',
-        cta_type: category.cta_type || '',
-        tone_of_voice: category.tone_of_voice || [],
-        brand_rules: category.brand_rules || [],
-        good_samples: category.good_samples || [],
-        additional_info: category.additional_info || [],
-        period_in_hours: autoposting.period_in_hours?.toString() || '',
-        filter_prompt: autoposting.filter_prompt || '',
-        tg_channels: autoposting.tg_channels || [],
-        required_moderation: autoposting.required_moderation || false,
-        need_image: autoposting.need_image || false,
-      });
-      editModal.open();
-    } catch (err) {
-      console.error('Failed to load category for editing:', err);
-      setError('Ошибка при загрузке данных категории');
-    }
-  };
-
+  // Открытие модального окна создания
   const handleOpenAddModal = () => {
-    setError(null);
+    autopostingForm.switchToCreate();
     addModal.open();
   };
 
-  const handleJsonImport = (jsonData: any) => {
-    setFormData({
-      name: jsonData.name || '',
-      goal: jsonData.goal || '',
-      prompt_for_image_style: jsonData.prompt_for_image_style || '',
-      structure_skeleton: jsonData.structure_skeleton || [],
-      structure_flex_level_min: jsonData.structure_flex_level_min?.toString() || '',
-      structure_flex_level_max: jsonData.structure_flex_level_max?.toString() || '',
-      structure_flex_level_comment: jsonData.structure_flex_level_comment || '',
-      must_have: jsonData.must_have || [],
-      must_avoid: jsonData.must_avoid || [],
-      social_networks_rules: jsonData.social_networks_rules || '',
-      len_min: jsonData.len_min?.toString() || '',
-      len_max: jsonData.len_max?.toString() || '',
-      n_hashtags_min: jsonData.n_hashtags_min?.toString() || '',
-      n_hashtags_max: jsonData.n_hashtags_max?.toString() || '',
-      cta_type: jsonData.cta_type || '',
-      tone_of_voice: jsonData.tone_of_voice || [],
-      brand_rules: jsonData.brand_rules || [],
-      good_samples: jsonData.good_samples || [],
-      additional_info: jsonData.additional_info || [],
-      period_in_hours: jsonData.period_in_hours?.toString() || '',
-      filter_prompt: jsonData.filter_prompt || '',
-      tg_channels: jsonData.tg_channels || [],
-      required_moderation: jsonData.required_moderation || false,
-      need_image: jsonData.need_image || false,
-    });
-  };
-
-  const handleEditJsonImport = (jsonData: any) => {
-    setEditFormData({
-      name: jsonData.name || '',
-      goal: jsonData.goal || '',
-      prompt_for_image_style: jsonData.prompt_for_image_style || '',
-      structure_skeleton: jsonData.structure_skeleton || [],
-      structure_flex_level_min: jsonData.structure_flex_level_min?.toString() || '',
-      structure_flex_level_max: jsonData.structure_flex_level_max?.toString() || '',
-      structure_flex_level_comment: jsonData.structure_flex_level_comment || '',
-      must_have: jsonData.must_have || [],
-      must_avoid: jsonData.must_avoid || [],
-      social_networks_rules: jsonData.social_networks_rules || '',
-      len_min: jsonData.len_min?.toString() || '',
-      len_max: jsonData.len_max?.toString() || '',
-      n_hashtags_min: jsonData.n_hashtags_min?.toString() || '',
-      n_hashtags_max: jsonData.n_hashtags_max?.toString() || '',
-      cta_type: jsonData.cta_type || '',
-      tone_of_voice: jsonData.tone_of_voice || [],
-      brand_rules: jsonData.brand_rules || [],
-      good_samples: jsonData.good_samples || [],
-      additional_info: jsonData.additional_info || [],
-      period_in_hours: jsonData.period_in_hours?.toString() || '',
-      filter_prompt: jsonData.filter_prompt || '',
-      tg_channels: jsonData.tg_channels || [],
-      required_moderation: jsonData.required_moderation || false,
-      need_image: jsonData.need_image || false,
-    });
-  };
-
-  const handleLoadJsonFile = async () => {
+  // Открытие модального окна редактирования
+  const handleEdit = async (autoposting: Autoposting) => {
     try {
-      const jsonData = await loadJsonFromFile();
-      handleJsonImport(jsonData);
-      alert('Настройки успешно загружены из JSON');
+      const category = await autopostingCategoryApi.getById(autoposting.autoposting_category_id);
+      setSelectedAutoposting(autoposting);
+      setSelectedCategory(category);
+
+      const formData = autopostingToForm(autoposting, category);
+      autopostingForm.switchToEdit({ autoposting, category }, () => formData);
+      editModal.open();
     } catch (err) {
-      alert('Ошибка при загрузке JSON файла');
+      notification.error('Ошибка при загрузке данных категории');
+      console.error('Failed to load category for editing:', err);
     }
   };
 
-  const handleLoadEditJsonFile = async () => {
+  // Открытие деталей
+  const handleOpenDetails = async (autoposting: Autoposting) => {
     try {
-      const jsonData = await loadJsonFromFile();
-      handleEditJsonImport(jsonData);
-      alert('Настройки успешно загружены из JSON');
+      const category = await autopostingCategoryApi.getById(autoposting.autoposting_category_id);
+      setSelectedAutoposting(autoposting);
+      setSelectedCategory(category);
+      detailsModal.open();
     } catch (err) {
-      alert('Ошибка при загрузке JSON файла');
+      notification.error('Ошибка при загрузке данных категории');
+      console.error('Failed to load category:', err);
     }
   };
 
-  const validateForm = (data: AutopostingFormData): boolean => {
-    if (!data.name.trim()) {
-      setError('Название рубрики обязательно для заполнения');
-      return false;
-    }
-    if (!data.period_in_hours || parseInt(data.period_in_hours) < 1) {
-      setError('Период в часах должен быть не менее 1');
-      return false;
-    }
-    if (!data.filter_prompt.trim()) {
-      setError('Промпт фильтра обязателен для заполнения');
-      return false;
-    }
-    return true;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    if (!validateForm(formData)) {
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-
-      // Создаём категорию автопостинга
-      const categoryRequest: CreateAutopostingCategoryRequest = {
-        organization_id: organizationId,
-        name: formData.name,
-        prompt_for_image_style: formData.prompt_for_image_style,
-        goal: formData.goal,
-        structure_skeleton: formData.structure_skeleton.filter(item => item.trim() !== ''),
-        structure_flex_level_min: parseInt(formData.structure_flex_level_min),
-        structure_flex_level_max: parseInt(formData.structure_flex_level_max),
-        structure_flex_level_comment: formData.structure_flex_level_comment,
-        must_have: formData.must_have.filter(item => item.trim() !== ''),
-        must_avoid: formData.must_avoid.filter(item => item.trim() !== ''),
-        social_networks_rules: formData.social_networks_rules,
-        len_min: parseInt(formData.len_min),
-        len_max: parseInt(formData.len_max),
-        n_hashtags_min: parseInt(formData.n_hashtags_min),
-        n_hashtags_max: parseInt(formData.n_hashtags_max),
-        cta_type: formData.cta_type,
-        tone_of_voice: formData.tone_of_voice.filter(item => item.trim() !== ''),
-        brand_rules: formData.brand_rules.filter(item => item.trim() !== ''),
-        good_samples: formData.good_samples.filter(item => Object.keys(item).length > 0),
-        additional_info: formData.additional_info.filter(item => item.trim() !== ''),
-      };
-
-      const categoryResponse = await autopostingCategoryApi.create(categoryRequest);
-
-      if (!categoryResponse.autoposting_category_id) {
-        throw new Error('Failed to create autoposting category');
-      }
-
-      // Создаём автопостинг
-      const autopostingRequest: CreateAutopostingRequest = {
-        organization_id: organizationId,
-        autoposting_category_id: categoryResponse.autoposting_category_id,
-        period_in_hours: parseInt(formData.period_in_hours),
-        filter_prompt: formData.filter_prompt,
-        tg_channels: formData.tg_channels.filter(item => item.trim() !== '').length > 0
-          ? formData.tg_channels.filter(item => item.trim() !== '')
-          : null,
-        required_moderation: formData.required_moderation,
-        need_image: formData.need_image,
-      };
-
-      await autopostingApi.create(autopostingRequest);
-
-      // Reset form and close modal
-      setFormData({
-        name: '',
-        goal: '',
-        prompt_for_image_style: '',
-        structure_skeleton: [],
-        structure_flex_level_min: '',
-        structure_flex_level_max: '',
-        structure_flex_level_comment: '',
-        must_have: [],
-        must_avoid: [],
-        social_networks_rules: '',
-        len_min: '',
-        len_max: '',
-        n_hashtags_min: '',
-        n_hashtags_max: '',
-        cta_type: '',
-        tone_of_voice: [],
-        brand_rules: [],
-        good_samples: [],
-        additional_info: [],
-        period_in_hours: '',
-        filter_prompt: '',
-        tg_channels: [],
-        required_moderation: false,
-        need_image: false,
-      });
-      addModal.close();
-      setSuccess('Автопостинг успешно создан');
-      setTimeout(() => setSuccess(null), 3000);
-
-      // Reload autopostings
-      await loadAutopostings();
-    } catch (err) {
-      console.error('Failed to create autoposting:', err);
-      setError('Ошибка при создании автопостинга. Попробуйте ещё раз.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleEditSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    if (!editingAutoposting || !editingCategory) return;
-
-    if (!validateForm(editFormData)) {
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-
-      // Обновляем категорию
-      const categoryRequest: UpdateAutopostingCategoryRequest = {
-        name: editFormData.name,
-        prompt_for_image_style: editFormData.prompt_for_image_style,
-        goal: editFormData.goal,
-        structure_skeleton: editFormData.structure_skeleton.filter(item => item.trim() !== ''),
-        structure_flex_level_min: parseInt(editFormData.structure_flex_level_min),
-        structure_flex_level_max: parseInt(editFormData.structure_flex_level_max),
-        structure_flex_level_comment: editFormData.structure_flex_level_comment,
-        must_have: editFormData.must_have.filter(item => item.trim() !== ''),
-        must_avoid: editFormData.must_avoid.filter(item => item.trim() !== ''),
-        social_networks_rules: editFormData.social_networks_rules,
-        len_min: parseInt(editFormData.len_min),
-        len_max: parseInt(editFormData.len_max),
-        n_hashtags_min: parseInt(editFormData.n_hashtags_min),
-        n_hashtags_max: parseInt(editFormData.n_hashtags_max),
-        cta_type: editFormData.cta_type,
-        tone_of_voice: editFormData.tone_of_voice.filter(item => item.trim() !== ''),
-        brand_rules: editFormData.brand_rules.filter(item => item.trim() !== ''),
-        good_samples: editFormData.good_samples.filter(item => Object.keys(item).length > 0),
-        additional_info: editFormData.additional_info.filter(item => item.trim() !== ''),
-      };
-
-      await autopostingCategoryApi.update(editingCategory.id, categoryRequest);
-
-      // Обновляем автопостинг
-      const autopostingRequest: UpdateAutopostingRequest = {
-        period_in_hours: parseInt(editFormData.period_in_hours),
-        filter_prompt: editFormData.filter_prompt,
-        tg_channels: editFormData.tg_channels.filter(item => item.trim() !== '').length > 0
-          ? editFormData.tg_channels.filter(item => item.trim() !== '')
-          : null,
-        required_moderation: editFormData.required_moderation,
-        need_image: editFormData.need_image,
-      };
-
-      await autopostingApi.update(editingAutoposting.id, autopostingRequest);
-
-      editModal.close();
-      setEditingAutoposting(null);
-      setEditingCategory(null);
-      setSuccess('Автопостинг успешно обновлён');
-      setTimeout(() => setSuccess(null), 3000);
-
-      // Reload autopostings
-      await loadAutopostings();
-    } catch (err) {
-      console.error('Failed to update autoposting:', err);
-      setError('Ошибка при обновлении автопостинга. Попробуйте ещё раз.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleDelete = async (autoposting: Autoposting) => {
-    const category = autopostingCategories.get(autoposting.autoposting_category_id);
+  // Удаление автопостинга
+  const handleDelete = (autoposting: Autoposting) => {
+    const category = categoryCache.get(autoposting.autoposting_category_id);
     const categoryName = category?.name || 'Unknown';
 
-    if (!confirm(`Вы уверены, что хотите удалить автопостинг "${categoryName}"?`)) {
-      return;
-    }
-
-    try {
-      await autopostingApi.delete(autoposting.id);
-      await loadAutopostings();
-    } catch (err) {
-      console.error('Failed to delete autoposting:', err);
-      alert('Ошибка при удалении автопостинга');
-    }
+    confirmDialog.confirm({
+      title: 'Удалить автопостинг',
+      message: `Вы уверены, что хотите удалить автопостинг "${categoryName}"?`,
+      type: 'danger',
+      confirmText: 'Удалить',
+      onConfirm: async () => {
+        try {
+          await autopostingApi.delete(autoposting.id);
+          notification.success('Автопостинг успешно удалён');
+          await autopostingList.refresh();
+        } catch (err) {
+          notification.error('Ошибка при удалении автопостинга');
+          console.error('Failed to delete autoposting:', err);
+        }
+      },
+    });
   };
 
+  // Переключение enabled/disabled
   const handleToggleEnabled = async (autoposting: Autoposting) => {
     setTogglingId(autoposting.id);
     try {
       await autopostingApi.update(autoposting.id, {
         enabled: !autoposting.enabled,
       });
-
-      // Обновляем локальное состояние без перезагрузки
-      setAutopostings(prevAutopostings =>
-        prevAutopostings.map(ap =>
-          ap.id === autoposting.id
-            ? { ...ap, enabled: !ap.enabled }
-            : ap
-        )
-      );
+      await autopostingList.refresh();
     } catch (err) {
+      notification.error('Ошибка при изменении статуса автопостинга');
       console.error('Failed to toggle autoposting:', err);
-      alert('Ошибка при изменении статуса автопостинга');
     } finally {
       setTogglingId(null);
     }
   };
 
-  if (loading) {
+  // Импорт JSON
+  const handleJsonImport = (jsonData: any) => {
+    const formData = jsonToForm(jsonData);
+    autopostingForm.setFormData(formData);
+    jsonImportModal.close();
+    notification.success('Настройки успешно загружены из JSON');
+  };
+
+  // Загрузка JSON из файла
+  const handleLoadJsonFile = async () => {
+    try {
+      const jsonData = await loadJsonFromFile();
+      handleJsonImport(jsonData);
+    } catch (err) {
+      notification.error('Ошибка при загрузке JSON файла');
+    }
+  };
+
+  // Отправка формы
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const success = await autopostingForm.submit();
+    if (!success && autopostingForm.error) {
+      notification.error(autopostingForm.error);
+    }
+  };
+
+  if (autopostingList.loading) {
     return <div className="categories-section loading">Загрузка автопостингов...</div>;
   }
 
   return (
     <>
+      {/* Контейнер уведомлений */}
+      <NotificationContainer notifications={notification.notifications} onRemove={notification.remove} />
+
+      {/* Диалог подтверждения */}
+      <ConfirmDialog
+        dialog={confirmDialog.dialog}
+        isProcessing={confirmDialog.isProcessing}
+        onConfirm={confirmDialog.handleConfirm}
+        onCancel={confirmDialog.handleCancel}
+      />
+
       <div className="categories-section">
         <div className="section-header">
           <h2>Автопостинг</h2>
-          <Button size="small" onClick={handleOpenAddModal}>Добавить автопостинг</Button>
+          <Button size="small" onClick={handleOpenAddModal}>
+            Добавить автопостинг
+          </Button>
         </div>
 
-        {success && (
-          <div className="notification notification-success">
-            <span className="notification-icon">✓</span>
-            {success}
-          </div>
-        )}
-
-        {error && (
+        {autopostingList.error && (
           <div className="notification notification-error">
             <span className="notification-icon">⚠</span>
-            {error}
+            {autopostingList.error}
           </div>
         )}
 
-        {autopostings.length === 0 ? (
+        {autopostingList.entities.length === 0 ? (
           <div className="empty-state">Автопостинги не найдены</div>
         ) : (
           <Table>
@@ -509,8 +290,14 @@ export const AutopostingSection = ({ organizationId }: AutopostingSectionProps) 
               </TableRow>
             </TableHeader>
             <TableBody>
-              {autopostings.map((autoposting) => {
-                const category = autopostingCategories.get(autoposting.autoposting_category_id);
+              {autopostingList.entities.map((autoposting) => {
+                const category = categoryCache.get(autoposting.autoposting_category_id);
+
+                // Загружаем категорию если её нет в кэше
+                if (!category) {
+                  loadCategory(autoposting.autoposting_category_id);
+                }
+
                 return (
                   <TableRow key={autoposting.id}>
                     <TableCell>{autoposting.id}</TableCell>
@@ -529,11 +316,7 @@ export const AutopostingSection = ({ organizationId }: AutopostingSectionProps) 
                       </span>
                     </TableCell>
                     <TableCell className="table-cell-action">
-                      <Button size="small" variant="secondary" onClick={() => {
-                        setEditingAutoposting(autoposting);
-                        setEditingCategory(category || null);
-                        detailsModal.open();
-                      }}>
+                      <Button size="small" variant="secondary" onClick={() => handleOpenDetails(autoposting)}>
                         Детали
                       </Button>
                     </TableCell>
@@ -551,7 +334,9 @@ export const AutopostingSection = ({ organizationId }: AutopostingSectionProps) 
                       >
                         {togglingId === autoposting.id
                           ? '...'
-                          : autoposting.enabled ? 'Отключить' : 'Включить'}
+                          : autoposting.enabled
+                          ? 'Отключить'
+                          : 'Включить'}
                       </Button>
                     </TableCell>
                     <TableCell className="table-cell-action">
@@ -567,84 +352,73 @@ export const AutopostingSection = ({ organizationId }: AutopostingSectionProps) 
         )}
       </div>
 
+      {/* Модальное окно создания */}
       <Modal isOpen={addModal.isOpen} onClose={addModal.close} title="Добавить автопостинг" className="category-modal">
         <div className="modal-toolbar">
-          <Button variant="secondary" onClick={jsonImportModal.open} disabled={submitting} size="small">
+          <Button variant="secondary" onClick={jsonImportModal.open} disabled={autopostingForm.isSubmitting} size="small">
             Вставить JSON
           </Button>
-          <Button variant="secondary" onClick={handleLoadJsonFile} disabled={submitting} size="small">
+          <Button variant="secondary" onClick={handleLoadJsonFile} disabled={autopostingForm.isSubmitting} size="small">
             Загрузить JSON
           </Button>
         </div>
         <form onSubmit={handleSubmit} className="category-form">
           <div className="form-content">
-            <AutopostingFormFields formData={formData} onChange={setFormData} />
+            <AutopostingFormFields formData={autopostingForm.formData} onChange={autopostingForm.setFormData} />
           </div>
-
           <div className="form-actions">
-            <Button type="button" variant="secondary" onClick={addModal.close} disabled={submitting}>
+            <Button type="button" variant="secondary" onClick={addModal.close} disabled={autopostingForm.isSubmitting}>
               Отмена
             </Button>
-            <Button type="submit" disabled={submitting}>
-              {submitting ? 'Создание...' : 'Создать'}
+            <Button type="submit" disabled={autopostingForm.isSubmitting}>
+              {autopostingForm.isSubmitting ? 'Создание...' : 'Создать'}
             </Button>
           </div>
         </form>
       </Modal>
 
-      <JsonImportModal
-        isOpen={jsonImportModal.isOpen}
-        onClose={jsonImportModal.close}
-        onImport={handleJsonImport}
-      />
-
-      <JsonImportModal
-        isOpen={editJsonImportModal.isOpen}
-        onClose={editJsonImportModal.close}
-        onImport={handleEditJsonImport}
-        zIndex={1100}
-      />
-
-      {editingAutoposting && editingCategory && (
-        <AutopostingDetailsModal
-          isOpen={detailsModal.isOpen}
-          onClose={detailsModal.close}
-          autoposting={editingAutoposting}
-          autopostingCategory={editingCategory}
-          organizationId={organizationId}
-        />
-      )}
-
-      {editingAutoposting && editingCategory && (
+      {/* Модальное окно редактирования */}
+      {selectedAutoposting && selectedCategory && (
         <Modal isOpen={editModal.isOpen} onClose={editModal.close} title="Редактировать автопостинг" className="category-modal">
           <div className="modal-toolbar">
-            <Button variant="secondary" onClick={() => {
-              detailsModal.open();
-            }} disabled={submitting} size="small">
+            <Button variant="secondary" onClick={() => handleOpenDetails(selectedAutoposting)} disabled={autopostingForm.isSubmitting} size="small">
               Детали
             </Button>
-            <Button variant="secondary" onClick={editJsonImportModal.open} disabled={submitting} size="small">
+            <Button variant="secondary" onClick={jsonImportModal.open} disabled={autopostingForm.isSubmitting} size="small">
               Вставить JSON
             </Button>
-            <Button variant="secondary" onClick={handleLoadEditJsonFile} disabled={submitting} size="small">
+            <Button variant="secondary" onClick={handleLoadJsonFile} disabled={autopostingForm.isSubmitting} size="small">
               Загрузить JSON
             </Button>
           </div>
-          <form onSubmit={handleEditSubmit} className="category-form">
+          <form onSubmit={handleSubmit} className="category-form">
             <div className="form-content">
-              <AutopostingFormFields formData={editFormData} onChange={setEditFormData} />
+              <AutopostingFormFields formData={autopostingForm.formData} onChange={autopostingForm.setFormData} />
             </div>
-
             <div className="form-actions">
-              <Button type="button" variant="secondary" onClick={editModal.close} disabled={submitting}>
+              <Button type="button" variant="secondary" onClick={editModal.close} disabled={autopostingForm.isSubmitting}>
                 Отмена
               </Button>
-              <Button type="submit" disabled={submitting}>
-                {submitting ? 'Сохранение...' : 'Сохранить'}
+              <Button type="submit" disabled={autopostingForm.isSubmitting}>
+                {autopostingForm.isSubmitting ? 'Сохранение...' : 'Сохранить'}
               </Button>
             </div>
           </form>
         </Modal>
+      )}
+
+      {/* Модальное окно импорта JSON */}
+      <JsonImportModal isOpen={jsonImportModal.isOpen} onClose={jsonImportModal.close} onImport={handleJsonImport} />
+
+      {/* Модальное окно деталей */}
+      {selectedAutoposting && selectedCategory && (
+        <AutopostingDetailsModal
+          isOpen={detailsModal.isOpen}
+          onClose={detailsModal.close}
+          autoposting={selectedAutoposting}
+          autopostingCategory={selectedCategory}
+          organizationId={organizationId}
+        />
       )}
     </>
   );
