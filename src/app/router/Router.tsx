@@ -1,7 +1,8 @@
 import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
 import {LoginPage} from '../../pages/login';
 import {EntitiesPage} from '../../pages/entities';
-import {OrganizationDetailPage, OrganizationsListPage} from '../../pages/organization-list';
+import {OrganizationsListPage} from '../../pages/organization-list';
+import {OrganizationDetailPage} from '../../pages/organization-detail';
 import {MainLayout} from '../layouts/MainLayout';
 import {PrivateRoute} from './PrivateRoute';
 

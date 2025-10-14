@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useState} from 'react';
+import {useCallback, useState} from 'react';
 import {
     type Category,
     categoryApi,
@@ -35,8 +35,13 @@ export const CategoriesTable = (
         organizationId
     }: CategoriesTableProps
 ) => {
+    const loadCategories = useCallback(
+        () => categoryApi.getByOrganization(organizationId),
+        [organizationId]
+    );
+
     const categoryList = useEntityList<Category>({
-        loadFn: () => categoryApi.getByOrganization(organizationId),
+        loadFn: loadCategories,
     });
 
     const categoryForm = useEntityForm<CategoryFormData, Category>({
@@ -67,7 +72,7 @@ export const CategoriesTable = (
     const editModal = useModal();
     const detailsModal = useModal();
 
-    const [selectedCategory, setSelectedCategory] = useState<Category>(null);
+    const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
     const handleOpenAddModal = () => {
         categoryForm.switchToCreate();

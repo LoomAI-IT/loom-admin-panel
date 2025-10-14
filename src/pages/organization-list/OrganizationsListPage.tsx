@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {type Organization, organizationApi} from '../../entities/organization';
-import {Button, Input, Modal, Table, TableBody, TableCell, TableHeader, TableRow} from '../../shared/ui';
+import {Button, DebouncedInput, Modal, Table, TableBody, TableCell, TableHeader, TableRow} from '../../shared/ui';
 import {useModal} from '../../shared/lib/hooks';
 import './OrganizationsListPage.css';
 
@@ -142,13 +142,14 @@ export const OrganizationsListPage = () => {
 
             <Modal isOpen={createModal.isOpen} onClose={createModal.close} title="Создать организацию">
                 <form onSubmit={handleCreateOrganization}>
-                    <Input
+                    <DebouncedInput
                         label="Название организации"
                         value={newOrgName}
                         onChange={(e) => setNewOrgName(e.target.value)}
                         placeholder="Введите название"
                         autoFocus
                         required
+                        debounceDelay={300}
                     />
                     <div className="modal-actions">
                         <Button

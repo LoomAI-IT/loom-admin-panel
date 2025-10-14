@@ -1,7 +1,7 @@
 import {type FormEvent, useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {authApi, useAuthStore} from '../../features/auth';
-import {Button, Input} from '../../shared/ui';
+import {Button, DebouncedInput} from '../../shared/ui';
 import './LoginPage.css';
 
 export const LoginPage = () => {
@@ -38,20 +38,22 @@ export const LoginPage = () => {
             <div className="login-container">
                 <h1>Вход в админ панель</h1>
                 <form onSubmit={handleSubmit} className="login-form">
-                    <Input
+                    <DebouncedInput
                         label="Логин"
                         type="text"
                         value={credentials.login}
-                        onChange={(e) => setCredentials({...credentials, login: e.target.value})}
+                        onChange={(value) => setCredentials({...credentials, login: value})}
                         disabled={loading}
+                        debounceDelay={300}
                         required
                     />
-                    <Input
+                    <DebouncedInput
                         label="Пароль"
                         type="password"
                         value={credentials.password}
-                        onChange={(e) => setCredentials({...credentials, password: e.target.value})}
+                        onChange={(value) => setCredentials({...credentials, password: value})}
                         disabled={loading}
+                        debounceDelay={300}
                         required
                     />
                     {error && <div className="error-message">{error}</div>}

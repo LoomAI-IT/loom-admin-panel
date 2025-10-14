@@ -110,12 +110,13 @@ export const useEntityList = <TEntity extends { id: number }>(
         setSelectedIds(new Set());
     }, []);
 
-    // Автозагрузка при монтировании
+    // Автозагрузка при монтировании и при изменении loadFn
     useEffect(() => {
         if (autoLoad) {
             load();
         }
-    }, [autoLoad, load]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [autoLoad, loadFn]);
 
     return {
         entities,

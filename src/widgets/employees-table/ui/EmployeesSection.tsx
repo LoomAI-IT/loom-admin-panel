@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useCallback, useState} from 'react';
 import {
     createEmptyEmployeeForm,
     type Employee,
@@ -29,11 +29,13 @@ interface EmployeesTableProps {
 
 export const EmployeesTable = ({organizationId}: EmployeesTableProps) => {
     // Управление списком сотрудников
+    const loadEmployees = useCallback(async () => {
+        const response = await employeeApi.getByOrganization(organizationId);
+        return response.employees;
+    }, [organizationId]);
+
     const employeeList = useEntityList<Employee>({
-        loadFn: async () => {
-            const response = await employeeApi.getByOrganization(organizationId);
-            return response.employees;
-        },
+        loadFn: loadEmployees,
     });
 
     // Управление формой создания

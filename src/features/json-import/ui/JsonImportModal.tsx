@@ -36,7 +36,7 @@ export const JsonImportModal = ({isOpen, onClose, onImport, zIndex}: JsonImportM
             <div className="json-import-modal">
                 <DebouncedTextarea
                     value={jsonText}
-                    onChange={(e) => setJsonText(e.target.value)}
+                    onChange={setJsonText}
                     placeholder="Вставьте JSON данные..."
                     rows={15}
                     error={error}
