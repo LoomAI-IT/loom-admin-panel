@@ -6,7 +6,6 @@ export interface DataTableColumn<T> {
     header: string;
     key?: keyof T;
     render?: (item: T) => JSX.Element;
-    className?: string;
 }
 
 export interface DataTableAction<T> {
@@ -73,7 +72,7 @@ export const DataTable = <T, >(
                     <TableHeader>
                         <TableRow>
                             {columns.map((col, idx) => (
-                                <TableCell key={idx} header className={col.className}>
+                                <TableCell key={idx} header>
                                     {col.header}
                                 </TableCell>
                             ))}
@@ -88,7 +87,7 @@ export const DataTable = <T, >(
                         {data.map((item) => (
                             <TableRow key={getRowKey(item)}>
                                 {columns.map((col, colIdx) => (
-                                    <TableCell key={colIdx} className={col.className}>
+                                    <TableCell key={colIdx}>
                                         {col.render
                                             ? col.render(item)
                                             : col.key

@@ -16,7 +16,6 @@ export const Button = (
     }: ButtonProps) => {
     return (
         <button
-            className={`btn btn-${variant} btn-${size} `}
             {...props}
         >
             {children}

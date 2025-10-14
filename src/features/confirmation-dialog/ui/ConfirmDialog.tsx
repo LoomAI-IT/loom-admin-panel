@@ -33,10 +33,10 @@ export const ConfirmDialog = ({dialog, isProcessing, onConfirm, onCancel}: Confi
         >
             <div>
                 <div>{getTypeIcon()}</div>
-                <div className="confirm-dialog-message">{dialog.message}</div>
+                <div>{dialog.message}</div>
             </div>
 
-            <div className="confirm-dialog-actions">
+            <div>
                 {dialog.cancelText && (
                     <Button
                         variant="secondary"

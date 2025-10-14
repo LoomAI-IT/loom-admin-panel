@@ -22,7 +22,6 @@ export const DebouncedTextarea = memo((
         onChange,
         debounceDelay = 300,
         autoResize = true,
-        className = '',
         ...props
     }: DebouncedTextareaProps
 ): React.JSX.Element => {
