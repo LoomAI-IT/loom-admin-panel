@@ -1,4 +1,5 @@
 export {Modal} from './Modal';
+export type {ModalSize} from './Modal';
 export {Button} from './Button';
 export {DebouncedInput} from './DebouncedInput';
 export {DebouncedTextarea} from './DebouncedTextarea';

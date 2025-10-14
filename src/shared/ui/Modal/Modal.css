@@ -39,6 +39,15 @@
   justify-content: space-between;
   padding: var(--spacing-6);
   border-bottom: 1px solid var(--color-border);
+  gap: var(--spacing-4);
+}
+
+.modal-header-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  flex: 1;
+  min-width: 0;
 }
 
 .modal-title {
@@ -46,6 +55,16 @@
   font-weight: var(--font-semibold);
   color: var(--color-text-primary);
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  flex-shrink: 0;
 }
 
 .modal-close {
@@ -94,7 +113,7 @@
 
 /* Modal Sizes */
 .modal-content--small {
-  max-width: 400px;
+  max-width: 450px;
 }
 
 .modal-content--medium {
@@ -102,11 +121,11 @@
 }
 
 .modal-content--large {
-  max-width: 800px;
+  max-width: 900px;
 }
 
 .modal-content--xl {
-  max-width: 1000px;
+  max-width: 1200px;
 }
 
 .modal-content--full {

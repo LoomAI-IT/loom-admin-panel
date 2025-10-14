@@ -71,6 +71,25 @@ export const FormBuilder = <TEntityFormData extends Record<string, any>>(
         }
     };
 
+    const headerActions = (
+        <>
+            <Button
+                type="button"
+                variant="secondary"
+                onClick={jsonImportModal.open}
+                disabled={isSubmitting}
+                size="small"
+            >Вставить JSON</Button>
+            <Button
+                type="button"
+                variant="secondary"
+                onClick={handleLoadJsonFile}
+                disabled={isSubmitting}
+                size="small"
+            >Загрузить JSON</Button>
+        </>
+    );
+
     const updateField = <K extends keyof TEntityFormData>(field: K, value: TEntityFormData[K]) => {
         setFormData({...values, [field]: value});
     };
@@ -216,24 +235,10 @@ export const FormBuilder = <TEntityFormData extends Record<string, any>>(
                 isOpen={isOpen}
                 onClose={onClose}
                 title={title}
+                size="large"
+                headerActions={headerActions}
             >
                 <form className="form-builder" onSubmit={onSubmit}>
-                    <div className="form-builder-actions">
-                        <Button
-                            type="button"
-                            variant="secondary"
-                            onClick={jsonImportModal.open}
-                            disabled={isSubmitting}
-                            size="small"
-                        >Вставить JSON</Button>
-                        <Button
-                            type="button"
-                            variant="secondary"
-                            onClick={handleLoadJsonFile}
-                            disabled={isSubmitting}
-                            size="small"
-                        >Загрузить JSON</Button>
-                    </div>
                     <div className="form-builder-sections">
                         {sections.map((section) => renderSection(section))}
                     </div>
