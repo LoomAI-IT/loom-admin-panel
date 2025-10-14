@@ -119,15 +119,12 @@ export const CategoriesTable = (
         },
         {
             header: 'Название',
-            render: (category) => <span className="category-name">{category.name}</span>,
-            className: 'table-cell-name',
+            render: (category) => <span>{category.name}</span>,
         },
         {
             header: 'Дата создания',
             render: (category) => (
-                <span className="category-date">
-                    {new Date(category.created_at).toLocaleDateString('ru-RU')}
-                </span>
+                <span>{new Date(category.created_at).toLocaleDateString('ru-RU')}</span>
             ),
         },
     ];
