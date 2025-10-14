@@ -6,7 +6,7 @@ interface TableProps {
 }
 
 export const Table = ({children}: TableProps) => {
-    return <table>{children}</table>;
+    return <table className="table">{children}</table>;
 };
 
 interface TableHeaderProps {
@@ -14,7 +14,7 @@ interface TableHeaderProps {
 }
 
 export const TableHeader = ({children}: TableHeaderProps) => {
-    return <thead>{children}</thead>;
+    return <thead className="table-header">{children}</thead>;
 };
 
 interface TableBodyProps {
@@ -22,7 +22,7 @@ interface TableBodyProps {
 }
 
 export const TableBody = ({children}: TableBodyProps) => {
-    return <tbody>{children}</tbody>;
+    return <tbody className="table-body">{children}</tbody>;
 };
 
 interface TableRowProps {
@@ -33,6 +33,7 @@ interface TableRowProps {
 export const TableRow = ({children, onClick,}: TableRowProps) => {
     return (
         <tr
+            className={onClick ? 'table-row table-row--clickable' : 'table-row'}
             onClick={onClick}
         >
             {children}
@@ -47,5 +48,6 @@ interface TableCellProps {
 
 export const TableCell = ({children, header = false}: TableCellProps) => {
     const Tag = header ? 'th' : 'td';
-    return <Tag>{children}</Tag>;
+    const className = header ? 'table-cell table-cell--header' : 'table-cell';
+    return <Tag className={className}>{children}</Tag>;
 };

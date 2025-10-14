@@ -19,11 +19,12 @@ export const Modal = ({isOpen, onClose, title, children, zIndex = 1000}: ModalPr
     };
 
     return (
-        <div onClick={handleOverlayClick} style={{zIndex}}>
-            <div onClick={(e) => e.stopPropagation()}>
-                <div>
-                    {title && <h2>{title}</h2>}
+        <div className="modal-overlay" onClick={handleOverlayClick} style={{zIndex}}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                    {title && <h2 className="modal-title">{title}</h2>}
                     <button
+                        className="modal-close"
                         onClick={onClose}
                         type="button"
                         aria-label="Закрыть"
@@ -31,7 +32,7 @@ export const Modal = ({isOpen, onClose, title, children, zIndex = 1000}: ModalPr
                         ×
                     </button>
                 </div>
-                <div>
+                <div className="modal-body">
                     {children}
                 </div>
             </div>

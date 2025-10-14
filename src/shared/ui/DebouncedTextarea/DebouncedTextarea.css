@@ -1,0 +1,80 @@
+.textarea-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: var(--spacing-4);
+}
+
+.textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: var(--spacing-4);
+  padding-top: calc(--spacing-4) + 8px);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-base);
+  outline: none;
+  transition: all var(--transition-fast);
+  font-family: var(--font-family-base);
+  resize: vertical;
+}
+
+.textarea::placeholder {
+  color: transparent;
+}
+
+/* Floating Label */
+.textarea-label {
+  position: absolute;
+  left: var(--spacing-4);
+  top: var(--spacing-4);
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+  pointer-events: none;
+  background-color: var(--color-surface);
+  padding: 0 var(--spacing-1);
+}
+
+/* Label Float State */
+.textarea:focus + .textarea-label,
+.textarea:not(:placeholder-shown) + .textarea-label {
+  top: 0;
+  font-size: var(--text-sm);
+  color: var(--color-primary-600);
+  transform: translateY(0);
+}
+
+/* Focus State */
+.textarea:focus {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+/* Error State */
+.textarea--error {
+  border-color: var(--color-danger-500);
+}
+
+.textarea--error:focus {
+  box-shadow: 0 0 0 3px var(--color-danger-100);
+}
+
+/* Disabled State */
+.textarea:disabled {
+  background-color: var(--color-gray-100);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.textarea:disabled + .textarea-label {
+  color: var(--color-text-disabled);
+}
+
+/* Animations */
+.textarea-wrapper {
+  animation: slideInUp var(--transition-fast) ease-out;
+}

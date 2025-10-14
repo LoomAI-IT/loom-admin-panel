@@ -46,14 +46,16 @@ export const DebouncedInput = memo((
     }, []);
 
     return (
-        <div>
-            {label && <label>{label}</label>}
+        <div className="input-wrapper">
             <input
+                className={`input ${error ? 'input--error' : ''}`}
                 value={localValue}
                 onChange={handleChange}
+                placeholder=" "
                 {...props}
             />
-            {error && <span>{error}</span>}
+            {label && <label className="input-label">{label}{props.required && <span className="text-danger">*</span>}</label>}
+            {error && <span className="text-danger text-sm mt-2">{error}</span>}
         </div>
     );
 });

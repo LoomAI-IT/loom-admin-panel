@@ -68,15 +68,17 @@ export const DebouncedTextarea = memo((
     );
 
     return (
-        <div>
-            {label && <label>{label}</label>}
+        <div className="textarea-wrapper">
             <textarea
                 ref={textareaRef}
+                className={`textarea ${error ? 'textarea--error' : ''}`}
                 value={localValue}
                 onChange={handleChange}
+                placeholder=" "
                 {...props}
             />
-            {error && <span>{error}</span>}
+            {label && <label className="textarea-label">{label}{props.required && <span className="text-danger">*</span>}</label>}
+            {error && <span className="text-danger text-sm mt-2">{error}</span>}
         </div>
     );
 });

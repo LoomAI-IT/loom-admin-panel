@@ -43,78 +43,99 @@ export const DataTable = <T, >(
         getRowKey,
     }: DataTableProps<T>
 ) => {
-    if (loading) {
-        return <div>Загрузка...</div>;
-    }
+    // Skeleton Loader Component
+    const SkeletonRow = () => (
+        <div className="skeleton-row">
+            {[...Array(columns.length + actions.length)].map((_, idx) => (
+                <div key={idx} className="skeleton skeleton-cell" />
+            ))}
+        </div>
+    );
 
     return (
-        <div>
-            <div>
-                <h2>{title}</h2>
+        <div className="data-table">
+            <div className="data-table-header">
+                <h2 className="data-table-title">{title}</h2>
                 {onAdd && (
-                    <Button size="small" onClick={onAdd}>
-                        {addButtonLabel}
-                    </Button>
+                    <div className="data-table-actions">
+                        <Button size="small" onClick={onAdd}>
+                            {addButtonLabel}
+                        </Button>
+                    </div>
                 )}
             </div>
 
             {error && (
-                <div>
+                <div className="data-table-error">
                     <span>⚠</span>
                     {error}
                 </div>
             )}
 
-            {data.length === 0 ? (
-                <div>{emptyMessage}</div>
+            {loading ? (
+                <div className="data-table-container">
+                    <div className="data-table-loading">
+                        <SkeletonRow />
+                        <SkeletonRow />
+                        <SkeletonRow />
+                        <SkeletonRow />
+                        <SkeletonRow />
+                    </div>
+                </div>
+            ) : data.length === 0 ? (
+                <div className="data-table-container">
+                    <div className="data-table-empty">{emptyMessage}</div>
+                </div>
             ) : (
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            {columns.map((col, idx) => (
-                                <TableCell key={idx} header>
-                                    {col.header}
-                                </TableCell>
-                            ))}
-                            {actions.map((action, idx) => (
-                                <TableCell key={`action-${idx}`} header>
-                                    {''}
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {data.map((item) => (
-                            <TableRow key={getRowKey(item)}>
-                                {columns.map((col, colIdx) => (
-                                    <TableCell key={colIdx}>
-                                        {col.render
-                                            ? col.render(item)
-                                            : col.key
-                                                ? String(item[col.key])
-                                                : ''}
+                <div className="data-table-container">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                {columns.map((col, idx) => (
+                                    <TableCell key={idx} header>
+                                        {col.header}
                                     </TableCell>
                                 ))}
-                                {actions.map((action, actionIdx) => (
-                                    <TableCell key={`action-${actionIdx}`}>
-                                        {action.render ? (
-                                            action.render(item)
-                                        ) : (
-                                            <Button
-                                                size="small"
-                                                variant={action.variant || 'primary'}
-                                                onClick={() => action.onClick(item)}
-                                                disabled={action.disabled?.(item)}
-                                            >
-                                                {action.label}
-                                            </Button>
-                                        )}
+                                {actions.map((action, idx) => (
+                                    <TableCell key={`action-${idx}`} header>
+                                        {''}
                                     </TableCell>
                                 ))}
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {data.map((item) => (
+                                <TableRow key={getRowKey(item)}>
+                                    {columns.map((col, colIdx) => (
+                                        <TableCell key={colIdx}>
+                                            {col.render
+                                                ? col.render(item)
+                                                : col.key
+                                                    ? String(item[col.key])
+                                                    : ''}
+                                        </TableCell>
+                                    ))}
+                                    {actions.map((action, actionIdx) => (
+                                        <TableCell key={`action-${actionIdx}`}>
+                                            {action.render ? (
+                                                action.render(item)
+                                            ) : (
+                                                <Button
+                                                    size="small"
+                                                    variant={action.variant || 'primary'}
+                                                    onClick={() => action.onClick(item)}
+                                                    disabled={action.disabled?.(item)}
+                                                >
+                                                    {action.label}
+                                                </Button>
+                                            )}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
             )}
         </div>
     );
