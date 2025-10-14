@@ -23,7 +23,7 @@ import {
     Modal
 } from '../../../shared/ui';
 import {useConfirmDialog, useEntityForm, useEntityList, useModal, useNotification} from '../../../shared/lib/hooks';
-import {JsonImportModal, loadJsonFromFile} from '../../../features/json-import';
+import {JsonImportModal, JsonViewModal, loadJsonFromFile} from '../../../features/json-import';
 import {NotificationContainer} from '../../../features/notification';
 import {ConfirmDialog} from '../../../features/confirmation-dialog';
 import './CategoriesTable.css';
@@ -68,6 +68,7 @@ export const CategoriesTable = (
     const addModal = useModal();
     const editModal = useModal();
     const jsonImportModal = useModal();
+    const jsonViewModal = useModal();
     const detailsModal = useModal();
 
     // Уведомления и диалоги
@@ -393,7 +394,10 @@ export const CategoriesTable = (
         {
             title: 'Структура контента',
             fields: [
-                {name: 'structure_skeleton', label: 'Скелет структуры'},
+                {
+                    name: 'structure_skeleton',
+                    label: 'Скелет структуры'
+                },
                 {
                     name: 'structure_flex_level_min',
                     label: 'Уровень гибкости',
@@ -403,14 +407,23 @@ export const CategoriesTable = (
                     name: 'structure_flex_level_max',
                     label: 'Максимальный уровень'
                 },
-                {name: 'structure_flex_level_comment', label: 'Комментарий к гибкости'},
+                {
+                    name: 'structure_flex_level_comment',
+                    label: 'Комментарий к гибкости'
+                },
             ]
         },
         {
             title: 'Обязательные и запрещенные элементы',
             fields: [
-                {name: 'must_have', label: 'Обязательные элементы'},
-                {name: 'must_avoid', label: 'Запрещенные элементы'},
+                {
+                    name: 'must_have',
+                    label: 'Обязательные элементы'
+                },
+                {
+                    name: 'must_avoid',
+                    label: 'Запрещенные элементы'
+                },
             ]
         },
         {
@@ -439,16 +452,32 @@ export const CategoriesTable = (
         {
             title: 'Социальные сети и брендинг',
             fields: [
-                {name: 'social_networks_rules', label: 'Правила для соцсетей'},
-                {name: 'tone_of_voice', label: 'Тон голоса'},
-                {name: 'brand_rules', label: 'Правила бренда'},
+                {
+                    name: 'social_networks_rules', label: 'Правила для соцсетей'
+                },
+                {
+                    name: 'tone_of_voice',
+                    label: 'Тон голоса'
+                }
+                ,
+                {
+                    name: 'brand_rules',
+                    label: 'Правила бренда'
+                },
             ]
         },
         {
             title: 'Дополнительно',
             fields: [
-                {name: 'good_samples', label: 'Примеры хорошего контента', important: true},
-                {name: 'additional_info', label: 'Дополнительная информация'},
+                {
+                    name: 'good_samples',
+                    label: 'Примеры хорошего контента',
+                    important: true
+                },
+                {
+                    name: 'additional_info',
+                    label: 'Дополнительная информация'
+                },
             ]
         },
     ];
@@ -464,6 +493,14 @@ export const CategoriesTable = (
                 isOpen={jsonImportModal.isOpen}
                 onClose={jsonImportModal.close}
                 onImport={handleJsonImport}
+            />
+
+            <JsonViewModal
+                isOpen={jsonViewModal.isOpen}
+                onClose={jsonViewModal.close}
+                data={selectedCategory}
+                organizationId={organizationId}
+                zIndex={1100}
             />
 
             <ConfirmDialog
@@ -555,27 +592,50 @@ export const CategoriesTable = (
                         values={categoryForm.formData}
                         onChange={categoryForm.setFormData}
                         onSubmit={handleSubmit}
-                        children={
-                            <div className="form-actions">
-                                <Button
-                                    type="button"
-                                    variant="secondary"
-                                    onClick={editModal.close}
-                                    disabled={categoryForm.isSubmitting}
-                                >Отмена</Button>
-                                <Button
-                                    type="submit"
-                                    disabled={categoryForm.isSubmitting}
-                                >{categoryForm.isSubmitting ? 'Сохранение...' : 'Сохранить'}</Button>
-                            </div>
-                        }
-                    />
+                    >
+                        <div className="form-actions">
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                onClick={editModal.close}
+                                disabled={categoryForm.isSubmitting}
+                            >Отмена</Button>
+                            <Button
+                                type="submit"
+                                disabled={categoryForm.isSubmitting}
+                            >{categoryForm.isSubmitting ? 'Сохранение...' : 'Сохранить'}</Button>
+                        </div>
+                    </FormBuilder>
                 </Modal>
             )}
 
             {/* Модальное окно деталей */}
             {selectedCategory && (
-                <DetailsViewer/>
+                <Modal
+                    isOpen={editModal.isOpen}
+                    onClose={editModal.close}
+                    title="Редактировать рубрику"
+                    className="category-modal"
+                >
+                    <div className="modal-toolbar">
+                        <Button
+                            variant="secondary"
+                            onClick={jsonImportModal.open}
+                            disabled={categoryForm.isSubmitting}
+                            size="small"
+                        >Вставить JSON</Button>
+                        <Button
+                            variant="secondary"
+                            onClick={handleLoadJsonFile}
+                            disabled={categoryForm.isSubmitting}
+                            size="small"
+                        >Загрузить JSON</Button>
+                    </div>
+                    <DetailsViewer<CategoryFormData>
+                        sections={categoryDetailsSections}
+                        values={categoryForm.formData}
+                    />
+                </Modal>
             )}
         </>
     );
