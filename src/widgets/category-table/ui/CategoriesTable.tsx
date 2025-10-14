@@ -370,14 +370,24 @@ export const CategoriesTable = (
         {
             title: 'Основная информация',
             fields: [
-                {name: 'name', label: 'Название рубрики', important: true},
+                {
+                    name: 'name',
+                    label: 'Название рубрики',
+                    important: true
+                },
                 {
                     name: 'goal',
                     label: 'Цель рубрики',
                     important: true
                 },
-                {name: 'cta_type', label: 'Тип CTA'},
-                {name: 'prompt_for_image_style', label: 'Промпт для стиля изображения'},
+                {
+                    name: 'cta_type',
+                    label: 'Тип CTA'
+                },
+                {
+                    name: 'prompt_for_image_style',
+                    label: 'Промпт для стиля изображения'
+                },
             ]
         },
         {

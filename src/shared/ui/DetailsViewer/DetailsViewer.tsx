@@ -1,11 +1,11 @@
 import * as React from 'react';
-import {JSX, ReactNode} from 'react';
+import {ReactNode} from 'react';
 import {useModal} from '../../lib/hooks';
 import './DetailsViewer.css';
 
 export interface DetailField<T = any> {
     name: string;
-    render?: (values: T) => JSX.Element;
+    label: string;
     important?: boolean;
     groupWith?: string[];
 }
@@ -112,10 +112,6 @@ export const DetailsViewer = <T extends Record<string, any>>(
 
     const renderField = (field: DetailField<T>): ReactNode => {
         const fieldLabel = field.name;
-
-        if (field.render) {
-            return field.render(values);
-        }
 
         if (!field.name) return null;
 
