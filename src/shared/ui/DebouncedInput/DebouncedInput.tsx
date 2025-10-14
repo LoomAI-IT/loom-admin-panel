@@ -20,7 +20,6 @@ export const DebouncedInput = memo((
         value,
         onChange,
         debounceDelay = 300,
-        className = '',
         ...props
     }: DebouncedInputProps
 ): React.JSX.Element => {
@@ -47,15 +46,14 @@ export const DebouncedInput = memo((
     }, []);
 
     return (
-        <div className="input-wrapper">
-            {label && <label className="input-label">{label}</label>}
+        <div>
+            {label && <label>{label}</label>}
             <input
-                className={`input ${error ? 'input-error' : ''} ${className}`}
                 value={localValue}
                 onChange={handleChange}
                 {...props}
             />
-            {error && <span className="input-error-message">{error}</span>}
+            {error && <span>{error}</span>}
         </div>
     );
 });

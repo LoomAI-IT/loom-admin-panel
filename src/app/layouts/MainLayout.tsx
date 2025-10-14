@@ -4,9 +4,9 @@ import './MainLayout.css';
 
 export const MainLayout = () => {
     return (
-        <div className="main-layout">
+        <div>
             <Sidebar/>
-            <main className="main-content">
+            <main>
                 <Outlet/>
             </main>
         </div>

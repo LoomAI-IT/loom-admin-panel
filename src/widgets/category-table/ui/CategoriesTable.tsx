@@ -24,8 +24,6 @@ import {useConfirmDialog, useEntityForm, useEntityList, useModal, useNotificatio
 import {NotificationContainer} from '../../../features/notification';
 import {ConfirmDialog} from '../../../features/confirmation-dialog';
 
-import './CategoriesTable.css';
-
 interface CategoriesTableProps {
     organizationId: number;
 }

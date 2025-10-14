@@ -70,9 +70,8 @@ const ObjectField = memo((
     const stringValue = typeof fieldValue === 'string' ? fieldValue : JSON.stringify(fieldValue);
 
     return (
-        <div className="object-field-row">
+        <div>
             <DebouncedInput
-                className="field-key-input"
                 value={fieldKey}
                 onChange={handleKeyChange}
                 placeholder="Ключ"
@@ -89,7 +88,6 @@ const ObjectField = memo((
                 variant="danger"
                 size="small"
                 onClick={handleRemove}
-                className="remove-field-button"
             >
                 ×
             </Button>
@@ -138,27 +136,25 @@ const ObjectItem = memo((
     );
 
     return (
-        <div className="object-item-edit-card">
-            <div className="object-item-edit-header">
-                <span className="object-item-title">Элемент {index + 1}</span>
+        <div>
+            <div>
+                <span>Элемент {index + 1}</span>
                 <Button
                     type="button"
                     variant="danger"
                     size="small"
                     onClick={handleRemove}
-                    className="remove-item-button"
                 >
                     ×
                 </Button>
             </div>
 
-            <div className="object-item-edit-fields">
+            <div>
                 {fields}
                 <Button
                     type="button"
                     size="small"
                     onClick={handleAddField}
-                    className="add-field-button"
                 >
                     + Добавить поле
                 </Button>
@@ -234,7 +230,6 @@ export const ObjectListField = memo((
         [value, onChange]
     );
 
-    // Мемоизация items для предотвращения лишних ре-рендеров
     const items = useMemo(
         () =>
             value.map((obj, index) => (
@@ -266,21 +261,21 @@ export const ObjectListField = memo((
     }
 
     return (
-        <div className="object-list-field">
-            {(title || label) && <h3 className="field-title">{title || label}</h3>}
+        <div>
+            {(title || label) && <h3>{title || label}</h3>}
 
             {mode === 'view' ? (
-                <div className="object-list-view">
+                <div>
                     {value.map((obj, objIdx) => (
-                        <div key={objIdx} className="object-item-card">
-                            <div className="object-item-header">
-                                <span className="object-item-title">Элемент {objIdx + 1}</span>
+                        <div key={objIdx}>
+                            <div>
+                                <span>Элемент {objIdx + 1}</span>
                             </div>
-                            <div className="object-item-fields">
+                            <div>
                                 {Object.entries(obj).map(([key, val]) => (
-                                    <div key={key} className="object-field-item">
-                                        <span className="field-key">{key}:</span>
-                                        <span className="field-value">
+                                    <div key={key}>
+                                        <span>{key}:</span>
+                                        <span>
                                                 {typeof val === 'object'
                                                     ? JSON.stringify(val, null, 2)
                                                     : String(val)}
@@ -293,12 +288,11 @@ export const ObjectListField = memo((
                 </div>
             ) : (
                 <>
-                    <div className="object-list-edit">{items}</div>
+                    <div>{items}</div>
                     <Button
                         type="button"
                         size="small"
                         onClick={handleAddObject}
-                        className="add-item-button"
                     >
                         + Добавить элемент
                     </Button>

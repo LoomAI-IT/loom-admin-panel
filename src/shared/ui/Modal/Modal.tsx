@@ -6,11 +6,10 @@ interface ModalProps {
     onClose: () => void;
     title?: string;
     children: ReactNode;
-    className?: string;
     zIndex?: number;
 }
 
-export const Modal = ({isOpen, onClose, title, children, className = '', zIndex = 1000}: ModalProps) => {
+export const Modal = ({isOpen, onClose, title, children, zIndex = 1000}: ModalProps) => {
     if (!isOpen) return null;
 
     const handleOverlayClick = (e: MouseEvent<HTMLDivElement>) => {
@@ -20,12 +19,11 @@ export const Modal = ({isOpen, onClose, title, children, className = '', zIndex 
     };
 
     return (
-        <div className="modal-overlay" onClick={handleOverlayClick} style={{zIndex}}>
-            <div className={`modal-content ${className}`} onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                    {title && <h2 className="modal-title">{title}</h2>}
+        <div onClick={handleOverlayClick} style={{zIndex}}>
+            <div onClick={(e) => e.stopPropagation()}>
+                <div>
+                    {title && <h2>{title}</h2>}
                     <button
-                        className="modal-close-button"
                         onClick={onClose}
                         type="button"
                         aria-label="Закрыть"
@@ -33,7 +31,7 @@ export const Modal = ({isOpen, onClose, title, children, className = '', zIndex 
                         ×
                     </button>
                 </div>
-                <div className="modal-body">
+                <div>
                     {children}
                 </div>
             </div>

@@ -1,7 +1,9 @@
 import {type FormEvent, useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+
 import {authApi, useAuthStore} from '../../features/auth';
 import {Button, DebouncedInput} from '../../shared/ui';
+
 import './LoginPage.css';
 
 export const LoginPage = () => {
@@ -34,10 +36,10 @@ export const LoginPage = () => {
     };
 
     return (
-        <div className="login-page">
-            <div className="login-container">
+        <div>
+            <div>
                 <h1>Вход в админ панель</h1>
-                <form onSubmit={handleSubmit} className="login-form">
+                <form onSubmit={handleSubmit}>
                     <DebouncedInput
                         label="Логин"
                         type="text"
@@ -56,7 +58,7 @@ export const LoginPage = () => {
                         debounceDelay={300}
                         required
                     />
-                    {error && <div className="error-message">{error}</div>}
+                    {error && <div>{error}</div>}
                     <Button type="submit" disabled={loading}>
                         {loading ? 'Вход...' : 'Войти'}
                     </Button>

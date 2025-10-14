@@ -1,8 +1,10 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+
 import {type Organization, organizationApi} from '../../entities/organization';
 import {Button, DebouncedInput, Modal, Table, TableBody, TableCell, TableHeader, TableRow} from '../../shared/ui';
 import {useModal} from '../../shared/lib/hooks';
+
 import './OrganizationsListPage.css';
 
 export const OrganizationsListPage = () => {
@@ -78,12 +80,12 @@ export const OrganizationsListPage = () => {
     };
 
     if (loading) {
-        return <div className="organizations-list-page loading">Загрузка...</div>;
+        return <div>Загрузка...</div>;
     }
 
     if (error) {
         return (
-            <div className="organizations-list-page error">
+            <div>
                 <p>{error}</p>
                 <Button onClick={loadOrganizations}>Повторить</Button>
             </div>
@@ -91,15 +93,15 @@ export const OrganizationsListPage = () => {
     }
 
     return (
-        <div className="organizations-list-page">
-            <div className="page-header">
+        <div>
+            <div>
                 <h1>Организации</h1>
                 <Button onClick={createModal.open}>Создать организацию</Button>
             </div>
 
-            <div className="organizations-table-container">
+            <div>
                 {organizations.length === 0 ? (
-                    <div className="empty-state">
+                    <div>
                         <p>Организации не найдены</p>
                     </div>
                 ) : (
@@ -151,7 +153,7 @@ export const OrganizationsListPage = () => {
                         required
                         debounceDelay={300}
                     />
-                    <div className="modal-actions">
+                    <div>
                         <Button
                             type="button"
                             variant="secondary"
@@ -171,7 +173,7 @@ export const OrganizationsListPage = () => {
                 <div>
                     <p>Вы уверены, что хотите удалить организацию <strong>{orgToDelete?.name}</strong>?</p>
                     <p>Это действие нельзя отменить.</p>
-                    <div className="modal-actions">
+                    <div>
                         <Button
                             type="button"
                             variant="secondary"

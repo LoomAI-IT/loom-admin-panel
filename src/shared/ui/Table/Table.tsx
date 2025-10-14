@@ -3,11 +3,10 @@ import './Table.css';
 
 interface TableProps {
     children: ReactNode;
-    className?: string;
 }
 
-export const Table = ({children, className = ''}: TableProps) => {
-    return <table className={`table ${className}`}>{children}</table>;
+export const Table = ({children}: TableProps) => {
+    return <table>{children}</table>;
 };
 
 interface TableHeaderProps {
@@ -15,7 +14,7 @@ interface TableHeaderProps {
 }
 
 export const TableHeader = ({children}: TableHeaderProps) => {
-    return <thead className="table-header">{children}</thead>;
+    return <thead>{children}</thead>;
 };
 
 interface TableBodyProps {
@@ -23,19 +22,17 @@ interface TableBodyProps {
 }
 
 export const TableBody = ({children}: TableBodyProps) => {
-    return <tbody className="table-body">{children}</tbody>;
+    return <tbody>{children}</tbody>;
 };
 
 interface TableRowProps {
     children: ReactNode;
     onClick?: () => void;
-    className?: string;
 }
 
-export const TableRow = ({children, onClick, className = ''}: TableRowProps) => {
+export const TableRow = ({children, onClick,}: TableRowProps) => {
     return (
         <tr
-            className={`table-row ${onClick ? 'table-row-clickable' : ''} ${className}`}
             onClick={onClick}
         >
             {children}
@@ -46,10 +43,9 @@ export const TableRow = ({children, onClick, className = ''}: TableRowProps) => 
 interface TableCellProps {
     children: ReactNode;
     header?: boolean;
-    className?: string;
 }
 
-export const TableCell = ({children, header = false, className = ''}: TableCellProps) => {
+export const TableCell = ({children, header = false}: TableCellProps) => {
     const Tag = header ? 'th' : 'td';
-    return <Tag className={`table-cell ${className}`}>{children}</Tag>;
+    return <Tag>{children}</Tag>;
 };

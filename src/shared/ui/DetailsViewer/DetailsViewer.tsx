@@ -41,9 +41,9 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
     const renderFieldValue = (value: any, fieldName: string, label: string): ReactNode => {
         if (value === null || value === undefined || value === '') {
             return (
-                <div className={`detail-value-wrapper`}>
-                    <span className="detail-field-label">{label}:</span>
-                    <span className="detail-value-empty">Не указано</span>
+                <div>
+                    <span>{label}:</span>
+                    <span>Не указано</span>
                 </div>
             );
         }
@@ -51,9 +51,9 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
         if (Array.isArray(value)) {
             if (value.length === 0) {
                 return (
-                    <div className={`detail-value-wrapper`}>
-                        <span className="detail-field-label">{label}:</span>
-                        <span className="detail-value-empty">Пустой список</span>
+                    <div>
+                        <span>{label}:</span>
+                        <span>Пустой список</span>
                     </div>
                 );
             }
@@ -61,19 +61,19 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
             // Массив объектов
             if (value.length > 0 && typeof value[0] === 'object' && value[0] !== null) {
                 return (
-                    <div className={`detail-value-wrapper`}>
-                        <span className="detail-field-label">{label}:</span>
-                        <div className="detail-value-object-list">
+                    <div>
+                        <span>{label}:</span>
+                        <div>
                             {value.map((item, index) => (
-                                <div key={index} className="object-sample-card">
-                                    <div className="sample-header">Элемент {index + 1}</div>
-                                    <div className="sample-content">
+                                <div key={index}>
+                                    <div>Элемент {index + 1}</div>
+                                    <div>
                                         {Object.entries(item).map(([key, val]) => (
-                                            <div key={key} className="sample-field">
-                                                <span className="sample-key">{key}:</span>
-                                                <span className="sample-value">
+                                            <div key={key}>
+                                                <span>{key}:</span>
+                                                <span>
                                                     {typeof val === 'object'
-                                                        ? <pre className="json-pre">{JSON.stringify(val, null, 2)}</pre>
+                                                        ? <pre>{JSON.stringify(val, null, 2)}</pre>
                                                         : String(val)
                                                     }
                                                 </span>
@@ -89,11 +89,11 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
 
             // Обычный массив строк
             return (
-                <div className={`detail-value-wrapper`}>
-                    <span className="detail-field-label">{label}:</span>
-                    <ul className="detail-value-list">
+                <div>
+                    <span>{label}:</span>
+                    <ul>
                         {value.map((item, index) => (
-                            <li key={index} className="list-item">
+                            <li key={index}>
                                 {String(item)}
                             </li>
                         ))}
@@ -104,9 +104,9 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
 
         if (typeof value === 'boolean') {
             return (
-                <div className={`detail-value-wrapper`}>
-                    <span className="detail-field-label">{label}:</span>
-                    <span className="detail-value">
+                <div>
+                    <span>{label}:</span>
+                    <span>
                         {value ? '✓ Да' : '✗ Нет'}
                     </span>
                 </div>
@@ -115,9 +115,9 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
 
         if (typeof value === 'number') {
             return (
-                <div className={`detail-value-wrapper`}>
-                    <span className="detail-field-label">{label}:</span>
-                    <span className="detail-value">
+                <div>
+                    <span>{label}:</span>
+                    <span>
                         {value}
                     </span>
                 </div>
@@ -127,9 +127,9 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
         // Для textarea-подобных полей с переносами
         if (typeof value === 'string' && (value.includes('\n') || value.length > 100)) {
             return (
-                <div className={`detail-value-wrapper`}>
-                    <span className="detail-field-label">{label}:</span>
-                    <div className="textarea-preview">
+                <div>
+                    <span>{label}:</span>
+                    <div>
                         <p>{value}</p>
                     </div>
                 </div>
@@ -137,9 +137,9 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
         }
 
         return (
-            <div className={`detail-value-wrapper`}>
-                <span className="detail-field-label">{label}:</span>
-                <span className="detail-value">
+            <div>
+                <span>{label}:</span>
+                <span>
                     {String(value)}
                 </span>
             </div>
@@ -152,7 +152,7 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
         const value = values[field.name as keyof TEntityFormData];
 
         return (
-            <div className={`detail-row`}>
+            <div>
                 {renderFieldValue(value, field.name, field.label)}
             </div>
         );
@@ -185,7 +185,7 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
             .map((fieldOrGroup) => {
                 if (Array.isArray(fieldOrGroup)) {
                     return (
-                        <div key={fieldOrGroup[0].name} className="detail-grid-2">
+                        <div key={fieldOrGroup[0].name}>
                             {fieldOrGroup.map((field) => renderField(field))}
                         </div>
                     );
@@ -197,9 +197,9 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
         if (renderedFields.length === 0) return null;
 
         return (
-            <section key={section.title} className="detail-section">
-                <h3 className="section-title">{section.title}</h3>
-                <div className="section-fields">
+            <section key={section.title}>
+                <h3>{section.title}</h3>
+                <div>
                     {renderedFields}
                 </div>
             </section>

@@ -12,19 +12,6 @@ interface ConfirmDialogProps {
 export const ConfirmDialog = ({dialog, isProcessing, onConfirm, onCancel}: ConfirmDialogProps) => {
     if (!dialog.isOpen) return null;
 
-    const getTypeClassName = () => {
-        switch (dialog.type) {
-            case 'danger':
-                return 'confirm-dialog-danger';
-            case 'warning':
-                return 'confirm-dialog-warning';
-            case 'success':
-                return 'confirm-dialog-success';
-            default:
-                return 'confirm-dialog-info';
-        }
-    };
-
     const getTypeIcon = () => {
         switch (dialog.type) {
             case 'danger':
@@ -43,10 +30,9 @@ export const ConfirmDialog = ({dialog, isProcessing, onConfirm, onCancel}: Confi
             isOpen={dialog.isOpen}
             onClose={onCancel}
             title={dialog.title}
-            className={`confirm-dialog ${getTypeClassName()}`}
         >
-            <div className="confirm-dialog-content">
-                <div className="confirm-dialog-icon">{getTypeIcon()}</div>
+            <div>
+                <div>{getTypeIcon()}</div>
                 <div className="confirm-dialog-message">{dialog.message}</div>
             </div>
 

@@ -47,7 +47,7 @@ const StringListItem = memo((
     }, [index, onRemove]);
 
     return (
-        <div className="string-list-item-row">
+        <div>
             <DebouncedTextarea
                 value={value}
                 onChange={handleChange}
@@ -60,7 +60,6 @@ const StringListItem = memo((
                 variant="danger"
                 size="small"
                 onClick={handleRemove}
-                className="remove-item-button"
             >
                 ×
             </Button>
@@ -101,7 +100,6 @@ export const StringListField = memo((
         [value, onChange]
     );
 
-    // Мемоизация items для предотвращения лишних ре-рендеров
     const items = useMemo(
         () =>
             value.map((item, index) => (
@@ -123,22 +121,22 @@ export const StringListField = memo((
     }
 
     return (
-        <div className="string-list-field">
-            {(title || label) && <h3 className="field-title">{title || label}</h3>}
+        <div>
+            {(title || label) && <h3>{title || label}</h3>}
 
             {mode === 'view' ? (
-                <div className="string-list-view">
+                <div>
                     {value.map((item, idx) => (
-                        <div key={idx} className="string-list-view-item">
-                            <span className="item-number">{idx + 1}.</span>
-                            <span className="item-content">{item}</span>
+                        <div key={idx}>
+                            <span>{idx + 1}.</span>
+                            <span>{item}</span>
                         </div>
                     ))}
                 </div>
             ) : (
                 <>
-                    <div className="string-list-edit">{items}</div>
-                    <Button type="button" size="small" onClick={handleAdd} className="add-item-button">
+                    <div>{items}</div>
+                    <Button type="button" size="small" onClick={handleAdd}>
                         + Добавить элемент
                     </Button>
                 </>

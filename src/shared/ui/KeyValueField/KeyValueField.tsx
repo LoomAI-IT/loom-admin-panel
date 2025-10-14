@@ -55,9 +55,8 @@ const KeyValueItem = memo((
     const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
 
     return (
-        <div className="key-value-field-row">
+        <div>
             <DebouncedInput
-                className="field-key-input"
                 value={itemKey}
                 onChange={handleKeyChange}
                 placeholder="Ключ"
@@ -74,7 +73,6 @@ const KeyValueItem = memo((
                 variant="danger"
                 size="small"
                 onClick={handleRemove}
-                className="remove-field-button"
             >
                 ×
             </Button>
@@ -127,7 +125,6 @@ export const KeyValueField = memo((
         [value, onChange]
     );
 
-    // Мемоизация items для предотвращения лишних ре-рендеров
     const items = useMemo(
         () =>
             Object.entries(value).map(([key, val]) => (
@@ -149,15 +146,15 @@ export const KeyValueField = memo((
     }
 
     return (
-        <div className="key-value-field">
-            {(title || label) && <h3 className="field-title">{title || label}</h3>}
+        <div>
+            {(title || label) && <h3>{title || label}</h3>}
 
             {mode === 'view' ? (
-                <div className="key-value-view">
+                <div>
                     {Object.entries(value).map(([key, val]) => (
-                        <div key={key} className="key-value-view-item">
-                            <span className="key-label">{key}:</span>
-                            <span className="value-content">
+                        <div key={key}>
+                            <span>{key}:</span>
+                            <span>
                                     {typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val)}
                                 </span>
                         </div>
@@ -165,8 +162,8 @@ export const KeyValueField = memo((
                 </div>
             ) : (
                 <>
-                    <div className="key-value-edit">{items}</div>
-                    <Button type="button" size="small" onClick={handleAdd} className="add-field-button">
+                    <div>{items}</div>
+                    <Button type="button" size="small" onClick={handleAdd}>
                         + Добавить поле
                     </Button>
                 </>

@@ -69,18 +69,15 @@ export const DebouncedTextarea = memo((
     );
 
     return (
-        <div className="textarea-wrapper">
-            {label && <label className="textarea-label">{label}</label>}
+        <div>
+            {label && <label>{label}</label>}
             <textarea
                 ref={textareaRef}
-                className={`textarea ${error ? 'textarea-error' : ''} ${
-                    autoResize ? 'textarea-auto-resize' : ''
-                } ${className}`}
                 value={localValue}
                 onChange={handleChange}
                 {...props}
             />
-            {error && <span className="textarea-error-message">{error}</span>}
+            {error && <span>{error}</span>}
         </div>
     );
 });

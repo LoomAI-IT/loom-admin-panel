@@ -1,1 +1,1 @@
-export {EmployeesTable} from './ui/EmployeesTable';
+export {EmployeeTable} from './ui/EmployeeTable.tsx';

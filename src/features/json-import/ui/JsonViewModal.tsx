@@ -33,9 +33,9 @@ export const JsonViewModal = ({isOpen, onClose, data, organizationId, zIndex}: J
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Просмотр JSON" zIndex={zIndex}>
-            <div className="json-view-modal">
-                <pre className="json-content">{jsonString}</pre>
-                <div className="modal-actions">
+            <div>
+                <pre>{jsonString}</pre>
+                <div>
                     <Button variant="secondary" onClick={handleCopy}>
                         Копировать
                     </Button>

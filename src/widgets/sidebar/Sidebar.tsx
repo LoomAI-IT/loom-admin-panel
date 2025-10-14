@@ -6,7 +6,6 @@ interface MenuItem {
     label: string;
 }
 
-// Здесь будут добавляться новые сущности
 const menuItems: MenuItem[] = [
     {path: '/organizations', label: 'Организации'},
 ];
@@ -15,13 +14,13 @@ export const Sidebar = () => {
     const location = useLocation();
 
     return (
-        <aside className="sidebar">
-            <div className="sidebar-header">
+        <aside>
+            <div>
                 <h2>Админ панель</h2>
             </div>
-            <nav className="sidebar-nav">
+            <nav>
                 {menuItems.length === 0 ? (
-                    <div className="sidebar-empty">
+                    <div>
                         Сущности не добавлены
                     </div>
                 ) : (
@@ -30,7 +29,6 @@ export const Sidebar = () => {
                             <li key={item.path}>
                                 <Link
                                     to={item.path}
-                                    className={location.pathname === item.path ? 'active' : ''}
                                 >
                                     {item.label}
                                 </Link>

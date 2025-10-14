@@ -132,8 +132,8 @@ export const FormBuilder = <TEntityFormData extends Record<string, any>>(
 
             case 'checkbox':
                 return (
-                    <div className="input-wrapper">
-                        <label className="input-label">
+                    <div>
+                        <label>
                             <input
                                 type="checkbox"
                                 checked={Boolean(value)}
@@ -174,12 +174,12 @@ export const FormBuilder = <TEntityFormData extends Record<string, any>>(
         });
 
         return (
-            <section className="form-section" key={section.title}>
-                <h3 className="form-section-title">{section.title}</h3>
+            <section key={section.title}>
+                <h3>{section.title}</h3>
                 {processedFields.map((fieldOrGroup, idx) => {
                     if (Array.isArray(fieldOrGroup)) {
                         return (
-                            <div key={idx} className="input-grid-2">
+                            <div key={idx}>
                                 {fieldOrGroup.map((field) => (
                                     <div key={field.name}>{renderField(field)}</div>
                                 ))}
@@ -203,10 +203,9 @@ export const FormBuilder = <TEntityFormData extends Record<string, any>>(
                 isOpen={isOpen}
                 onClose={onClose}
                 title={title}
-                className="category-modal"
             >
-                <form onSubmit={onSubmit} className="form-builder">
-                    <div className="modal-toolbar">
+                <form onSubmit={onSubmit}>
+                    <div>
                         <Button
                             variant="secondary"
                             onClick={jsonImportModal.open}
@@ -220,10 +219,10 @@ export const FormBuilder = <TEntityFormData extends Record<string, any>>(
                             size="small"
                         >Загрузить JSON</Button>
                     </div>
-                    <div className="form-content">
+                    <div>
                         {sections.map((section) => renderSection(section))}
                     </div>
-                    <div className="form-actions">
+                    <div>
                         <Button
                             type="button"
                             variant="secondary"

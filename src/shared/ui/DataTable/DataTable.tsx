@@ -45,12 +45,12 @@ export const DataTable = <T, >(
     }: DataTableProps<T>
 ) => {
     if (loading) {
-        return <div className="data-table-section loading">Загрузка...</div>;
+        return <div>Загрузка...</div>;
     }
 
     return (
-        <div className="data-table-section">
-            <div className="data-table-header">
+        <div>
+            <div>
                 <h2>{title}</h2>
                 {onAdd && (
                     <Button size="small" onClick={onAdd}>
@@ -60,14 +60,14 @@ export const DataTable = <T, >(
             </div>
 
             {error && (
-                <div className="notification notification-error">
-                    <span className="notification-icon">⚠</span>
+                <div>
+                    <span>⚠</span>
                     {error}
                 </div>
             )}
 
             {data.length === 0 ? (
-                <div className="empty-state">{emptyMessage}</div>
+                <div>{emptyMessage}</div>
             ) : (
                 <Table>
                     <TableHeader>
@@ -78,7 +78,7 @@ export const DataTable = <T, >(
                                 </TableCell>
                             ))}
                             {actions.map((action, idx) => (
-                                <TableCell key={`action-${idx}`} header className="table-cell-action">
+                                <TableCell key={`action-${idx}`} header>
                                     {''}
                                 </TableCell>
                             ))}
@@ -97,7 +97,7 @@ export const DataTable = <T, >(
                                     </TableCell>
                                 ))}
                                 {actions.map((action, actionIdx) => (
-                                    <TableCell key={`action-${actionIdx}`} className="table-cell-action">
+                                    <TableCell key={`action-${actionIdx}`}>
                                         {action.render ? (
                                             action.render(item)
                                         ) : (

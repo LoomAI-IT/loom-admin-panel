@@ -33,7 +33,7 @@ export const JsonImportModal = ({isOpen, onClose, onImport, zIndex}: JsonImportM
 
     return (
         <Modal isOpen={isOpen} onClose={handleClose} title="Вставить JSON" zIndex={zIndex}>
-            <div className="json-import-modal">
+            <div>
                 <DebouncedTextarea
                     value={jsonText}
                     onChange={setJsonText}
@@ -41,7 +41,7 @@ export const JsonImportModal = ({isOpen, onClose, onImport, zIndex}: JsonImportM
                     rows={15}
                     error={error}
                 />
-                <div className="modal-actions">
+                <div>
                     <Button variant="secondary" onClick={handleClose}>
                         Отмена
                     </Button>
