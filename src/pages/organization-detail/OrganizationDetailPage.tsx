@@ -1,19 +1,6 @@
-/**
- * Рефакторинг OrganizationDetailPage
- *
- * Было: 126 строк, прямые API вызовы в компоненте, alert()
- * Стало: ~90 строк, использование useOrganizationData
- *
- * Изменения:
- * - Использование useOrganizationData для загрузки данных
- * - Использование useNotification вместо alert()
- * - Использование useConfirmDialog для подтверждения удаления
- * - Вынесена логика загрузки в хук (Single Responsibility)
- */
-
 import {useNavigate, useParams} from 'react-router-dom';
 import {organizationApi} from '../../entities/organization';
-import {OrganizationForm} from '../../widgets/organization-form';
+import {OrganizationDetail} from '../../widgets/organization-detail';
 import {CategoriesTable} from '../../widgets/category-table';
 import {AutopostingTable} from '../../widgets/autoposting-table';
 import {EmployeesTable} from '../../widgets/employees-table';
@@ -96,7 +83,7 @@ export const OrganizationDetailPage = () => {
                 </div>
 
                 <div className="organization-content">
-                    <OrganizationForm organization={organization} costMultiplier={costMultiplier} onUpdate={reload}/>
+                    <OrganizationDetail organization={organization} costMultiplier={costMultiplier} onUpdate={reload}/>
 
                     <CategoriesTable organizationId={organization.id}/>
 

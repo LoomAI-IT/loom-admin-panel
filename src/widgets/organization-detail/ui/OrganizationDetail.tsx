@@ -18,7 +18,7 @@ import {KeyValueEditor} from './KeyValueEditor';
 import {ObjectListEditor} from './ObjectListEditor';
 import {JsonImportModal, JsonViewModal, loadJsonFromFile} from '../../../features/json-import';
 import {NotificationContainer} from '../../../features/notification';
-import './OrganizationForm.css';
+import './OrganizationDetail.css';
 
 interface OrganizationFormProps {
     organization: Organization;
@@ -26,7 +26,7 @@ interface OrganizationFormProps {
     onUpdate: () => void;
 }
 
-export const OrganizationForm = ({organization, costMultiplier, onUpdate}: OrganizationFormProps) => {
+export const OrganizationDetail = ({organization, costMultiplier, onUpdate}: OrganizationFormProps) => {
     const [isEditing, setIsEditing] = useState(false);
 
     const jsonImportModal = useModal();
