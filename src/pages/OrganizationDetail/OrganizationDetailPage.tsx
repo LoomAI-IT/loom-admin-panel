@@ -69,8 +69,8 @@ export const OrganizationDetailPage = () => {
 
     const organizationForm = useEntityForm<OrganizationFormData, Organization>({
         initialData: createEmptyOrganizationForm(),
-        transformEntityToForm: (org) => organizationToForm(org, costMultiplier),
         validateFn: validateOrganizationForm,
+        transformEntityToForm: (org) => organizationToForm(org, costMultiplier),
         onSubmit: async (data) => {
             if (!organization) throw new Error('No organization');
 
