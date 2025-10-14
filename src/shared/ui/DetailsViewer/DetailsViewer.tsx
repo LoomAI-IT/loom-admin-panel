@@ -6,7 +6,6 @@ import './DetailsViewer.css';
 export interface DetailField<T = any> {
     name: string;
     label: string;
-    important?: boolean;
     groupWith?: string[];
 }
 
@@ -36,10 +35,10 @@ export const DetailsViewer = <T extends Record<string, any>>(
         }
     }, [values, modal]);
 
-    const renderFieldValue = (value: any, fieldName: string, label: string, isImportant = false): ReactNode => {
+    const renderFieldValue = (value: any, fieldName: string, label: string): ReactNode => {
         if (value === null || value === undefined || value === '') {
             return (
-                <div className={`detail-value-wrapper ${isImportant ? 'important' : ''}`}>
+                <div className={`detail-value-wrapper`}>
                     <span className="detail-field-label">{label}:</span>
                     <span className="detail-value-empty">Не указано</span>
                 </div>
@@ -49,7 +48,7 @@ export const DetailsViewer = <T extends Record<string, any>>(
         if (Array.isArray(value)) {
             if (value.length === 0) {
                 return (
-                    <div className={`detail-value-wrapper ${isImportant ? 'important' : ''}`}>
+                    <div className={`detail-value-wrapper`}>
                         <span className="detail-field-label">{label}:</span>
                         <span className="detail-value-empty">Пустой список</span>
                     </div>
@@ -59,7 +58,7 @@ export const DetailsViewer = <T extends Record<string, any>>(
             // Массив объектов
             if (value.length > 0 && typeof value[0] === 'object' && value[0] !== null) {
                 return (
-                    <div className={`detail-value-wrapper ${isImportant ? 'important' : ''}`}>
+                    <div className={`detail-value-wrapper`}>
                         <span className="detail-field-label">{label}:</span>
                         <div className="detail-value-object-list">
                             {value.map((item, index) => (
@@ -87,7 +86,7 @@ export const DetailsViewer = <T extends Record<string, any>>(
 
             // Обычный массив строк
             return (
-                <div className={`detail-value-wrapper ${isImportant ? 'important' : ''}`}>
+                <div className={`detail-value-wrapper`}>
                     <span className="detail-field-label">{label}:</span>
                     <ul className="detail-value-list">
                         {value.map((item, index) => (
@@ -102,7 +101,7 @@ export const DetailsViewer = <T extends Record<string, any>>(
 
         if (typeof value === 'boolean') {
             return (
-                <div className={`detail-value-wrapper ${isImportant ? 'important' : ''}`}>
+                <div className={`detail-value-wrapper`}>
                     <span className="detail-field-label">{label}:</span>
                     <span className="detail-value">
                         {value ? '✓ Да' : '✗ Нет'}
@@ -113,7 +112,7 @@ export const DetailsViewer = <T extends Record<string, any>>(
 
         if (typeof value === 'number') {
             return (
-                <div className={`detail-value-wrapper ${isImportant ? 'important' : ''}`}>
+                <div className={`detail-value-wrapper`}>
                     <span className="detail-field-label">{label}:</span>
                     <span className="detail-value">
                         {value}
@@ -125,7 +124,7 @@ export const DetailsViewer = <T extends Record<string, any>>(
         // Для textarea-подобных полей с переносами
         if (typeof value === 'string' && (value.includes('\n') || value.length > 100)) {
             return (
-                <div className={`detail-value-wrapper ${isImportant ? 'important' : ''}`}>
+                <div className={`detail-value-wrapper`}>
                     <span className="detail-field-label">{label}:</span>
                     <div className="textarea-preview">
                         <p>{value}</p>
@@ -135,7 +134,7 @@ export const DetailsViewer = <T extends Record<string, any>>(
         }
 
         return (
-            <div className={`detail-value-wrapper ${isImportant ? 'important' : ''}`}>
+            <div className={`detail-value-wrapper`}>
                 <span className="detail-field-label">{label}:</span>
                 <span className="detail-value">
                     {String(value)}
@@ -150,8 +149,8 @@ export const DetailsViewer = <T extends Record<string, any>>(
         const value = values[field.name as keyof T];
 
         return (
-            <div className={`detail-row ${field.important ? 'important' : ''}`}>
-                {renderFieldValue(value, field.name, field.label, field.important)}
+            <div className={`detail-row`}>
+                {renderFieldValue(value, field.name, field.label)}
             </div>
         );
     };

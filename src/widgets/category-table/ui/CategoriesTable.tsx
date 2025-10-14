@@ -239,7 +239,7 @@ export const CategoriesTable = (
                     required: true,
                     inputType: 'number',
                     inputMode: 'numeric',
-                    groupWith: ['structure_flex_level_max'], // Группируем с максимальным
+                    groupWith: ['structure_flex_level_max'],
                 },
                 {
                     name: 'structure_flex_level_max',
@@ -374,12 +374,10 @@ export const CategoriesTable = (
                 {
                     name: 'name',
                     label: 'Название рубрики',
-                    important: true
                 },
                 {
                     name: 'goal',
                     label: 'Цель рубрики',
-                    important: true
                 },
                 {
                     name: 'cta_type',
@@ -472,7 +470,6 @@ export const CategoriesTable = (
                 {
                     name: 'good_samples',
                     label: 'Примеры хорошего контента',
-                    important: true
                 },
                 {
                     name: 'additional_info',
@@ -565,7 +562,6 @@ export const CategoriesTable = (
                 />
             </Modal>
 
-            {/* Модальное окно редактирования */}
             {selectedCategory && (
                 <Modal
                     isOpen={editModal.isOpen}
@@ -609,7 +605,6 @@ export const CategoriesTable = (
                 </Modal>
             )}
 
-            {/* Модальное окно деталей */}
             {selectedCategory && (
                 <Modal
                     isOpen={editModal.isOpen}
