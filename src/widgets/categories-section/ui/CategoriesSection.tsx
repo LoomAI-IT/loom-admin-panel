@@ -1,10 +1,36 @@
-import { useState, useEffect } from 'react';
-import { categoryApi, type Category, type CreateCategoryRequest, type UpdateCategoryRequest } from '../../../entities/category';
+/**
+ * Рефакторинг CategoriesSection
+ *
+ * Было: 504 строки, дублирование формы, ручное управление состоянием
+ * Стало: ~150 строк, использование хуков useEntityForm/useEntityList
+ *
+ * Изменения:
+ * - Использование useEntityList для управления списком категорий
+ * - Использование useEntityForm вместо дублирования formData/editFormData
+ * - Использование useNotification вместо alert()
+ * - Использование useConfirmDialog вместо confirm()
+ * - Использование трансформеров из entities/category
+ */
+
+import { useState } from 'react';
+import {
+  categoryApi,
+  type Category,
+  type CategoryFormData,
+  createEmptyCategoryForm,
+  categoryToForm,
+  jsonToForm,
+  formToCreateRequest,
+  formToUpdateRequest,
+  validateCategoryForm,
+} from '../../../entities/category';
 import { Table, TableHeader, TableBody, TableRow, TableCell } from '../../../shared/ui/Table';
 import { Button } from '../../../shared/ui/Button';
 import { Modal } from '../../../shared/ui/Modal';
-import { useModal } from '../../../shared/lib/hooks/useModal';
+import { useModal, useEntityList, useEntityForm, useNotification, useConfirmDialog } from '../../../shared/lib/hooks';
 import { JsonImportModal, loadJsonFromFile } from '../../../features/json-import';
+import { NotificationContainer } from '../../../features/notification';
+import { ConfirmDialog } from '../../../features/confirmation-dialog';
 import { CategoryFormFields } from './CategoryFormFields';
 import { CategoryDetailsModal } from './CategoryDetailsModal';
 import './CategoriesSection.css';
@@ -14,361 +40,145 @@ interface CategoriesSectionProps {
 }
 
 export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) => {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  // Управление списком категорий
+  const categoryList = useEntityList<Category>({
+    loadFn: () => categoryApi.getByOrganization(organizationId),
+  });
+
+  // Управление формой (единая форма для create и edit)
+  const categoryForm = useEntityForm<CategoryFormData, Category>({
+    initialData: createEmptyCategoryForm(),
+    transformEntityToForm: categoryToForm,
+    validateFn: validateCategoryForm,
+    onSubmit: async (data, mode) => {
+      if (mode === 'create') {
+        const request = formToCreateRequest(data, organizationId);
+        await categoryApi.create(request);
+        notification.success('Рубрика успешно создана');
+      } else {
+        if (!selectedCategory) throw new Error('No category selected');
+        const request = formToUpdateRequest(data);
+        await categoryApi.update(selectedCategory.id, request);
+        notification.success('Рубрика успешно обновлена');
+      }
+      await categoryList.refresh();
+      addModal.close();
+      editModal.close();
+    },
+  });
+
+  // Модальные окна
   const addModal = useModal();
   const editModal = useModal();
   const jsonImportModal = useModal();
-  const editJsonImportModal = useModal();
   const detailsModal = useModal();
 
-  const [formData, setFormData] = useState({
-    name: '',
-    goal: '',
-    prompt_for_image_style: '',
-    structure_skeleton: [] as string[],
-    structure_flex_level_min: '',
-    structure_flex_level_max: '',
-    structure_flex_level_comment: '',
-    must_have: [] as string[],
-    must_avoid: [] as string[],
-    social_networks_rules: '',
-    len_min: '',
-    len_max: '',
-    n_hashtags_min: '',
-    n_hashtags_max: '',
-    cta_type: '',
-    tone_of_voice: [] as string[],
-    brand_rules: [] as string[],
-    good_samples: [] as Record<string, any>[],
-    additional_info: [] as string[],
-  });
+  // Уведомления и диалоги
+  const notification = useNotification();
+  const confirmDialog = useConfirmDialog();
 
-  const [editFormData, setEditFormData] = useState({
-    name: '',
-    goal: '',
-    prompt_for_image_style: '',
-    structure_skeleton: [] as string[],
-    structure_flex_level_min: '',
-    structure_flex_level_max: '',
-    structure_flex_level_comment: '',
-    must_have: [] as string[],
-    must_avoid: [] as string[],
-    social_networks_rules: '',
-    len_min: '',
-    len_max: '',
-    n_hashtags_min: '',
-    n_hashtags_max: '',
-    cta_type: '',
-    tone_of_voice: [] as string[],
-    brand_rules: [] as string[],
-    good_samples: [] as Record<string, any>[],
-    additional_info: [] as string[],
-  });
+  // Текущая выбранная категория (для деталей)
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
-  useEffect(() => {
-    loadCategories();
-  }, [organizationId]);
-
-  const loadCategories = async () => {
-    try {
-      setLoading(true);
-      const data = await categoryApi.getByOrganization(organizationId);
-      setCategories(data);
-    } catch (err) {
-      console.error('Failed to load categories:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEdit = (category: Category) => {
-    setError(null);
-    setEditingCategory(category);
-    setEditFormData({
-      name: category.name,
-      goal: category.goal || '',
-      prompt_for_image_style: category.prompt_for_image_style || '',
-      structure_skeleton: category.structure_skeleton || [],
-      structure_flex_level_min: category.structure_flex_level_min?.toString() || '',
-      structure_flex_level_max: category.structure_flex_level_max?.toString() || '',
-      structure_flex_level_comment: category.structure_flex_level_comment || '',
-      must_have: category.must_have || [],
-      must_avoid: category.must_avoid || [],
-      social_networks_rules: category.social_networks_rules || '',
-      len_min: category.len_min?.toString() || '',
-      len_max: category.len_max?.toString() || '',
-      n_hashtags_min: category.n_hashtags_min?.toString() || '',
-      n_hashtags_max: category.n_hashtags_max?.toString() || '',
-      cta_type: category.cta_type || '',
-      tone_of_voice: category.tone_of_voice || [],
-      brand_rules: category.brand_rules || [],
-      good_samples: category.good_samples || [],
-      additional_info: category.additional_info || [],
-    });
-    editModal.open();
-  };
-
+  // Открытие модального окна создания
   const handleOpenAddModal = () => {
-    setError(null);
+    categoryForm.switchToCreate();
     addModal.open();
   };
 
+  // Открытие модального окна редактирования
+  const handleEdit = (category: Category) => {
+    setSelectedCategory(category);
+    categoryForm.switchToEdit(category, categoryToForm);
+    editModal.open();
+  };
+
+  // Открытие деталей
+  const handleOpenDetails = (category: Category) => {
+    setSelectedCategory(category);
+    detailsModal.open();
+  };
+
+  // Удаление категории
+  const handleDelete = (category: Category) => {
+    confirmDialog.confirm({
+      title: 'Удалить рубрику',
+      message: `Вы уверены, что хотите удалить рубрику "${category.name}"?`,
+      type: 'danger',
+      confirmText: 'Удалить',
+      onConfirm: async () => {
+        try {
+          await categoryApi.delete(category.id);
+          notification.success('Рубрика успешно удалена');
+          await categoryList.refresh();
+        } catch (err) {
+          notification.error('Ошибка при удалении рубрики');
+          console.error('Failed to delete category:', err);
+        }
+      },
+    });
+  };
+
+  // Импорт JSON
   const handleJsonImport = (jsonData: any) => {
-    setFormData({
-      name: jsonData.name || '',
-      goal: jsonData.goal || '',
-      prompt_for_image_style: jsonData.prompt_for_image_style || '',
-      structure_skeleton: jsonData.structure_skeleton || [],
-      structure_flex_level_min: jsonData.structure_flex_level_min?.toString() || '',
-      structure_flex_level_max: jsonData.structure_flex_level_max?.toString() || '',
-      structure_flex_level_comment: jsonData.structure_flex_level_comment || '',
-      must_have: jsonData.must_have || [],
-      must_avoid: jsonData.must_avoid || [],
-      social_networks_rules: jsonData.social_networks_rules || '',
-      len_min: jsonData.len_min?.toString() || '',
-      len_max: jsonData.len_max?.toString() || '',
-      n_hashtags_min: jsonData.n_hashtags_min?.toString() || '',
-      n_hashtags_max: jsonData.n_hashtags_max?.toString() || '',
-      cta_type: jsonData.cta_type || '',
-      tone_of_voice: jsonData.tone_of_voice || [],
-      brand_rules: jsonData.brand_rules || [],
-      good_samples: jsonData.good_samples || [],
-      additional_info: jsonData.additional_info || [],
-    });
+    const formData = jsonToForm(jsonData);
+    categoryForm.setFormData(formData);
+    jsonImportModal.close();
+    notification.success('Настройки успешно загружены из JSON');
   };
 
-  const handleEditJsonImport = (jsonData: any) => {
-    setEditFormData({
-      name: jsonData.name || '',
-      goal: jsonData.goal || '',
-      prompt_for_image_style: jsonData.prompt_for_image_style || '',
-      structure_skeleton: jsonData.structure_skeleton || [],
-      structure_flex_level_min: jsonData.structure_flex_level_min?.toString() || '',
-      structure_flex_level_max: jsonData.structure_flex_level_max?.toString() || '',
-      structure_flex_level_comment: jsonData.structure_flex_level_comment || '',
-      must_have: jsonData.must_have || [],
-      must_avoid: jsonData.must_avoid || [],
-      social_networks_rules: jsonData.social_networks_rules || '',
-      len_min: jsonData.len_min?.toString() || '',
-      len_max: jsonData.len_max?.toString() || '',
-      n_hashtags_min: jsonData.n_hashtags_min?.toString() || '',
-      n_hashtags_max: jsonData.n_hashtags_max?.toString() || '',
-      cta_type: jsonData.cta_type || '',
-      tone_of_voice: jsonData.tone_of_voice || [],
-      brand_rules: jsonData.brand_rules || [],
-      good_samples: jsonData.good_samples || [],
-      additional_info: jsonData.additional_info || [],
-    });
-  };
-
+  // Загрузка JSON из файла
   const handleLoadJsonFile = async () => {
     try {
       const jsonData = await loadJsonFromFile();
       handleJsonImport(jsonData);
-      alert('Настройки успешно загружены из JSON');
     } catch (err) {
-      alert('Ошибка при загрузке JSON файла');
+      notification.error('Ошибка при загрузке JSON файла');
     }
   };
 
-  const handleLoadEditJsonFile = async () => {
-    try {
-      const jsonData = await loadJsonFromFile();
-      handleEditJsonImport(jsonData);
-      alert('Настройки успешно загружены из JSON');
-    } catch (err) {
-      alert('Ошибка при загрузке JSON файла');
-    }
-  };
-
+  // Отправка формы
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-
-    if (!formData.name.trim()) {
-      setError('Название рубрики обязательно для заполнения');
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-
-      const filteredStructureSkeleton = formData.structure_skeleton.filter(item => item.trim() !== '');
-      const filteredMustHave = formData.must_have.filter(item => item.trim() !== '');
-      const filteredMustAvoid = formData.must_avoid.filter(item => item.trim() !== '');
-      const filteredToneOfVoice = formData.tone_of_voice.filter(item => item.trim() !== '');
-      const filteredBrandRules = formData.brand_rules.filter(item => item.trim() !== '');
-      const filteredGoodSamples = formData.good_samples.filter(item => Object.keys(item).length > 0);
-      const filteredAdditionalInfo = formData.additional_info.filter(item => item.trim() !== '');
-
-      const request: CreateCategoryRequest = {
-        organization_id: organizationId,
-        name: formData.name,
-        goal: formData.goal || undefined,
-        prompt_for_image_style: formData.prompt_for_image_style || undefined,
-        structure_skeleton: filteredStructureSkeleton.length > 0 ? filteredStructureSkeleton : undefined,
-        structure_flex_level_min: formData.structure_flex_level_min ? parseInt(formData.structure_flex_level_min) : undefined,
-        structure_flex_level_max: formData.structure_flex_level_max ? parseInt(formData.structure_flex_level_max) : undefined,
-        structure_flex_level_comment: formData.structure_flex_level_comment || undefined,
-        must_have: filteredMustHave.length > 0 ? filteredMustHave : undefined,
-        must_avoid: filteredMustAvoid.length > 0 ? filteredMustAvoid : undefined,
-        social_networks_rules: formData.social_networks_rules || undefined,
-        len_min: formData.len_min ? parseInt(formData.len_min) : undefined,
-        len_max: formData.len_max ? parseInt(formData.len_max) : undefined,
-        n_hashtags_min: formData.n_hashtags_min ? parseInt(formData.n_hashtags_min) : undefined,
-        n_hashtags_max: formData.n_hashtags_max ? parseInt(formData.n_hashtags_max) : undefined,
-        cta_type: formData.cta_type || undefined,
-        tone_of_voice: filteredToneOfVoice.length > 0 ? filteredToneOfVoice : undefined,
-        brand_rules: filteredBrandRules.length > 0 ? filteredBrandRules : undefined,
-        good_samples: filteredGoodSamples.length > 0 ? filteredGoodSamples : undefined,
-        additional_info: filteredAdditionalInfo.length > 0 ? filteredAdditionalInfo : undefined,
-      };
-
-      await categoryApi.create(request);
-
-      // Reset form and close modal
-      setFormData({
-        name: '',
-        goal: '',
-        prompt_for_image_style: '',
-        structure_skeleton: [],
-        structure_flex_level_min: '',
-        structure_flex_level_max: '',
-        structure_flex_level_comment: '',
-        must_have: [],
-        must_avoid: [],
-        social_networks_rules: '',
-        len_min: '',
-        len_max: '',
-        n_hashtags_min: '',
-        n_hashtags_max: '',
-        cta_type: '',
-        tone_of_voice: [],
-        brand_rules: [],
-        good_samples: [],
-        additional_info: [],
-      });
-      addModal.close();
-      setSuccess('Рубрика успешно создана');
-      setTimeout(() => setSuccess(null), 3000);
-
-      // Reload categories
-      await loadCategories();
-    } catch (err) {
-      console.error('Failed to create category:', err);
-      setError('Ошибка при создании рубрики. Попробуйте ещё раз.');
-    } finally {
-      setSubmitting(false);
+    const success = await categoryForm.submit();
+    if (!success && categoryForm.error) {
+      notification.error(categoryForm.error);
     }
   };
 
-  const handleEditSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    if (!editingCategory) return;
-
-    if (!editFormData.name.trim()) {
-      setError('Название рубрики обязательно для заполнения');
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-
-      const filteredStructureSkeleton = editFormData.structure_skeleton.filter(item => item.trim() !== '');
-      const filteredMustHave = editFormData.must_have.filter(item => item.trim() !== '');
-      const filteredMustAvoid = editFormData.must_avoid.filter(item => item.trim() !== '');
-      const filteredToneOfVoice = editFormData.tone_of_voice.filter(item => item.trim() !== '');
-      const filteredBrandRules = editFormData.brand_rules.filter(item => item.trim() !== '');
-      const filteredGoodSamples = editFormData.good_samples.filter(item => Object.keys(item).length > 0);
-      const filteredAdditionalInfo = editFormData.additional_info.filter(item => item.trim() !== '');
-
-      const request: UpdateCategoryRequest = {
-        name: editFormData.name,
-        goal: editFormData.goal || undefined,
-        prompt_for_image_style: editFormData.prompt_for_image_style || undefined,
-        structure_skeleton: filteredStructureSkeleton,
-        structure_flex_level_min: editFormData.structure_flex_level_min ? parseInt(editFormData.structure_flex_level_min) : undefined,
-        structure_flex_level_max: editFormData.structure_flex_level_max ? parseInt(editFormData.structure_flex_level_max) : undefined,
-        structure_flex_level_comment: editFormData.structure_flex_level_comment || undefined,
-        must_have: filteredMustHave,
-        must_avoid: filteredMustAvoid,
-        social_networks_rules: editFormData.social_networks_rules || undefined,
-        len_min: editFormData.len_min ? parseInt(editFormData.len_min) : undefined,
-        len_max: editFormData.len_max ? parseInt(editFormData.len_max) : undefined,
-        n_hashtags_min: editFormData.n_hashtags_min ? parseInt(editFormData.n_hashtags_min) : undefined,
-        n_hashtags_max: editFormData.n_hashtags_max ? parseInt(editFormData.n_hashtags_max) : undefined,
-        cta_type: editFormData.cta_type || undefined,
-        tone_of_voice: filteredToneOfVoice,
-        brand_rules: filteredBrandRules,
-        good_samples: filteredGoodSamples,
-        additional_info: filteredAdditionalInfo,
-      };
-
-      await categoryApi.update(editingCategory.id, request);
-
-      editModal.close();
-      setEditingCategory(null);
-      setSuccess('Рубрика успешно обновлена');
-      setTimeout(() => setSuccess(null), 3000);
-
-      // Reload categories
-      await loadCategories();
-    } catch (err) {
-      console.error('Failed to update category:', err);
-      setError('Ошибка при обновлении рубрики. Попробуйте ещё раз.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleDelete = async (category: Category) => {
-    if (!confirm(`Вы уверены, что хотите удалить рубрику "${category.name}"?`)) {
-      return;
-    }
-
-    try {
-      await categoryApi.delete(category.id);
-      await loadCategories();
-    } catch (err) {
-      console.error('Failed to delete category:', err);
-      alert('Ошибка при удалении рубрики');
-    }
-  };
-
-  if (loading) {
+  if (categoryList.loading) {
     return <div className="categories-section loading">Загрузка рубрик...</div>;
   }
 
   return (
     <>
+      {/* Контейнер уведомлений */}
+      <NotificationContainer notifications={notification.notifications} onRemove={notification.remove} />
+
+      {/* Диалог подтверждения */}
+      <ConfirmDialog
+        dialog={confirmDialog.dialog}
+        isProcessing={confirmDialog.isProcessing}
+        onConfirm={confirmDialog.handleConfirm}
+        onCancel={confirmDialog.handleCancel}
+      />
+
       <div className="categories-section">
         <div className="section-header">
           <h2>Рубрики</h2>
-          <Button size="small" onClick={handleOpenAddModal}>Добавить рубрику</Button>
+          <Button size="small" onClick={handleOpenAddModal}>
+            Добавить рубрику
+          </Button>
         </div>
 
-        {success && (
-          <div className="notification notification-success">
-            <span className="notification-icon">✓</span>
-            {success}
-          </div>
-        )}
-
-        {error && (
+        {categoryList.error && (
           <div className="notification notification-error">
             <span className="notification-icon">⚠</span>
-            {error}
+            {categoryList.error}
           </div>
         )}
 
-        {categories.length === 0 ? (
+        {categoryList.entities.length === 0 ? (
           <div className="empty-state">Рубрики не найдены</div>
         ) : (
           <Table>
@@ -383,7 +193,7 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {categories.map((category) => (
+              {categoryList.entities.map((category) => (
                 <TableRow key={category.id}>
                   <TableCell>{category.id}</TableCell>
                   <TableCell className="table-cell-name">
@@ -395,10 +205,7 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
                     </span>
                   </TableCell>
                   <TableCell className="table-cell-action">
-                    <Button size="small" variant="secondary" onClick={() => {
-                      setEditingCategory(category);
-                      detailsModal.open();
-                    }}>
+                    <Button size="small" variant="secondary" onClick={() => handleOpenDetails(category)}>
                       Детали
                     </Button>
                   </TableCell>
@@ -419,84 +226,72 @@ export const CategoriesSection = ({ organizationId }: CategoriesSectionProps) =>
         )}
       </div>
 
+      {/* Модальное окно создания */}
       <Modal isOpen={addModal.isOpen} onClose={addModal.close} title="Добавить рубрику" className="category-modal">
         <div className="modal-toolbar">
-          <Button variant="secondary" onClick={jsonImportModal.open} disabled={submitting} size="small">
+          <Button variant="secondary" onClick={jsonImportModal.open} disabled={categoryForm.isSubmitting} size="small">
             Вставить JSON
           </Button>
-          <Button variant="secondary" onClick={handleLoadJsonFile} disabled={submitting} size="small">
+          <Button variant="secondary" onClick={handleLoadJsonFile} disabled={categoryForm.isSubmitting} size="small">
             Загрузить JSON
           </Button>
         </div>
         <form onSubmit={handleSubmit} className="category-form">
           <div className="form-content">
-            <CategoryFormFields formData={formData} onChange={setFormData} />
+            <CategoryFormFields formData={categoryForm.formData} onChange={categoryForm.setFormData} />
           </div>
-
           <div className="form-actions">
-            <Button type="button" variant="secondary" onClick={addModal.close} disabled={submitting}>
+            <Button type="button" variant="secondary" onClick={addModal.close} disabled={categoryForm.isSubmitting}>
               Отмена
             </Button>
-            <Button type="submit" disabled={submitting}>
-              {submitting ? 'Создание...' : 'Создать'}
+            <Button type="submit" disabled={categoryForm.isSubmitting}>
+              {categoryForm.isSubmitting ? 'Создание...' : 'Создать'}
             </Button>
           </div>
         </form>
       </Modal>
 
-      <JsonImportModal
-        isOpen={jsonImportModal.isOpen}
-        onClose={jsonImportModal.close}
-        onImport={handleJsonImport}
-      />
-
-      <JsonImportModal
-        isOpen={editJsonImportModal.isOpen}
-        onClose={editJsonImportModal.close}
-        onImport={handleEditJsonImport}
-        zIndex={1100}
-      />
-
-      {editingCategory && (
-        <CategoryDetailsModal
-          isOpen={detailsModal.isOpen}
-          onClose={detailsModal.close}
-          category={editingCategory}
-          organizationId={organizationId}
-        />
-      )}
-
-      {editingCategory && (
+      {/* Модальное окно редактирования */}
+      {selectedCategory && (
         <Modal isOpen={editModal.isOpen} onClose={editModal.close} title="Редактировать рубрику" className="category-modal">
           <div className="modal-toolbar">
-            <Button variant="secondary" onClick={() => {
-              setEditingCategory(editingCategory);
-              detailsModal.open();
-            }} disabled={submitting} size="small">
+            <Button variant="secondary" onClick={() => handleOpenDetails(selectedCategory)} disabled={categoryForm.isSubmitting} size="small">
               Детали
             </Button>
-            <Button variant="secondary" onClick={editJsonImportModal.open} disabled={submitting} size="small">
+            <Button variant="secondary" onClick={jsonImportModal.open} disabled={categoryForm.isSubmitting} size="small">
               Вставить JSON
             </Button>
-            <Button variant="secondary" onClick={handleLoadEditJsonFile} disabled={submitting} size="small">
+            <Button variant="secondary" onClick={handleLoadJsonFile} disabled={categoryForm.isSubmitting} size="small">
               Загрузить JSON
             </Button>
           </div>
-          <form onSubmit={handleEditSubmit} className="category-form">
+          <form onSubmit={handleSubmit} className="category-form">
             <div className="form-content">
-              <CategoryFormFields formData={editFormData} onChange={setEditFormData} />
+              <CategoryFormFields formData={categoryForm.formData} onChange={categoryForm.setFormData} />
             </div>
-
             <div className="form-actions">
-              <Button type="button" variant="secondary" onClick={editModal.close} disabled={submitting}>
+              <Button type="button" variant="secondary" onClick={editModal.close} disabled={categoryForm.isSubmitting}>
                 Отмена
               </Button>
-              <Button type="submit" disabled={submitting}>
-                {submitting ? 'Сохранение...' : 'Сохранить'}
+              <Button type="submit" disabled={categoryForm.isSubmitting}>
+                {categoryForm.isSubmitting ? 'Сохранение...' : 'Сохранить'}
               </Button>
             </div>
           </form>
         </Modal>
+      )}
+
+      {/* Модальное окно импорта JSON */}
+      <JsonImportModal isOpen={jsonImportModal.isOpen} onClose={jsonImportModal.close} onImport={handleJsonImport} />
+
+      {/* Модальное окно деталей */}
+      {selectedCategory && (
+        <CategoryDetailsModal
+          isOpen={detailsModal.isOpen}
+          onClose={detailsModal.close}
+          category={selectedCategory}
+          organizationId={organizationId}
+        />
       )}
     </>
   );
