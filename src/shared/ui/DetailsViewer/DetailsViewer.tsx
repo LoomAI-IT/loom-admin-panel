@@ -36,93 +36,122 @@ export const DetailsViewer = <T extends Record<string, any>>(
         }
     }, [values, modal]);
 
-    const renderFieldValue = (value: any, fieldName: string, isImportant = false): ReactNode => {
+    const renderFieldValue = (value: any, fieldName: string, label: string, isImportant = false): ReactNode => {
         if (value === null || value === undefined || value === '') {
-            return <span className="detail-value-empty">Не указано</span>;
+            return (
+                <div className={`detail-value-wrapper ${isImportant ? 'important' : ''}`}>
+                    <span className="detail-field-label">{label}:</span>
+                    <span className="detail-value-empty">Не указано</span>
+                </div>
+            );
         }
 
         if (Array.isArray(value)) {
             if (value.length === 0) {
-                return <span className="detail-value-empty">Пустой список</span>;
+                return (
+                    <div className={`detail-value-wrapper ${isImportant ? 'important' : ''}`}>
+                        <span className="detail-field-label">{label}:</span>
+                        <span className="detail-value-empty">Пустой список</span>
+                    </div>
+                );
             }
 
             // Массив объектов
             if (value.length > 0 && typeof value[0] === 'object' && value[0] !== null) {
                 return (
-                    <div className={`detail-value-object-list ${isImportant ? 'important' : ''}`}>
-                        {value.map((item, index) => (
-                            <div key={index} className="object-sample-card">
-                                <div className="sample-header">Элемент {index + 1}</div>
-                                <div className="sample-content">
-                                    {Object.entries(item).map(([key, val]) => (
-                                        <div key={key} className="sample-field">
-                                            <span className="sample-key">{key}:</span>
-                                            <span className="sample-value">
-                                                {typeof val === 'object'
-                                                    ? <pre className="json-pre">{JSON.stringify(val, null, 2)}</pre>
-                                                    : String(val)
-                                                }
-                                            </span>
-                                        </div>
-                                    ))}
+                    <div className={`detail-value-wrapper ${isImportant ? 'important' : ''}`}>
+                        <span className="detail-field-label">{label}:</span>
+                        <div className="detail-value-object-list">
+                            {value.map((item, index) => (
+                                <div key={index} className="object-sample-card">
+                                    <div className="sample-header">Элемент {index + 1}</div>
+                                    <div className="sample-content">
+                                        {Object.entries(item).map(([key, val]) => (
+                                            <div key={key} className="sample-field">
+                                                <span className="sample-key">{key}:</span>
+                                                <span className="sample-value">
+                                                    {typeof val === 'object'
+                                                        ? <pre className="json-pre">{JSON.stringify(val, null, 2)}</pre>
+                                                        : String(val)
+                                                    }
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 );
             }
 
             // Обычный массив строк
             return (
-                <ul className={`detail-value-list ${isImportant ? 'important' : ''}`}>
-                    {value.map((item, index) => (
-                        <li key={index} className="list-item">
-                            {String(item)}
-                        </li>
-                    ))}
-                </ul>
+                <div className={`detail-value-wrapper ${isImportant ? 'important' : ''}`}>
+                    <span className="detail-field-label">{label}:</span>
+                    <ul className="detail-value-list">
+                        {value.map((item, index) => (
+                            <li key={index} className="list-item">
+                                {String(item)}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             );
         }
 
         if (typeof value === 'boolean') {
-            return <span className={`detail-value ${isImportant ? 'important' : ''}`}>
-                {value ? '✓ Да' : '✗ Нет'}
-            </span>;
+            return (
+                <div className={`detail-value-wrapper ${isImportant ? 'important' : ''}`}>
+                    <span className="detail-field-label">{label}:</span>
+                    <span className="detail-value">
+                        {value ? '✓ Да' : '✗ Нет'}
+                    </span>
+                </div>
+            );
         }
 
         if (typeof value === 'number') {
-            return <span className={`detail-value ${isImportant ? 'important' : ''}`}>
-                {value}
-            </span>;
+            return (
+                <div className={`detail-value-wrapper ${isImportant ? 'important' : ''}`}>
+                    <span className="detail-field-label">{label}:</span>
+                    <span className="detail-value">
+                        {value}
+                    </span>
+                </div>
+            );
         }
 
         // Для textarea-подобных полей с переносами
         if (typeof value === 'string' && (value.includes('\n') || value.length > 100)) {
             return (
-                <div className={`textarea-preview ${isImportant ? 'important' : ''}`}>
-                    <p>{value}</p>
+                <div className={`detail-value-wrapper ${isImportant ? 'important' : ''}`}>
+                    <span className="detail-field-label">{label}:</span>
+                    <div className="textarea-preview">
+                        <p>{value}</p>
+                    </div>
                 </div>
             );
         }
 
-        return <span className={`detail-value ${isImportant ? 'important' : ''}`}>
-            {String(value)}
-        </span>;
+        return (
+            <div className={`detail-value-wrapper ${isImportant ? 'important' : ''}`}>
+                <span className="detail-field-label">{label}:</span>
+                <span className="detail-value">
+                    {String(value)}
+                </span>
+            </div>
+        );
     };
 
     const renderField = (field: DetailField<T>): ReactNode => {
-        const fieldLabel = field.name;
-
         if (!field.name) return null;
 
         const value = values[field.name as keyof T];
 
         return (
             <div className={`detail-row ${field.important ? 'important' : ''}`}>
-                <div className="detail-label">{fieldLabel}</div>
-                <div className="detail-value-container">
-                    {renderFieldValue(value, field.name, field.important)}
-                </div>
+                {renderFieldValue(value, field.name, field.label, field.important)}
             </div>
         );
     };
