@@ -84,7 +84,7 @@ export const categoryToForm = (category: Category): CategoryFormData => ({
 /**
  * Преобразует JSON в форму (для импорта)
  */
-export const jsonToForm = (jsonData: any): CategoryFormData => ({
+export const jsonToCategoryForm = (jsonData: any): CategoryFormData => ({
     name: jsonData.name || '',
     goal: jsonData.goal || '',
     prompt_for_image_style: jsonData.prompt_for_image_style || '',
@@ -125,7 +125,7 @@ const filterObjects = (items: Record<string, any>[]): Record<string, any>[] | un
 /**
  * Преобразует форму в CreateCategoryRequest
  */
-export const formToCreateRequest = (
+export const formToCreateCategoryRequest = (
     formData: CategoryFormData,
     organizationId: number
 ): CreateCategoryRequest => ({
@@ -154,7 +154,7 @@ export const formToCreateRequest = (
 /**
  * Преобразует форму в UpdateCategoryRequest
  */
-export const formToUpdateRequest = (formData: CategoryFormData): UpdateCategoryRequest => ({
+export const formToUpdateCategoryRequest = (formData: CategoryFormData): UpdateCategoryRequest => ({
     name: formData.name,
     goal: stringOrUndefined(formData.goal),
     prompt_for_image_style: stringOrUndefined(formData.prompt_for_image_style),

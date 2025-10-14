@@ -2,38 +2,41 @@ import * as React from 'react';
 import {ReactNode} from 'react';
 import {useModal} from '../../lib/hooks';
 import './DetailsViewer.css';
+import {Modal} from "../Modal";
+import {Button} from "../Button";
+import {JsonViewModal} from "../../../features/json-import";
 
-export interface DetailField<T = any> {
+export interface DetailField<TEntityFormData = any> {
     name: string;
     label: string;
     groupWith?: string[];
 }
 
-export interface DetailSection<T = any> {
+export interface DetailSection<TEntityFormData = any> {
     title: string;
-    fields: DetailField<T>[];
+    fields: DetailField<TEntityFormData>[];
 }
 
-interface DetailsViewerProps<T> {
-    sections: DetailSection<T>[];
-    values: T;
-    onClose?: () => void;
-    className?: string;
+interface DetailsViewerProps<TEntityFormData> {
+    title: string;
+    organizationId: number,
+    sections: DetailSection<TEntityFormData>[];
+    values: TEntityFormData;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
-export const DetailsViewer = <T extends Record<string, any>>(
+export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
     {
+        title,
+        organizationId,
         sections,
         values,
-    }: DetailsViewerProps<T>
+        isOpen,
+        onClose,
+    }: DetailsViewerProps<TEntityFormData>
 ) => {
-    const modal = useModal();
-
-    React.useEffect(() => {
-        if (values) {
-            modal.open();
-        }
-    }, [values, modal]);
+    const jsonViewModal = useModal();
 
     const renderFieldValue = (value: any, fieldName: string, label: string): ReactNode => {
         if (value === null || value === undefined || value === '') {
@@ -143,10 +146,10 @@ export const DetailsViewer = <T extends Record<string, any>>(
         );
     };
 
-    const renderField = (field: DetailField<T>): ReactNode => {
+    const renderField = (field: DetailField<TEntityFormData>): ReactNode => {
         if (!field.name) return null;
 
-        const value = values[field.name as keyof T];
+        const value = values[field.name as keyof TEntityFormData];
 
         return (
             <div className={`detail-row`}>
@@ -155,9 +158,9 @@ export const DetailsViewer = <T extends Record<string, any>>(
         );
     };
 
-    const renderSection = (section: DetailSection<T>) => {
+    const renderSection = (section: DetailSection<TEntityFormData>) => {
         // Группируем поля для grid (как в FormBuilder)
-        const processedFields: Array<DetailField<T> | DetailField<T>[]> = [];
+        const processedFields: Array<DetailField<TEntityFormData> | DetailField<TEntityFormData>[]> = [];
         const groupedFieldsSet = new Set<string>();
 
         section.fields.forEach((field) => {
@@ -204,8 +207,36 @@ export const DetailsViewer = <T extends Record<string, any>>(
     };
 
     return (
-        <div className="details-content">
-            {sections.map(renderSection)}
-        </div>
+        <>
+            <JsonViewModal
+                isOpen={jsonViewModal.isOpen}
+                onClose={jsonViewModal.close}
+                data={values}
+                organizationId={organizationId}
+                zIndex={1100}
+            />
+
+            <Modal
+                isOpen={isOpen}
+                onClose={onClose}
+                title={title}
+            >
+                <div>
+                    {sections.map(renderSection)}
+                </div>
+                <div>
+                    <Button
+                        variant="secondary"
+                        onClick={jsonViewModal.open}
+                        size="small"
+                    >Посмотреть JSON</Button>
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={onClose}
+                    >Закрыть</Button>
+                </div>
+            </Modal>
+        </>
     );
 };

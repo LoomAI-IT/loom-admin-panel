@@ -6,10 +6,6 @@ interface NotificationContainerProps {
     onRemove: (id: string) => void;
 }
 
-/**
- * Контейнер для отображения уведомлений
- * Заменяет alert() на полноценные UI уведомления
- */
 export const NotificationContainer = ({notifications, onRemove}: NotificationContainerProps) => {
     if (notifications.length === 0) return null;
 
