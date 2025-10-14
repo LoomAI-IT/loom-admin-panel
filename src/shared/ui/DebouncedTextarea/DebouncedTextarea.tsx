@@ -1,6 +1,8 @@
 import * as React from 'react';
-import {memo, type TextareaHTMLAttributes, useCallback, useEffect, useLayoutEffect, useRef, useState,} from 'react';
+import {memo, type TextareaHTMLAttributes, useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
+
 import {useDebouncedValue} from '../../lib/hooks';
+
 import './DebouncedTextarea.css';
 
 interface DebouncedTextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange'> {
@@ -12,16 +14,18 @@ interface DebouncedTextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAre
     autoResize?: boolean;
 }
 
-export const DebouncedTextarea = memo(({
-                                           label,
-                                           error,
-                                           value,
-                                           onChange,
-                                           debounceDelay = 300,
-                                           autoResize = true,
-                                           className = '',
-                                           ...props
-                                       }: DebouncedTextareaProps): React.JSX.Element => {
+export const DebouncedTextarea = memo((
+    {
+        label,
+        error,
+        value,
+        onChange,
+        debounceDelay = 300,
+        autoResize = true,
+        className = '',
+        ...props
+    }: DebouncedTextareaProps
+): React.JSX.Element => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     // Внутренний state для быстрой отрисовки
@@ -78,7 +82,7 @@ export const DebouncedTextarea = memo(({
             />
             {error && <span className="textarea-error-message">{error}</span>}
         </div>
-    ) as React["JSX.Element"];
+    );
 });
 
 DebouncedTextarea.displayName = 'DebouncedTextarea';

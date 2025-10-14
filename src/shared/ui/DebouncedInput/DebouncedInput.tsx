@@ -1,6 +1,8 @@
 import * as React from 'react';
 import {type InputHTMLAttributes, memo, useCallback, useEffect, useState} from 'react';
+
 import {useDebouncedValue} from '../../lib/hooks';
+
 import './DebouncedInput.css';
 
 interface DebouncedInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
@@ -8,18 +10,20 @@ interface DebouncedInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>
     error?: string;
     value: string;
     onChange: (value: string) => void;
-    debounceDelay?: number;
+    debounceDelay: number;
 }
 
-export const DebouncedInput = memo(({
-                                        label,
-                                        error,
-                                        value,
-                                        onChange,
-                                        debounceDelay = 300,
-                                        className = '',
-                                        ...props
-                                    }: DebouncedInputProps): React.JSX.Element => {
+export const DebouncedInput = memo((
+    {
+        label,
+        error,
+        value,
+        onChange,
+        debounceDelay = 300,
+        className = '',
+        ...props
+    }: DebouncedInputProps
+): React.JSX.Element => {
     // Внутренний state для быстрой отрисовки
     const [localValue, setLocalValue] = useState(value);
 
@@ -53,7 +57,7 @@ export const DebouncedInput = memo(({
             />
             {error && <span className="input-error-message">{error}</span>}
         </div>
-    ) as React["JSX.Element"];
+    );
 });
 
 DebouncedInput.displayName = 'DebouncedInput';

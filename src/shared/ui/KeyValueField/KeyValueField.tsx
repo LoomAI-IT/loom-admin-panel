@@ -1,4 +1,6 @@
-import {memo, useCallback, useMemo} from 'react';
+import * as React from "react";
+import {memo, useCallback, useMemo} from "react";
+
 import {DebouncedInput} from '../DebouncedInput';
 import {DebouncedTextarea} from '../DebouncedTextarea';
 import {Button} from '../Button';
@@ -10,158 +12,167 @@ interface KeyValueFieldProps {
     value: Record<string, any>;
     onChange: (newValue: Record<string, any>) => void;
     mode?: 'view' | 'edit';
-    debounceDelay?: number;
+    debounceDelay: number;
 }
 
-const KeyValueItem = memo(
-    ({
+interface KeyValueItemProps {
+    itemKey: string;
+    value: any;
+    debounceDelay: number;
+    onKeyChange: (oldKey: string, newKey: string) => void;
+    onValueChange: (key: string, value: string) => void;
+    onRemove: (key: string) => void;
+}
+
+const KeyValueItem = memo((
+    {
         itemKey,
         value,
         debounceDelay,
         onKeyChange,
         onValueChange,
-        onRemove,
-    }: {
-        itemKey: string;
-        value: any;
-        debounceDelay: number;
-        onKeyChange: (oldKey: string, newKey: string) => void;
-        onValueChange: (key: string, value: string) => void;
-        onRemove: (key: string) => void;
-    }): React.JSX.Element => {
-        const handleKeyChange = useCallback(
-            (newKey: string) => {
-                onKeyChange(itemKey, newKey);
-            },
-            [itemKey, onKeyChange]
-        );
+        onRemove
+    }: KeyValueItemProps
+): React.JSX.Element => {
+    const handleKeyChange = useCallback(
+        (newKey: string) => {
+            onKeyChange(itemKey, newKey);
+        },
+        [itemKey, onKeyChange]
+    );
 
-        const handleValueChange = useCallback(
-            (newValue: string) => {
-                onValueChange(itemKey, newValue);
-            },
-            [itemKey, onValueChange]
-        );
+    const handleValueChange = useCallback(
+        (newValue: string) => {
+            onValueChange(itemKey, newValue);
+        },
+        [itemKey, onValueChange]
+    );
 
-        const handleRemove = useCallback(() => {
-            onRemove(itemKey);
-        }, [itemKey, onRemove]);
+    const handleRemove = useCallback(() => {
+        onRemove(itemKey);
+    }, [itemKey, onRemove]);
 
-        const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
+    const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
 
-        return (
-            <div className="key-value-field-row">
-                <DebouncedInput
-                    className="field-key-input"
-                    value={itemKey}
-                    onChange={handleKeyChange}
-                    placeholder="Ключ"
-                    debounceDelay={debounceDelay}
-                />
-                <DebouncedTextarea
-                    value={stringValue}
-                    onChange={handleValueChange}
-                    placeholder="Значение"
-                    debounceDelay={debounceDelay}
-                />
-                <Button
-                    type="button"
-                    variant="danger"
-                    size="small"
-                    onClick={handleRemove}
-                    className="remove-field-button"
-                >
-                    ×
-                </Button>
-            </div>
-        );
-    }
-);
+    return (
+        <div className="key-value-field-row">
+            <DebouncedInput
+                className="field-key-input"
+                value={itemKey}
+                onChange={handleKeyChange}
+                placeholder="Ключ"
+                debounceDelay={debounceDelay}
+            />
+            <DebouncedTextarea
+                value={stringValue}
+                onChange={handleValueChange}
+                placeholder="Значение"
+                debounceDelay={debounceDelay}
+            />
+            <Button
+                type="button"
+                variant="danger"
+                size="small"
+                onClick={handleRemove}
+                className="remove-field-button"
+            >
+                ×
+            </Button>
+        </div>
+    );
+});
 
 KeyValueItem.displayName = 'KeyValueItem';
 
-export const KeyValueField = memo(
-    ({title, label, value, onChange, mode = 'edit', debounceDelay = 300}: KeyValueFieldProps): React.JSX.Element | null => {
-        const handleAdd = useCallback(() => {
-            onChange({...value, '': ''});
-        }, [value, onChange]);
+export const KeyValueField = memo((
+    {
+        title,
+        label,
+        value,
+        onChange,
+        mode = 'edit',
+        debounceDelay = 300
+    }: KeyValueFieldProps
+): React.JSX.Element | null => {
+    const handleAdd = useCallback(() => {
+        onChange({...value, '': ''});
+    }, [value, onChange]);
 
-        const handleRemove = useCallback(
-            (key: string) => {
-                const newData = {...value};
-                delete newData[key];
-                onChange(newData);
-            },
-            [value, onChange]
-        );
+    const handleRemove = useCallback(
+        (key: string) => {
+            const newData = {...value};
+            delete newData[key];
+            onChange(newData);
+        },
+        [value, onChange]
+    );
 
-        const handleKeyUpdate = useCallback(
-            (oldKey: string, newKey: string) => {
-                if (oldKey === newKey) return;
+    const handleKeyUpdate = useCallback(
+        (oldKey: string, newKey: string) => {
+            if (oldKey === newKey) return;
 
-                const newData = {...value};
-                const val = newData[oldKey];
-                delete newData[oldKey];
-                newData[newKey] = val;
-                onChange(newData);
-            },
-            [value, onChange]
-        );
+            const newData = {...value};
+            const val = newData[oldKey];
+            delete newData[oldKey];
+            newData[newKey] = val;
+            onChange(newData);
+        },
+        [value, onChange]
+    );
 
-        const handleValueUpdate = useCallback(
-            (key: string, newValue: string) => {
-                onChange({...value, [key]: newValue});
-            },
-            [value, onChange]
-        );
+    const handleValueUpdate = useCallback(
+        (key: string, newValue: string) => {
+            onChange({...value, [key]: newValue});
+        },
+        [value, onChange]
+    );
 
-        // Мемоизация items для предотвращения лишних ре-рендеров
-        const items = useMemo(
-            () =>
-                Object.entries(value).map(([key, val]) => (
-                    <KeyValueItem
-                        key={key}
-                        itemKey={key}
-                        value={val}
-                        debounceDelay={debounceDelay}
-                        onKeyChange={handleKeyUpdate}
-                        onValueChange={handleValueUpdate}
-                        onRemove={handleRemove}
-                    />
-                )),
-            [value, debounceDelay, handleKeyUpdate, handleValueUpdate, handleRemove]
-        );
+    // Мемоизация items для предотвращения лишних ре-рендеров
+    const items = useMemo(
+        () =>
+            Object.entries(value).map(([key, val]) => (
+                <KeyValueItem
+                    key={key}
+                    itemKey={key}
+                    value={val}
+                    debounceDelay={debounceDelay}
+                    onKeyChange={handleKeyUpdate}
+                    onValueChange={handleValueUpdate}
+                    onRemove={handleRemove}
+                />
+            )),
+        [value, debounceDelay, handleKeyUpdate, handleValueUpdate, handleRemove]
+    );
 
-        if (mode === 'view' && Object.keys(value).length === 0) {
-            return null;
-        }
+    if (mode === 'view' && Object.keys(value).length === 0) {
+        return null;
+    }
 
-        return (
-            <div className="key-value-field">
-                {(title || label) && <h3 className="field-title">{title || label}</h3>}
+    return (
+        <div className="key-value-field">
+            {(title || label) && <h3 className="field-title">{title || label}</h3>}
 
-                {mode === 'view' ? (
-                    <div className="key-value-view">
-                        {Object.entries(value).map(([key, val]) => (
-                            <div key={key} className="key-value-view-item">
-                                <span className="key-label">{key}:</span>
-                                <span className="value-content">
+            {mode === 'view' ? (
+                <div className="key-value-view">
+                    {Object.entries(value).map(([key, val]) => (
+                        <div key={key} className="key-value-view-item">
+                            <span className="key-label">{key}:</span>
+                            <span className="value-content">
                                     {typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val)}
                                 </span>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <>
-                        <div className="key-value-edit">{items}</div>
-                        <Button type="button" size="small" onClick={handleAdd} className="add-field-button">
-                            + Добавить поле
-                        </Button>
-                    </>
-                )}
-            </div>
-        );
-    }
-);
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <>
+                    <div className="key-value-edit">{items}</div>
+                    <Button type="button" size="small" onClick={handleAdd} className="add-field-button">
+                        + Добавить поле
+                    </Button>
+                </>
+            )}
+        </div>
+    );
+});
 
 KeyValueField.displayName = 'KeyValueField';

@@ -1,6 +1,9 @@
+import * as React from 'react';
 import {memo, useCallback, useMemo} from 'react';
+
 import {DebouncedTextarea} from '../DebouncedTextarea';
 import {Button} from '../Button';
+
 import './StringListField.css';
 
 interface StringListFieldProps {
@@ -9,64 +12,66 @@ interface StringListFieldProps {
     value: string[];
     onChange: (newValue: string[]) => void;
     mode?: 'view' | 'edit';
-    placeholder?: string;
-    debounceDelay?: number;
+    placeholder: string;
+    debounceDelay: number;
 }
 
-const StringListItem = memo(
-    ({
+interface StringListItemProps {
+    value: string;
+    index: number;
+    placeholder: string;
+    debounceDelay: number;
+    onChange: (index: number, value: string) => void;
+    onRemove: (index: number) => void;
+}
+
+const StringListItem = memo((
+    {
         value,
         index,
         placeholder,
         debounceDelay,
         onChange,
         onRemove,
-    }: {
-        value: string;
-        index: number;
-        placeholder: string;
-        debounceDelay: number;
-        onChange: (index: number, value: string) => void;
-        onRemove: (index: number) => void;
-    }): React.JSX.Element => {
-        const handleChange = useCallback(
-            (newValue: string) => {
-                onChange(index, newValue);
-            },
-            [index, onChange]
-        );
+    }: StringListItemProps
+): React.JSX.Element => {
+    const handleChange = useCallback(
+        (newValue: string) => {
+            onChange(index, newValue);
+        },
+        [index, onChange]
+    );
 
-        const handleRemove = useCallback(() => {
-            onRemove(index);
-        }, [index, onRemove]);
+    const handleRemove = useCallback(() => {
+        onRemove(index);
+    }, [index, onRemove]);
 
-        return (
-            <div className="string-list-item-row">
-                <DebouncedTextarea
-                    value={value}
-                    onChange={handleChange}
-                    placeholder={`${placeholder} ${index + 1}`}
-                    rows={3}
-                    debounceDelay={debounceDelay}
-                />
-                <Button
-                    type="button"
-                    variant="danger"
-                    size="small"
-                    onClick={handleRemove}
-                    className="remove-item-button"
-                >
-                    ×
-                </Button>
-            </div>
-        );
-    }
-);
+    return (
+        <div className="string-list-item-row">
+            <DebouncedTextarea
+                value={value}
+                onChange={handleChange}
+                placeholder={`${placeholder} ${index + 1}`}
+                rows={3}
+                debounceDelay={debounceDelay}
+            />
+            <Button
+                type="button"
+                variant="danger"
+                size="small"
+                onClick={handleRemove}
+                className="remove-item-button"
+            >
+                ×
+            </Button>
+        </div>
+    );
+});
 
 StringListItem.displayName = 'StringListItem';
 
-export const StringListField = memo(
-    ({
+export const StringListField = memo((
+    {
         title,
         label,
         value,
@@ -74,72 +79,72 @@ export const StringListField = memo(
         mode = 'edit',
         placeholder = 'Элемент',
         debounceDelay = 300,
-    }: StringListFieldProps): React.JSX.Element | null => {
-        const handleAdd = useCallback(() => {
-            onChange([...value, '']);
-        }, [value, onChange]);
+    }: StringListFieldProps
+): React.JSX.Element | null => {
+    const handleAdd = useCallback(() => {
+        onChange([...value, '']);
+    }, [value, onChange]);
 
-        const handleRemove = useCallback(
-            (index: number) => {
-                onChange(value.filter((_, i) => i !== index));
-            },
-            [value, onChange]
-        );
+    const handleRemove = useCallback(
+        (index: number) => {
+            onChange(value.filter((_, i) => i !== index));
+        },
+        [value, onChange]
+    );
 
-        const handleUpdate = useCallback(
-            (index: number, newValue: string) => {
-                const updated = [...value];
-                updated[index] = newValue;
-                onChange(updated);
-            },
-            [value, onChange]
-        );
+    const handleUpdate = useCallback(
+        (index: number, newValue: string) => {
+            const updated = [...value];
+            updated[index] = newValue;
+            onChange(updated);
+        },
+        [value, onChange]
+    );
 
-        // Мемоизация items для предотвращения лишних ре-рендеров
-        const items = useMemo(
-            () =>
-                value.map((item, index) => (
-                    <StringListItem
-                        key={index}
-                        value={item}
-                        index={index}
-                        placeholder={placeholder}
-                        debounceDelay={debounceDelay}
-                        onChange={handleUpdate}
-                        onRemove={handleRemove}
-                    />
-                )),
-            [value, placeholder, debounceDelay, handleUpdate, handleRemove]
-        );
+    // Мемоизация items для предотвращения лишних ре-рендеров
+    const items = useMemo(
+        () =>
+            value.map((item, index) => (
+                <StringListItem
+                    key={index}
+                    value={item}
+                    index={index}
+                    placeholder={placeholder}
+                    debounceDelay={debounceDelay}
+                    onChange={handleUpdate}
+                    onRemove={handleRemove}
+                />
+            )),
+        [value, placeholder, debounceDelay, handleUpdate, handleRemove]
+    );
 
-        if (mode === 'view' && value.length === 0) {
-            return null;
-        }
-
-        return (
-            <div className="string-list-field">
-                {(title || label) && <h3 className="field-title">{title || label}</h3>}
-
-                {mode === 'view' ? (
-                    <div className="string-list-view">
-                        {value.map((item, idx) => (
-                            <div key={idx} className="string-list-view-item">
-                                <span className="item-number">{idx + 1}.</span>
-                                <span className="item-content">{item}</span>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <>
-                        <div className="string-list-edit">{items}</div>
-                        <Button type="button" size="small" onClick={handleAdd} className="add-item-button">
-                            + Добавить элемент
-                        </Button>
-                    </>
-                )}
-            </div>
-        );
+    if (mode === 'view' && value.length === 0) {
+        return null;
     }
-);
+
+    return (
+        <div className="string-list-field">
+            {(title || label) && <h3 className="field-title">{title || label}</h3>}
+
+            {mode === 'view' ? (
+                <div className="string-list-view">
+                    {value.map((item, idx) => (
+                        <div key={idx} className="string-list-view-item">
+                            <span className="item-number">{idx + 1}.</span>
+                            <span className="item-content">{item}</span>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <>
+                    <div className="string-list-edit">{items}</div>
+                    <Button type="button" size="small" onClick={handleAdd} className="add-item-button">
+                        + Добавить элемент
+                    </Button>
+                </>
+            )}
+        </div>
+    );
+});
 
 StringListField.displayName = 'StringListField';
