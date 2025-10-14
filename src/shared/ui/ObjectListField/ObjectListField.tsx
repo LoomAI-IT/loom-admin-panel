@@ -70,7 +70,7 @@ const ObjectField = memo((
     const stringValue = typeof fieldValue === 'string' ? fieldValue : JSON.stringify(fieldValue);
 
     return (
-        <div>
+        <div style={{display: 'flex', flexDirection: 'column', gap: 'var(--spacing-2)'}}>
             <DebouncedInput
                 value={fieldKey}
                 onChange={handleKeyChange}
@@ -82,15 +82,19 @@ const ObjectField = memo((
                 onChange={handleValueChange}
                 placeholder="Значение"
                 debounceDelay={debounceDelay}
+                rows={2}
             />
-            <Button
-                type="button"
-                variant="danger"
-                size="small"
-                onClick={handleRemove}
-            >
-                ×
-            </Button>
+            <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+                <Button
+                    type="button"
+                    variant="danger"
+                    size="xs"
+                    onClick={handleRemove}
+                    aria-label="Удалить поле"
+                >
+                    Удалить поле
+                </Button>
+            </div>
         </div>
     );
 });
@@ -136,29 +140,33 @@ const ObjectItem = memo((
     );
 
     return (
-        <div>
-            <div>
-                <span>Элемент {index + 1}</span>
+        <div className="object-list-item">
+            <div className="object-list-item-header">
+                <span className="object-list-item-title">Элемент {index + 1}</span>
                 <Button
                     type="button"
                     variant="danger"
-                    size="small"
+                    size="xs"
                     onClick={handleRemove}
+                    aria-label="Удалить элемент"
                 >
-                    ×
+                    Удалить элемент
                 </Button>
             </div>
 
-            <div>
+            <div className="object-list-item-fields">
                 {fields}
-                <Button
-                    type="button"
-                    size="small"
-                    onClick={handleAddField}
-                >
-                    + Добавить поле
-                </Button>
             </div>
+
+            <Button
+                type="button"
+                variant="secondary"
+                size="small"
+                onClick={handleAddField}
+                style={{marginTop: 'var(--spacing-2)'}}
+            >
+                + Добавить поле
+            </Button>
         </div>
     );
 });
@@ -261,8 +269,8 @@ export const ObjectListField = memo((
     }
 
     return (
-        <div>
-            {(title || label) && <h3>{title || label}</h3>}
+        <div className="object-list-field">
+            {(title || label) && <label className="object-list-field-label">{title || label}</label>}
 
             {mode === 'view' ? (
                 <div>
@@ -288,11 +296,13 @@ export const ObjectListField = memo((
                 </div>
             ) : (
                 <>
-                    <div>{items}</div>
+                    <div className="object-list-items">{items}</div>
                     <Button
                         type="button"
+                        variant="secondary"
                         size="small"
                         onClick={handleAddObject}
+                        className="object-list-add-button"
                     >
                         + Добавить элемент
                     </Button>

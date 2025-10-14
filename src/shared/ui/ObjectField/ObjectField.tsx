@@ -55,7 +55,7 @@ const ObjectFieldItem = memo((
     const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
 
     return (
-        <div>
+        <div className="object-field-item">
             <DebouncedInput
                 value={itemKey}
                 onChange={handleKeyChange}
@@ -67,15 +67,19 @@ const ObjectFieldItem = memo((
                 onChange={handleValueChange}
                 placeholder="Значение"
                 debounceDelay={debounceDelay}
+                rows={3}
             />
-            <Button
-                type="button"
-                variant="danger"
-                size="small"
-                onClick={handleRemove}
-            >
-                ×
-            </Button>
+            <div className="object-field-item-actions">
+                <Button
+                    type="button"
+                    variant="danger"
+                    size="xs"
+                    onClick={handleRemove}
+                    aria-label="Удалить поле"
+                >
+                    Удалить
+                </Button>
+            </div>
         </div>
     );
 });
@@ -146,8 +150,8 @@ export const ObjectField = memo((
     }
 
     return (
-        <div>
-            {(title || label) && <h3>{title || label}</h3>}
+        <div className="object-field">
+            {(title || label) && <label className="object-field-label">{title || label}</label>}
 
             {mode === 'view' ? (
                 <div>
@@ -161,12 +165,18 @@ export const ObjectField = memo((
                     ))}
                 </div>
             ) : (
-                <>
-                    <div>{items}</div>
-                    <Button type="button" size="small" onClick={handleAdd}>
+                <div className="object-field-container">
+                    <div className="object-field-items">{items}</div>
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        size="small"
+                        onClick={handleAdd}
+                        className="object-field-add-button"
+                    >
                         + Добавить поле
                     </Button>
-                </>
+                </div>
             )}
         </div>
     );

@@ -10,11 +10,11 @@
   padding-top: calc(var(--spacing-3) + 8px);
   font-size: var(--text-base);
   color: var(--color-text-primary);
-  background-color: var(--color-surface);
-  border: 1.5px solid var(--color-border);
+  background-color: white;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-base);
   outline: none;
-  transition: all var(--transition-fast);
+  transition: border-color var(--transition-fast);
   font-family: var(--font-family-base);
 }
 
@@ -32,7 +32,7 @@
   color: var(--color-text-secondary);
   transition: all var(--transition-fast);
   pointer-events: none;
-  background-color: var(--color-surface);
+  background-color: white;
   padding: 0 var(--spacing-1);
 }
 
@@ -40,7 +40,7 @@
 .input:focus + .input-label,
 .input:not(:placeholder-shown) + .input-label {
   top: 0;
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   color: var(--color-primary-600);
   transform: translateY(0);
 }
@@ -48,7 +48,7 @@
 /* Focus State */
 .input:focus {
   border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px var(--color-primary-100);
+  box-shadow: 0 0 0 2px var(--color-primary-100);
 }
 
 /* Error State */
@@ -62,17 +62,26 @@
 
 /* Disabled State */
 .input:disabled {
-  background-color: var(--color-gray-100);
+  background-color: var(--color-gray-50);
   color: var(--color-text-disabled);
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.7;
+  border-color: var(--color-gray-200);
+  box-shadow: none;
 }
 
 .input:disabled + .input-label {
   color: var(--color-text-disabled);
+  opacity: 0.7;
 }
 
 /* Animations */
 .input-wrapper {
   animation: slideInUp var(--transition-fast) ease-out;
+}
+
+/* Required Field Indicator */
+.input[required] + .input-label::after {
+  content: ' *';
+  color: var(--color-danger-500);
 }

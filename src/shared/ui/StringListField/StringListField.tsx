@@ -47,22 +47,27 @@ const StringListItem = memo((
     }, [index, onRemove]);
 
     return (
-        <div>
-            <DebouncedTextarea
-                value={value}
-                onChange={handleChange}
-                placeholder={`${placeholder} ${index + 1}`}
-                rows={3}
-                debounceDelay={debounceDelay}
-            />
-            <Button
-                type="button"
-                variant="danger"
-                size="small"
-                onClick={handleRemove}
-            >
-                ×
-            </Button>
+        <div className="string-list-item">
+            <div className="string-list-item-input">
+                <DebouncedTextarea
+                    value={value}
+                    onChange={handleChange}
+                    placeholder={`${placeholder} ${index + 1}`}
+                    rows={3}
+                    debounceDelay={debounceDelay}
+                />
+            </div>
+            <div className="string-list-item-actions">
+                <Button
+                    type="button"
+                    variant="danger"
+                    size="xs"
+                    onClick={handleRemove}
+                    aria-label="Удалить элемент"
+                >
+                    Удалить
+                </Button>
+            </div>
         </div>
     );
 });
@@ -121,8 +126,8 @@ export const StringListField = memo((
     }
 
     return (
-        <div>
-            {(title || label) && <h3>{title || label}</h3>}
+        <div className="string-list-field">
+            {(title || label) && <label className="string-list-field-label">{title || label}</label>}
 
             {mode === 'view' ? (
                 <div>
@@ -135,8 +140,14 @@ export const StringListField = memo((
                 </div>
             ) : (
                 <>
-                    <div>{items}</div>
-                    <Button type="button" size="small" onClick={handleAdd}>
+                    <div className="string-list-items">{items}</div>
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        size="small"
+                        onClick={handleAdd}
+                        className="string-list-add-button"
+                    >
                         + Добавить элемент
                     </Button>
                 </>
