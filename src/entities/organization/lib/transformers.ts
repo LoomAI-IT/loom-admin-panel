@@ -1,5 +1,6 @@
 import type {
     CostMultiplier,
+    CreateOrganizationRequest,
     Organization,
     UpdateCostMultiplierRequest,
     UpdateOrganizationRequest,
@@ -24,6 +25,26 @@ export interface OrganizationFormData {
     transcribe_audio_cost_multiplier: number;
 }
 
+/**
+ * Создает пустую форму организации
+ */
+export const createEmptyOrganizationForm = (): OrganizationFormData => ({
+    name: '',
+    video_cut_description_end_sample: '',
+    publication_text_end_sample: '',
+    tone_of_voice: [],
+    brand_rules: [],
+    compliance_rules: [],
+    audience_insights: [],
+    products: [],
+    locale: {},
+    additional_info: [],
+    generate_text_cost_multiplier: 1,
+    generate_image_cost_multiplier: 1,
+    generate_vizard_video_cut_cost_multiplier: 1,
+    transcribe_audio_cost_multiplier: 1,
+});
+
 export const organizationToForm = (
     organization: Organization,
     costMultiplier: CostMultiplier | null
@@ -44,7 +65,10 @@ export const organizationToForm = (
     transcribe_audio_cost_multiplier: costMultiplier?.transcribe_audio_cost_multiplier ?? 1,
 });
 
-export const jsonToForm = (
+/**
+ * Преобразует JSON в форму (для импорта)
+ */
+export const jsonToOrganizationForm = (
     jsonData: any,
     currentCostMultiplier: CostMultiplier | null
 ): OrganizationFormData => ({
@@ -76,6 +100,18 @@ const filterNonEmpty = <T>(items: T[]): T[] => {
     return items;
 };
 
+/**
+ * Преобразует форму в CreateOrganizationRequest
+ */
+export const formToCreateOrganizationRequest = (
+    formData: OrganizationFormData
+): CreateOrganizationRequest => ({
+    name: formData.name,
+});
+
+/**
+ * Преобразует форму в UpdateOrganizationRequest
+ */
 export const formToUpdateOrganizationRequest = (
     data: OrganizationFormData,
     organizationId: number

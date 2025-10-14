@@ -5,9 +5,20 @@ import {
     organizationApi,
     type OrganizationFormData,
     organizationToForm,
+    createEmptyOrganizationForm,
+    formToCreateOrganizationRequest,
+    formToUpdateOrganizationRequest,
+    formToUpdateCostMultiplierRequest,
+    jsonToOrganizationForm,
     validateOrganizationForm,
 } from '../../../entities/organization';
-import {DataTable, type DataTableAction, type DataTableColumn,} from '../../../shared/ui';
+import {
+    DataTable,
+    type DataTableAction,
+    type DataTableColumn,
+    FormBuilder,
+    type FormSection,
+} from '../../../shared/ui';
 import {useConfirmDialog, useEntityForm, useEntityList, useModal, useNotification} from '../../../shared/lib/hooks';
 import {NotificationContainer} from '../../../features/notification';
 import {ConfirmDialog} from '../../../features/confirmation-dialog';
@@ -25,32 +36,32 @@ export const OrganizationsTable = () => {
         loadFn: loadOrganizations,
     });
 
-    const createEmptyOrganizationForm = (): OrganizationFormData => ({
-        name: '',
-        video_cut_description_end_sample: '',
-        publication_text_end_sample: '',
-        tone_of_voice: [],
-        brand_rules: [],
-        compliance_rules: [],
-        audience_insights: [],
-        products: [],
-        locale: {},
-        additional_info: [],
-        generate_text_cost_multiplier: 1,
-        generate_image_cost_multiplier: 1,
-        generate_vizard_video_cut_cost_multiplier: 1,
-        transcribe_audio_cost_multiplier: 1,
-    });
-
     const organizationForm = useEntityForm<OrganizationFormData, Organization>({
         initialData: createEmptyOrganizationForm(),
         transformEntityToForm: (org) => organizationToForm(org, null),
         validateFn: validateOrganizationForm,
-        onSubmit: async (data, _) => {
-            await organizationApi.create({name: data.name});
-            notification.success('Организация успешно создана');
-            await organizationList.refresh();
-            addModal.close();
+        onSubmit: async (data, mode) => {
+            if (mode === 'create') {
+                // Сначала создаем организацию с минимальными данными
+                const createRequest = formToCreateOrganizationRequest(data);
+                const createResponse = await organizationApi.create(createRequest);
+                const orgId = createResponse.organization_id;
+
+                // Затем сразу обновляем её с полными данными
+                const updateRequest = formToUpdateOrganizationRequest(data, orgId);
+                await organizationApi.update(updateRequest);
+
+                // И обновляем cost multipliers
+                const costRequest = formToUpdateCostMultiplierRequest(data, orgId);
+                await organizationApi.updateCostMultiplier(costRequest);
+
+                notification.success('Организация успешно создана');
+                await organizationList.refresh();
+                addModal.close();
+            } else {
+                // Режим редактирования пока не реализован
+                notification.error('Редактирование пока не поддерживается');
+            }
         },
     });
 
@@ -62,6 +73,14 @@ export const OrganizationsTable = () => {
     const handleOpenAddModal = () => {
         organizationForm.switchToCreate();
         addModal.open();
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const success = await organizationForm.submit();
+        if (!success && organizationForm.error) {
+            notification.error(organizationForm.error);
+        }
     };
 
     const handleDelete = (organization: Organization) => {
@@ -112,6 +131,137 @@ export const OrganizationsTable = () => {
         },
     ];
 
+    const organizationFormSections: FormSection<OrganizationFormData>[] = [
+        {
+            title: 'Основная информация',
+            fields: [
+                {
+                    name: 'name',
+                    type: 'input',
+                    label: 'Название организации',
+                    placeholder: 'Введите название организации',
+                    required: true,
+                    inputType: 'text',
+                },
+                {
+                    name: 'video_cut_description_end_sample',
+                    type: 'textarea',
+                    label: 'Образец окончания описания видео-отрывка',
+                    placeholder: 'Пример текста для окончания...',
+                    debounceDelay: 500,
+                },
+                {
+                    name: 'publication_text_end_sample',
+                    type: 'textarea',
+                    label: 'Образец окончания текста публикации',
+                    placeholder: 'Пример текста для окончания публикации...',
+                    debounceDelay: 500,
+                },
+            ],
+        },
+        {
+            title: 'Брендинг и стиль',
+            fields: [
+                {
+                    name: 'tone_of_voice',
+                    type: 'stringList',
+                    label: 'Тон голоса',
+                    placeholder: 'тон/стиль',
+                },
+                {
+                    name: 'brand_rules',
+                    type: 'stringList',
+                    label: 'Правила бренда',
+                    placeholder: 'правило бренда',
+                },
+            ],
+        },
+        {
+            title: 'Комплаенс и аудитория',
+            fields: [
+                {
+                    name: 'compliance_rules',
+                    type: 'stringList',
+                    label: 'Правила комплаенса',
+                    placeholder: 'правило комплаенса',
+                },
+                {
+                    name: 'audience_insights',
+                    type: 'stringList',
+                    label: 'Инсайты об аудитории',
+                    placeholder: 'инсайт',
+                },
+            ],
+        },
+        {
+            title: 'Продукты и локализация',
+            fields: [
+                {
+                    name: 'products',
+                    type: 'objectList',
+                    label: 'Продукты',
+                },
+                {
+                    name: 'locale',
+                    type: 'object',
+                    label: 'Локализация',
+                },
+            ],
+        },
+        {
+            title: 'Множители стоимости',
+            fields: [
+                {
+                    name: 'generate_text_cost_multiplier',
+                    type: 'input',
+                    label: 'Множитель стоимости генерации текста',
+                    placeholder: '1',
+                    required: true,
+                    inputType: 'number',
+                    inputMode: 'numeric',
+                },
+                {
+                    name: 'generate_image_cost_multiplier',
+                    type: 'input',
+                    label: 'Множитель стоимости генерации изображений',
+                    placeholder: '1',
+                    required: true,
+                    inputType: 'number',
+                    inputMode: 'numeric',
+                },
+                {
+                    name: 'generate_vizard_video_cut_cost_multiplier',
+                    type: 'input',
+                    label: 'Множитель стоимости генерации видео-отрывков',
+                    placeholder: '1',
+                    required: true,
+                    inputType: 'number',
+                    inputMode: 'numeric',
+                },
+                {
+                    name: 'transcribe_audio_cost_multiplier',
+                    type: 'input',
+                    label: 'Множитель стоимости транскрибации аудио',
+                    placeholder: '1',
+                    required: true,
+                    inputType: 'number',
+                    inputMode: 'numeric',
+                },
+            ],
+        },
+        {
+            title: 'Дополнительно',
+            fields: [
+                {
+                    name: 'additional_info',
+                    type: 'stringList',
+                    label: 'Дополнительная информация',
+                    placeholder: 'дополнительный пункт',
+                },
+            ],
+        },
+    ];
+
     return (
         <>
             <NotificationContainer
@@ -137,6 +287,18 @@ export const OrganizationsTable = () => {
                 onAdd={handleOpenAddModal}
                 addButtonLabel="Добавить организацию"
                 getRowKey={(organization) => organization.id}
+            />
+
+            <FormBuilder<OrganizationFormData>
+                title="Добавить организацию"
+                sections={organizationFormSections}
+                values={organizationForm.formData}
+                isSubmitting={organizationForm.isSubmitting}
+                isOpen={addModal.isOpen}
+                onClose={addModal.close}
+                onSubmit={handleSubmit}
+                jsonToForm={(jsonData) => jsonToOrganizationForm(jsonData, null)}
+                setFormData={organizationForm.setFormData}
             />
         </>
     );

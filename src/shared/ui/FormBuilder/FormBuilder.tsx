@@ -1,12 +1,12 @@
 import * as React from 'react';
 import {ReactNode} from 'react';
 import {JsonImportModal, loadJsonFromFile} from "../../../features/json-import";
-import {Button, DebouncedInput, DebouncedTextarea, Modal, ObjectListField, StringListField} from '../';
+import {Button, DebouncedInput, DebouncedTextarea, Modal, ObjectField, ObjectListField, StringListField} from '../';
 import {useModal, useNotification} from "../../lib/hooks";
 
 import './FormBuilder.css';
 
-export type FormFieldType = 'input' | 'textarea' | 'stringList' | 'objectList' | 'checkbox' | 'custom';
+export type FormFieldType = 'input' | 'textarea' | 'stringList' | 'objectList' | 'object' | 'checkbox' | 'custom';
 
 export interface FormField<TEntityFormData = any> {
     name: string;
@@ -125,6 +125,16 @@ export const FormBuilder = <TEntityFormData extends Record<string, any>>(
                     <ObjectListField
                         label={field.label}
                         value={(value as Record<string, any>[]) || []}
+                        onChange={(newValue) => updateField(field.name as keyof TEntityFormData, newValue as TEntityFormData[keyof TEntityFormData])}
+                        debounceDelay={field.debounceDelay || 300}
+                    />
+                );
+
+            case 'object':
+                return (
+                    <ObjectField
+                        label={field.label}
+                        value={(value as Record<string, any>) || {}}
                         onChange={(newValue) => updateField(field.name as keyof TEntityFormData, newValue as TEntityFormData[keyof TEntityFormData])}
                         debounceDelay={field.debounceDelay || 300}
                     />

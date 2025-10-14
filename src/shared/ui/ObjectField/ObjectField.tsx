@@ -4,9 +4,9 @@ import {memo, useCallback, useMemo} from "react";
 import {DebouncedInput} from '../DebouncedInput';
 import {DebouncedTextarea} from '../DebouncedTextarea';
 import {Button} from '../Button';
-import './KeyValueField.css';
+import './ObjectField.css';
 
-interface KeyValueFieldProps {
+interface ObjectFieldProps {
     title?: string;
     label?: string;
     value: Record<string, any>;
@@ -15,7 +15,7 @@ interface KeyValueFieldProps {
     debounceDelay: number;
 }
 
-interface KeyValueItemProps {
+interface ObjectFieldItemProps {
     itemKey: string;
     value: any;
     debounceDelay: number;
@@ -24,7 +24,7 @@ interface KeyValueItemProps {
     onRemove: (key: string) => void;
 }
 
-const KeyValueItem = memo((
+const ObjectFieldItem = memo((
     {
         itemKey,
         value,
@@ -32,7 +32,7 @@ const KeyValueItem = memo((
         onKeyChange,
         onValueChange,
         onRemove
-    }: KeyValueItemProps
+    }: ObjectFieldItemProps
 ): React.JSX.Element => {
     const handleKeyChange = useCallback(
         (newKey: string) => {
@@ -80,9 +80,9 @@ const KeyValueItem = memo((
     );
 });
 
-KeyValueItem.displayName = 'KeyValueItem';
+ObjectFieldItem.displayName = 'ObjectFieldItem';
 
-export const KeyValueField = memo((
+export const ObjectField = memo((
     {
         title,
         label,
@@ -90,7 +90,7 @@ export const KeyValueField = memo((
         onChange,
         mode = 'edit',
         debounceDelay = 300
-    }: KeyValueFieldProps
+    }: ObjectFieldProps
 ): React.JSX.Element | null => {
     const handleAdd = useCallback(() => {
         onChange({...value, '': ''});
@@ -128,7 +128,7 @@ export const KeyValueField = memo((
     const items = useMemo(
         () =>
             Object.entries(value).map(([key, val]) => (
-                <KeyValueItem
+                <ObjectFieldItem
                     key={key}
                     itemKey={key}
                     value={val}
@@ -172,4 +172,4 @@ export const KeyValueField = memo((
     );
 });
 
-KeyValueField.displayName = 'KeyValueField';
+ObjectField.displayName = 'ObjectField';

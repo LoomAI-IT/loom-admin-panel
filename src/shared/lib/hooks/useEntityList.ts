@@ -60,7 +60,7 @@ export const useEntityList = <TEntity extends { id: number }>(
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Ошибка при загрузке данных';
             setError(errorMessage);
-            console.error('Error loading MainManu:', err);
+            console.error('Error loading MainMenu:', err);
         } finally {
             setLoading(false);
         }
