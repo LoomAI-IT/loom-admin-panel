@@ -1,11 +1,5 @@
 import {useState, useCallback} from 'react';
 
-/**
- * Хук для управления диалогами подтверждения
- * Заменяет стандартные alert() и confirm() на полноценный UI компонент
- * Поддерживает различные типы диалогов и асинхронные действия
- */
-
 export type ConfirmDialogType = 'info' | 'warning' | 'danger' | 'success';
 
 export interface ConfirmDialogState {
@@ -33,8 +27,6 @@ interface UseConfirmDialogReturn {
     // Утилиты для быстрого создания диалогов
     confirmDelete: (entityName: string, onConfirm: () => void | Promise<void>) => void;
     confirmAction: (title: string, message: string, onConfirm: () => void | Promise<void>) => void;
-    showInfo: (title: string, message: string) => void;
-    showWarning: (title: string, message: string) => void;
 }
 
 const defaultState: ConfirmDialogState = {
@@ -118,35 +110,7 @@ export const useConfirmDialog = (): UseConfirmDialogReturn => {
         },
         [confirm]
     );
-
-    // Утилита для информационного диалога
-    const showInfo = useCallback(
-        (title: string, message: string) => {
-            confirm({
-                title,
-                message,
-                type: 'info',
-                confirmText: 'ОК',
-                onConfirm: close,
-            });
-        },
-        [confirm, close]
-    );
-
-    // Утилита для предупреждающего диалога
-    const showWarning = useCallback(
-        (title: string, message: string) => {
-            confirm({
-                title,
-                message,
-                type: 'warning',
-                confirmText: 'Понятно',
-                onConfirm: close,
-            });
-        },
-        [confirm, close]
-    );
-
+    
     return {
         dialog,
         isProcessing,
@@ -158,7 +122,5 @@ export const useConfirmDialog = (): UseConfirmDialogReturn => {
 
         confirmDelete,
         confirmAction,
-        showInfo,
-        showWarning,
     };
 };
