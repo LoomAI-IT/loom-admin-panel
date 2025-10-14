@@ -163,7 +163,7 @@ export const CategoriesTable = (
                 </span>
             ),
         },
-    ] as DataTableColumn<Category>[];
+    ];
 
     // Конфигурация действий для DataTable
     const actions: DataTableAction<Category>[] = [
