@@ -1,4 +1,4 @@
-import {useState, useCallback, useEffect} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 
 /**
  * Хук для управления списком сущностей с фильтрацией и сортировкой
@@ -60,7 +60,7 @@ export const useEntityList = <TEntity extends { id: number }>(
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Ошибка при загрузке данных';
             setError(errorMessage);
-            console.error('Error loading entities:', err);
+            console.error('Error loading MainManu:', err);
         } finally {
             setLoading(false);
         }

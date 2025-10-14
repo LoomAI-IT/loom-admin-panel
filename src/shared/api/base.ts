@@ -1,5 +1,5 @@
-import axios from 'axios';
 import type {AxiosInstance} from 'axios';
+import axios from 'axios';
 
 // Базовый клиент API с поддержкой cookies
 export const apiClient = axios.create({
@@ -30,7 +30,7 @@ export const setupAuthInterceptor = (client: AxiosInstance, authClient: AxiosIns
                 } catch (refreshError) {
                     // Если refresh не удался, очищаем localStorage и перенаправляем на логин
                     localStorage.removeItem('auth_account_id');
-                    window.location.href = '/login';
+                    window.location.href = '/Login';
                     return Promise.reject(refreshError);
                 }
             }

@@ -1,6 +1,6 @@
-import './EntitiesPage.css';
+import './MainMenuPage.css';
 
-export const EntitiesPage = () => {
+export const MainMenuPage = () => {
     return (
         <div>
             <h1>Главная страница</h1>

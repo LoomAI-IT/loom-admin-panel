@@ -1,1 +1,0 @@
-export {OrganizationMenuPage} from './OrganizationMenuPage';
