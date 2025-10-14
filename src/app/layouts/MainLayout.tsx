@@ -1,5 +1,7 @@
 import {Outlet} from 'react-router-dom';
+
 import {Sidebar} from '../../widgets/Sidebar';
+
 import './MainLayout.css';
 
 export const MainLayout = () => {

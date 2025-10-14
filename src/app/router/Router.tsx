@@ -1,8 +1,10 @@
 import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
+
 import {LoginPage} from '../../pages/Login';
 import {MainMenuPage} from '../../pages/MainMenu';
 import {OrganizationsMenuPage} from '../../pages/OrganizationsMenu';
 import {OrganizationDetailPage} from '../../pages/OrganizationDetail';
+
 import {MainLayout} from '../layouts/MainLayout';
 import {PrivateRoute} from './PrivateRoute';
 

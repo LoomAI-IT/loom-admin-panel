@@ -9,6 +9,8 @@ export type {
     DeleteOrganizationResponse,
     CostMultiplier,
     UpdateCostMultiplierRequest,
+    organizationFormSections,
+    organizationDetailsSections
 } from './model/types';
 export {
     createEmptyOrganizationForm,

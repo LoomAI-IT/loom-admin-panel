@@ -1,28 +1,27 @@
 import * as React from 'react';
 import {useCallback} from 'react';
 import {useNavigate} from 'react-router-dom';
+
+import {NotificationContainer} from '../../../features/notification';
+import {ConfirmDialog} from '../../../features/confirmation-dialog';
+
 import {
+    createEmptyOrganizationForm,
+    formToCreateOrganizationRequest,
+    formToUpdateCostMultiplierRequest,
+    formToUpdateOrganizationRequest,
+    jsonToOrganizationForm,
     type Organization,
     organizationApi,
     type OrganizationFormData,
+    organizationFormSections,
     organizationToForm,
-    createEmptyOrganizationForm,
-    formToCreateOrganizationRequest,
-    formToUpdateOrganizationRequest,
-    formToUpdateCostMultiplierRequest,
-    jsonToOrganizationForm,
-    validateOrganizationForm,
+    validateOrganizationForm
 } from '../../../entities/organization';
-import {
-    DataTable,
-    type DataTableAction,
-    type DataTableColumn,
-    FormBuilder,
-    type FormSection,
-} from '../../../shared/ui';
+
+import {DataTable, type DataTableAction, type DataTableColumn, FormBuilder,} from '../../../shared/ui';
 import {useConfirmDialog, useEntityForm, useEntityList, useModal, useNotification} from '../../../shared/lib/hooks';
-import {NotificationContainer} from '../../../features/notification';
-import {ConfirmDialog} from '../../../features/confirmation-dialog';
+
 
 export const OrganizationsTable = () => {
     const navigate = useNavigate();
@@ -140,137 +139,6 @@ export const OrganizationsTable = () => {
             label: 'Удалить',
             onClick: handleDelete,
             variant: 'danger',
-        },
-    ];
-
-    const organizationFormSections: FormSection<OrganizationFormData>[] = [
-        {
-            title: 'Основная информация',
-            fields: [
-                {
-                    name: 'name',
-                    type: 'input',
-                    label: 'Название организации',
-                    placeholder: 'Введите название организации',
-                    required: true,
-                    inputType: 'text',
-                },
-                {
-                    name: 'video_cut_description_end_sample',
-                    type: 'textarea',
-                    label: 'Образец окончания описания видео-отрывка',
-                    placeholder: 'Пример текста для окончания...',
-                    debounceDelay: 500,
-                },
-                {
-                    name: 'publication_text_end_sample',
-                    type: 'textarea',
-                    label: 'Образец окончания текста публикации',
-                    placeholder: 'Пример текста для окончания публикации...',
-                    debounceDelay: 500,
-                },
-            ],
-        },
-        {
-            title: 'Брендинг и стиль',
-            fields: [
-                {
-                    name: 'tone_of_voice',
-                    type: 'stringList',
-                    label: 'Тон голоса',
-                    placeholder: 'тон/стиль',
-                },
-                {
-                    name: 'brand_rules',
-                    type: 'stringList',
-                    label: 'Правила бренда',
-                    placeholder: 'правило бренда',
-                },
-            ],
-        },
-        {
-            title: 'Комплаенс и аудитория',
-            fields: [
-                {
-                    name: 'compliance_rules',
-                    type: 'stringList',
-                    label: 'Правила комплаенса',
-                    placeholder: 'правило комплаенса',
-                },
-                {
-                    name: 'audience_insights',
-                    type: 'stringList',
-                    label: 'Инсайты об аудитории',
-                    placeholder: 'инсайт',
-                },
-            ],
-        },
-        {
-            title: 'Продукты и локализация',
-            fields: [
-                {
-                    name: 'products',
-                    type: 'objectList',
-                    label: 'Продукты',
-                },
-                {
-                    name: 'locale',
-                    type: 'object',
-                    label: 'Локализация',
-                },
-            ],
-        },
-        {
-            title: 'Множители стоимости',
-            fields: [
-                {
-                    name: 'generate_text_cost_multiplier',
-                    type: 'input',
-                    label: 'Множитель стоимости генерации текста',
-                    placeholder: '1',
-                    required: true,
-                    inputType: 'number',
-                    inputMode: 'numeric',
-                },
-                {
-                    name: 'generate_image_cost_multiplier',
-                    type: 'input',
-                    label: 'Множитель стоимости генерации изображений',
-                    placeholder: '1',
-                    required: true,
-                    inputType: 'number',
-                    inputMode: 'numeric',
-                },
-                {
-                    name: 'generate_vizard_video_cut_cost_multiplier',
-                    type: 'input',
-                    label: 'Множитель стоимости генерации видео-отрывков',
-                    placeholder: '1',
-                    required: true,
-                    inputType: 'number',
-                    inputMode: 'numeric',
-                },
-                {
-                    name: 'transcribe_audio_cost_multiplier',
-                    type: 'input',
-                    label: 'Множитель стоимости транскрибации аудио',
-                    placeholder: '1',
-                    required: true,
-                    inputType: 'number',
-                    inputMode: 'numeric',
-                },
-            ],
-        },
-        {
-            title: 'Дополнительно',
-            fields: [
-                {
-                    name: 'additional_info',
-                    type: 'stringList',
-                    label: 'Дополнительная информация',
-                    placeholder: 'дополнительный пункт',
-                },
-            ],
         },
     ];
 
