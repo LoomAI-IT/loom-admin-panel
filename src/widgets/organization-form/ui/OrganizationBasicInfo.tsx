@@ -1,5 +1,4 @@
-import {Input} from '../../../shared/ui/Input';
-import {Textarea} from '../../../shared/ui/Textarea';
+import {Input, Textarea} from '../../../shared/ui';
 import type {Organization} from '../../../entities/organization';
 import {CostMultiplierEditor} from './CostMultiplierEditor';
 

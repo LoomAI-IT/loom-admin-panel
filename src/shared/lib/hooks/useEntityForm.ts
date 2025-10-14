@@ -1,10 +1,4 @@
-import {useState, useCallback} from 'react';
-
-/**
- * Универсальный хук для управления формами создания/редактирования сущностей
- * Решает проблему дублирования formData и editFormData
- * Следует принципу DRY - один хук для create и edit режимов
- */
+import {useCallback, useState} from 'react';
 
 type FormMode = 'create' | 'edit';
 

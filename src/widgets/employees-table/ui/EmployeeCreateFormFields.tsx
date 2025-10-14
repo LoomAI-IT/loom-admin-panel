@@ -1,10 +1,5 @@
-/**
- * Поля формы создания сотрудника
- * Переиспользуемый компонент для создания нового сотрудника
- */
-
-import {EmployeeRole, type EmployeeCreateFormData} from '../../../entities/employee';
-import {Input} from '../../../shared/ui/Input';
+import {type EmployeeCreateFormData, EmployeeRole} from '../../../entities/employee';
+import {Input} from '../../../shared/ui';
 
 interface EmployeeCreateFormFieldsProps {
     formData: EmployeeCreateFormData;

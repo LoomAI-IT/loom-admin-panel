@@ -1,16 +1,3 @@
-/**
- * Рефакторинг OrganizationForm
- *
- * Было: 232 строки, дублирование reset логики, ручное управление формой
- * Стало: ~140 строк, использование useEntityForm
- *
- * Изменения:
- * - Использование useEntityForm вместо useFormState
- * - Использование useNotification вместо alert()
- * - Использование трансформеров из entities/organization
- * - Убрано дублирование reset логики
- */
-
 import {useState} from 'react';
 import {
     type CostMultiplier,
@@ -23,7 +10,7 @@ import {
     organizationToForm,
     validateOrganizationForm,
 } from '../../../entities/organization';
-import {Button} from '../../../shared/ui/Button';
+import {Button} from '../../../shared/ui';
 import {useEntityForm, useModal, useNotification} from '../../../shared/lib/hooks';
 import {OrganizationBasicInfo} from './OrganizationBasicInfo';
 import {StringListEditor} from './StringListEditor';

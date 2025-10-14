@@ -1,18 +1,4 @@
-/**
- * Рефакторинг CategoryFormFields
- *
- * Было: 632 строки, мемоизация, callback hell, дублирование компонентов
- * Стало: ~200 строк, простой код, переиспользование компонентов
- *
- * Изменения:
- * - Убрана избыточная мемоизация (OptimizedTextarea, ArrayInputItem и т.д.)
- * - Использование ArrayField из shared/ui вместо дублирования
- * - Использование GoodSamplesEditor из shared/ui
- * - Убраны десятки useCallback обработчиков для массивов
- * - Простая работа с формой через updateField из useEntityForm
- */
-
-import {Input, Textarea, ArrayField, GoodSamplesEditor} from '../../../shared/ui';
+import {ArrayField, GoodSamplesEditor, Input, Textarea} from '../../../shared/ui';
 import './CategoryFormFields.css';
 
 interface CategoryFormData {

@@ -1,5 +1,4 @@
-import {Button} from '../../../shared/ui/Button';
-import {Textarea} from '../../../shared/ui/Textarea';
+import {Button, Textarea} from '../../../shared/ui';
 import './StringListEditor.css';
 
 interface StringListEditorProps {

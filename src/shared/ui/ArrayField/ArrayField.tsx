@@ -1,13 +1,3 @@
-/**
- * Универсальный компонент для работы с массивами строк в формах
- * Решает проблему дублирования ArrayInputSection в CategoryFormFields и AutopostingFormFields
- *
- * Принципы:
- * - Простота: без избыточной мемоизации
- * - DRY: один компонент для всех массивов
- * - KISS: минимум логики, максимум переиспользования
- */
-
 import {Input} from '../Input';
 import {Textarea} from '../Textarea';
 import {Button} from '../Button';
@@ -22,14 +12,15 @@ interface ArrayFieldProps {
     addButtonText?: string;
 }
 
-export const ArrayField = ({
-                               label,
-                               value,
-                               onChange,
-                               placeholder = '',
-                               variant = 'textarea',
-                               addButtonText,
-                           }: ArrayFieldProps) => {
+export const ArrayField = (
+    {
+        label,
+        value,
+        onChange,
+        placeholder = '',
+        variant = 'textarea',
+        addButtonText,
+    }: ArrayFieldProps) => {
     const handleAdd = () => {
         onChange([...value, '']);
     };

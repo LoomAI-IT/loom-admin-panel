@@ -1,10 +1,5 @@
-/**
- * %C: 4;O 703@C7:8 40==KE >@30=870F88
- * !;54C5B ?@8=F8?C Single Responsibility - 2K=5A5=0 ;>38:0 703@C7:8 87 :><?>=5=B0
- */
-
-import {useState, useEffect} from 'react';
-import {organizationApi, type Organization, type CostMultiplier} from '../../../entities/organization';
+import {useEffect, useState} from 'react';
+import {type CostMultiplier, type Organization, organizationApi} from '../../../entities/organization';
 
 interface UseOrganizationDataReturn {
     organization: Organization | null;
@@ -14,9 +9,7 @@ interface UseOrganizationDataReturn {
     reload: () => void;
 }
 
-/**
- * 03@C605B 40==K5 >@30=870F88 8 5Q cost multiplier
- */
+
 export const useOrganizationData = (organizationId: number | undefined): UseOrganizationDataReturn => {
     const [organization, setOrganization] = useState<Organization | null>(null);
     const [costMultiplier, setCostMultiplier] = useState<CostMultiplier | null>(null);
@@ -27,7 +20,7 @@ export const useOrganizationData = (organizationId: number | undefined): UseOrga
     useEffect(() => {
         if (!organizationId) {
             setLoading(false);
-            setError('ID >@30=870F88 =5 C:070=');
+            setError('Ошибка');
             return;
         }
 
@@ -42,7 +35,7 @@ export const useOrganizationData = (organizationId: number | undefined): UseOrga
                 setOrganization(orgData);
                 setCostMultiplier(costMultiplierData);
             } catch (err) {
-                setError('H81:0 703@C7:8 >@30=870F88');
+                setError('Ошибка');
                 console.error('Failed to load organization:', err);
             } finally {
                 setLoading(false);

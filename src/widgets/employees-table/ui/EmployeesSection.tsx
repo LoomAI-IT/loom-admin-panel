@@ -1,51 +1,33 @@
-/**
- * Рефакторинг EmployeesSection
- *
- * Было: 512 строк, дублирование formData/editFormData, alert()/confirm(), ручное управление состоянием
- * Стало: ~200 строк, использование хуков useEntityList/useEntityForm
- *
- * Изменения:
- * - Использование useEntityList для управления списком сотрудников
- * - Использование двух useEntityForm (для create и edit)
- * - Использование useNotification вместо alert()
- * - Использование useConfirmDialog вместо confirm()
- * - Использование трансформеров из entities/employee
- * - Вынесены компоненты форм: EmployeeCreateFormFields, EmployeeEditFormFields, EmployeeDetailsModal
- * - Убраны inline стили
- */
-
 import {useState} from 'react';
 import {
-    employeeApi,
+    createEmptyEmployeeForm,
     type Employee,
+    employeeApi,
     type EmployeeCreateFormData,
     type EmployeeEditFormData,
-    createEmptyEmployeeForm,
     employeeToEditForm,
+    formToCreateRequest,
+    formToUpdatePermissionsRequest,
+    formToUpdateRoleRequest,
+    hasPermissionsChanged,
+    hasRoleChanged,
     validateEmployeeCreateForm,
     validateEmployeeEditForm,
-    formToCreateRequest,
-    formToUpdateRoleRequest,
-    formToUpdatePermissionsRequest,
-    hasRoleChanged,
-    hasPermissionsChanged,
 } from '../../../entities/employee';
-import {Table, TableHeader, TableBody, TableRow, TableCell} from '../../../shared/ui/Table';
-import {Button} from '../../../shared/ui/Button';
-import {Modal} from '../../../shared/ui/Modal';
-import {useModal, useEntityList, useEntityForm, useNotification, useConfirmDialog} from '../../../shared/lib/hooks';
+import {Button, Modal, Table, TableBody, TableCell, TableHeader, TableRow} from '../../../shared/ui';
+import {useConfirmDialog, useEntityForm, useEntityList, useModal, useNotification} from '../../../shared/lib/hooks';
 import {NotificationContainer} from '../../../features/notification';
 import {ConfirmDialog} from '../../../features/confirmation-dialog';
 import {EmployeeCreateFormFields} from './EmployeeCreateFormFields';
 import {EmployeeEditFormFields} from './EmployeeEditFormFields';
 import {EmployeeDetailsModal} from './EmployeeDetailsModal';
-import './EmployeesSection.css';
+import './EmployeesTable.css';
 
-interface EmployeesSectionProps {
+interface EmployeesTableProps {
     organizationId: number;
 }
 
-export const EmployeesSection = ({organizationId}: EmployeesSectionProps) => {
+export const EmployeesTable = ({organizationId}: EmployeesTableProps) => {
     // Управление списком сотрудников
     const employeeList = useEntityList<Employee>({
         loadFn: async () => {

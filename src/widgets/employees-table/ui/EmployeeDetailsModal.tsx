@@ -1,11 +1,5 @@
-/**
- * Модальное окно деталей сотрудника
- * Отображает полную информацию о сотруднике и его правах
- */
-
 import {type Employee} from '../../../entities/employee';
-import {Modal} from '../../../shared/ui/Modal';
-import {Button} from '../../../shared/ui/Button';
+import {Button, Modal} from '../../../shared/ui';
 
 interface EmployeeDetailsModalProps {
     isOpen: boolean;

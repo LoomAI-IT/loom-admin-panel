@@ -1,5 +1,4 @@
-import {Textarea} from '../../../shared/ui/Textarea';
-import {Button} from '../../../shared/ui/Button';
+import {Button, Textarea} from '../../../shared/ui';
 import './ObjectListEditor.css';
 
 interface ObjectListEditorProps {

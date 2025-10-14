@@ -1,45 +1,29 @@
-/**
- * Рефакторинг CategoriesSection
- *
- * Было: 504 строки, дублирование формы, ручное управление состоянием
- * Стало: ~150 строк, использование хуков useEntityForm/useEntityList
- *
- * Изменения:
- * - Использование useEntityList для управления списком категорий
- * - Использование useEntityForm вместо дублирования formData/editFormData
- * - Использование useNotification вместо alert()
- * - Использование useConfirmDialog вместо confirm()
- * - Использование трансформеров из entities/category
- */
-
 import {useState} from 'react';
 import {
-    categoryApi,
     type Category,
+    categoryApi,
     type CategoryFormData,
-    createEmptyCategoryForm,
     categoryToForm,
-    jsonToForm,
+    createEmptyCategoryForm,
     formToCreateRequest,
     formToUpdateRequest,
+    jsonToForm,
     validateCategoryForm,
 } from '../../../entities/category';
-import {Table, TableHeader, TableBody, TableRow, TableCell} from '../../../shared/ui/Table';
-import {Button} from '../../../shared/ui/Button';
-import {Modal} from '../../../shared/ui/Modal';
-import {useModal, useEntityList, useEntityForm, useNotification, useConfirmDialog} from '../../../shared/lib/hooks';
+import {Button, Modal, Table, TableBody, TableCell, TableHeader, TableRow} from '../../../shared/ui';
+import {useConfirmDialog, useEntityForm, useEntityList, useModal, useNotification} from '../../../shared/lib/hooks';
 import {JsonImportModal, loadJsonFromFile} from '../../../features/json-import';
 import {NotificationContainer} from '../../../features/notification';
 import {ConfirmDialog} from '../../../features/confirmation-dialog';
 import {CategoryFormFields} from './CategoryFormFields';
 import {CategoryDetailsModal} from './CategoryDetailsModal';
-import './CategoriesSection.css';
+import './CategoriesTable.css';
 
-interface CategoriesSectionProps {
+interface CategoriesTableProps {
     organizationId: number;
 }
 
-export const CategoriesSection = ({organizationId}: CategoriesSectionProps) => {
+export const CategoriesTable = ({organizationId}: CategoriesTableProps) => {
     // Управление списком категорий
     const categoryList = useEntityList<Category>({
         loadFn: () => categoryApi.getByOrganization(organizationId),
@@ -200,9 +184,9 @@ export const CategoriesSection = ({organizationId}: CategoriesSectionProps) => {
                                         <span className="category-name">{category.name}</span>
                                     </TableCell>
                                     <TableCell>
-                    <span className="category-date">
-                      {new Date(category.created_at).toLocaleDateString('ru-RU')}
-                    </span>
+                                        <span className="category-date">
+                                          {new Date(category.created_at).toLocaleDateString('ru-RU')}
+                                        </span>
                                     </TableCell>
                                     <TableCell className="table-cell-action">
                                         <Button size="small" variant="secondary"

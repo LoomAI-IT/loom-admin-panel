@@ -1,13 +1,13 @@
-import {contentClient} from '../../../shared/api/contentClient';
+import {contentClient} from '../../../shared/api';
 import type {
     Autoposting,
-    CreateAutopostingRequest,
-    UpdateAutopostingRequest,
-    AutopostingResponse,
     AutopostingCategory,
-    CreateAutopostingCategoryRequest,
-    UpdateAutopostingCategoryRequest,
     AutopostingCategoryResponse,
+    AutopostingResponse,
+    CreateAutopostingCategoryRequest,
+    CreateAutopostingRequest,
+    UpdateAutopostingCategoryRequest,
+    UpdateAutopostingRequest,
 } from '../model/types';
 
 // API для рубрик автопостинга

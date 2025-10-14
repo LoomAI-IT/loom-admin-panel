@@ -1,5 +1,4 @@
-import {Modal} from '../../../shared/ui/Modal';
-import {Button} from '../../../shared/ui/Button';
+import {Button, Modal} from '../../../shared/ui';
 import type {ConfirmDialogState} from '../../../shared/lib/hooks';
 import './ConfirmDialog.css';
 

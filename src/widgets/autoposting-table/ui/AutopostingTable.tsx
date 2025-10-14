@@ -1,55 +1,33 @@
-/**
- * Рефакторинг AutopostingSection
- *
- * Было: 650 строк, дублирование formData/editFormData, ручное управление состоянием
- * Стало: ~250 строк, использование useEntityForm/useEntityList
- *
- * Изменения:
- * - Использование useEntityList для управления списком автопостингов
- * - Использование useEntityForm вместо дублирования formData/editFormData
- * - Использование useNotification вместо alert()
- * - Использование useConfirmDialog вместо confirm()
- * - Использование трансформеров из entities/autoposting
- */
-
-import {useState, useCallback} from 'react';
+import {useCallback, useState} from 'react';
 import {
-    autopostingApi,
-    autopostingCategoryApi,
     type Autoposting,
+    autopostingApi,
     type AutopostingCategory,
+    autopostingCategoryApi,
     type AutopostingFormData,
-    createEmptyAutopostingForm,
     autopostingToForm,
-    jsonToForm,
-    formToCreateCategoryRequest,
-    formToUpdateCategoryRequest,
+    createEmptyAutopostingForm,
     formToCreateAutopostingRequest,
+    formToCreateCategoryRequest,
     formToUpdateAutopostingRequest,
+    formToUpdateCategoryRequest,
+    jsonToForm,
     validateAutopostingForm,
 } from '../../../entities/autoposting';
-import {Table, TableHeader, TableBody, TableRow, TableCell} from '../../../shared/ui/Table';
-import {Button} from '../../../shared/ui/Button';
-import {Modal} from '../../../shared/ui/Modal';
-import {
-    useModal,
-    useEntityList,
-    useEntityForm,
-    useNotification,
-    useConfirmDialog,
-} from '../../../shared/lib/hooks';
+import {Button, Modal, Table, TableBody, TableCell, TableHeader, TableRow} from '../../../shared/ui';
+import {useConfirmDialog, useEntityForm, useEntityList, useModal, useNotification,} from '../../../shared/lib/hooks';
 import {JsonImportModal, loadJsonFromFile} from '../../../features/json-import';
 import {NotificationContainer} from '../../../features/notification';
 import {ConfirmDialog} from '../../../features/confirmation-dialog';
 import {AutopostingFormFields} from './AutopostingFormFields';
 import {AutopostingDetailsModal} from './AutopostingDetailsModal';
-import '../../../widgets/categories-section/ui/CategoriesSection.css';
+import '../../category-table/ui/CategoriesTable.css';
 
-interface AutopostingSectionProps {
+interface AutopostingTableProps {
     organizationId: number;
 }
 
-export const AutopostingSection = ({organizationId}: AutopostingSectionProps) => {
+export const AutopostingTable = ({organizationId}: AutopostingTableProps) => {
     // Управление списком автопостингов
     const autopostingList = useEntityList<Autoposting>({
         loadFn: () => autopostingApi.getByOrganization(organizationId),

@@ -1,10 +1,5 @@
-import {contentClient} from '../../../shared/api/contentClient';
-import type {
-    Category,
-    CreateCategoryRequest,
-    UpdateCategoryRequest,
-    CategoryResponse,
-} from '../model/types';
+import {contentClient} from '../../../shared/api';
+import type {Category, CategoryResponse, CreateCategoryRequest, UpdateCategoryRequest,} from '../model/types';
 
 export const categoryApi = {
     create: async (data: CreateCategoryRequest): Promise<CategoryResponse> => {

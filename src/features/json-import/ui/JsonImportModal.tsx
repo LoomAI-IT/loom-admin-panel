@@ -1,7 +1,5 @@
 import {useState} from 'react';
-import {Modal} from '../../../shared/ui/Modal';
-import {Button} from '../../../shared/ui/Button';
-import {Textarea} from '../../../shared/ui/Textarea';
+import {Button, Modal, Textarea} from '../../../shared/ui';
 import './JsonImportModal.css';
 
 interface JsonImportModalProps {

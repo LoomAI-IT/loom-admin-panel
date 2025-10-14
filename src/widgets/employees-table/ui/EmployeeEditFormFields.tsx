@@ -1,9 +1,4 @@
-/**
- * Поля формы редактирования сотрудника
- * Переиспользуемый компонент для редактирования сотрудника и его прав
- */
-
-import {EmployeeRole, type EmployeeEditFormData, type Employee} from '../../../entities/employee';
+import {type Employee, type EmployeeEditFormData, EmployeeRole} from '../../../entities/employee';
 
 interface EmployeeEditFormFieldsProps {
     formData: EmployeeEditFormData;

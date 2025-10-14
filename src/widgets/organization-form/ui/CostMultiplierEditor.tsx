@@ -1,5 +1,5 @@
-import {useState, useEffect} from 'react';
-import {Input} from '../../../shared/ui/Input';
+import {useEffect, useState} from 'react';
+import {Input} from '../../../shared/ui';
 
 interface FormData {
     generate_text_cost_multiplier: number;

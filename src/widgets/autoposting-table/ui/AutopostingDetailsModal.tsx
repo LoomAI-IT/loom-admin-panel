@@ -1,9 +1,8 @@
-import {Modal} from '../../../shared/ui/Modal';
-import {Button} from '../../../shared/ui/Button';
 import {type Autoposting, type AutopostingCategory} from '../../../entities/autoposting';
 import {JsonViewModal} from '../../../features/json-import';
-import {useModal} from '../../../shared/lib/hooks/useModal';
-import '../../../widgets/categories-section/ui/CategoryDetailsModal.css';
+import {Button, Modal} from '../../../shared/ui';
+import {useModal} from '../../../shared/lib/hooks';
+import '../../category-table/ui/CategoryDetailsModal.css';
 
 interface AutopostingDetailsModalProps {
     isOpen: boolean;

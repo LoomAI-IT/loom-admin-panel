@@ -1,13 +1,3 @@
-/**
- * Универсальный компонент для работы с good_samples (массив объектов key-value)
- * Решает проблему дублирования GoodSampleField и GoodSampleCard
- *
- * Принципы:
- * - Простота: без избыточной мемоизации
- * - DRY: один компонент для всех good_samples
- * - KISS: простая логика без сложных оптимизаций
- */
-
 import {Textarea} from '../Textarea';
 import {Button} from '../Button';
 import './GoodSamplesEditor.css';

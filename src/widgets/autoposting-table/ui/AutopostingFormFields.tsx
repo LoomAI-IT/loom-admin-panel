@@ -1,20 +1,6 @@
-/**
- * Рефакторинг AutopostingFormFields
- *
- * Было: 693 строки, мемоизация, callback hell, дублирование компонентов
- * Стало: ~270 строк, простой код, переиспользование компонентов
- *
- * Изменения:
- * - Убрана избыточная мемоизация (OptimizedTextarea, ArrayInputItem и т.д.)
- * - Использование ArrayField из shared/ui вместо дублирования
- * - Использование GoodSamplesEditor из shared/ui
- * - Убраны десятки useCallback обработчиков для массивов
- * - Простая работа с формой через updateField
- */
-
 import {type AutopostingFormData} from '../../../entities/autoposting';
-import {Input, Textarea, ArrayField, GoodSamplesEditor} from '../../../shared/ui';
-import '../../../widgets/categories-section/ui/CategoryFormFields.css';
+import {ArrayField, GoodSamplesEditor, Input, Textarea} from '../../../shared/ui';
+import '../../category-table/ui/CategoryFormFields.css';
 
 interface AutopostingFormFieldsProps {
     formData: AutopostingFormData;
@@ -22,7 +8,6 @@ interface AutopostingFormFieldsProps {
 }
 
 export const AutopostingFormFields = ({formData, onChange}: AutopostingFormFieldsProps) => {
-    // Универсальный обработчик для обновления полей формы
     const updateField = <K extends keyof AutopostingFormData>(field: K, value: AutopostingFormData[K]) => {
         onChange({...formData, [field]: value});
     };

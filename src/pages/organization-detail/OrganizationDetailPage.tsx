@@ -11,18 +11,14 @@
  * - Вынесена логика загрузки в хук (Single Responsibility)
  */
 
-import {useParams, useNavigate} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import {organizationApi} from '../../entities/organization';
 import {OrganizationForm} from '../../widgets/organization-form';
-import {CategoriesSection} from '../../widgets/categories-section';
-import {AutopostingSection} from '../../widgets/autoposting-section';
-import {EmployeesSection} from '../../widgets/employees-section';
-import {Button} from '../../shared/ui/Button';
-import {
-    useOrganizationData,
-    useNotification,
-    useConfirmDialog,
-} from '../../shared/lib/hooks';
+import {CategoriesTable} from '../../widgets/category-table';
+import {AutopostingTable} from '../../widgets/autoposting-table';
+import {EmployeesTable} from '../../widgets/employees-table';
+import {Button} from '../../shared/ui';
+import {useConfirmDialog, useNotification, useOrganizationData,} from '../../shared/lib/hooks';
 import {NotificationContainer} from '../../features/notification';
 import {ConfirmDialog} from '../../features/confirmation-dialog';
 import './OrganizationDetailPage.css';
@@ -102,11 +98,11 @@ export const OrganizationDetailPage = () => {
                 <div className="organization-content">
                     <OrganizationForm organization={organization} costMultiplier={costMultiplier} onUpdate={reload}/>
 
-                    <CategoriesSection organizationId={organization.id}/>
+                    <CategoriesTable organizationId={organization.id}/>
 
-                    <AutopostingSection organizationId={organization.id}/>
+                    <AutopostingTable organizationId={organization.id}/>
 
-                    <EmployeesSection organizationId={organization.id}/>
+                    <EmployeesTable organizationId={organization.id}/>
                 </div>
             </div>
         </>

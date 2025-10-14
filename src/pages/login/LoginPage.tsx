@@ -1,8 +1,7 @@
-import {useState, useEffect, type FormEvent} from 'react';
+import {type FormEvent, useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {authApi, useAuthStore} from '../../features/auth';
-import {Input} from '../../shared/ui/Input';
-import {Button} from '../../shared/ui/Button';
+import {Button, Input} from '../../shared/ui';
 import './LoginPage.css';
 
 export const LoginPage = () => {

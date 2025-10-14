@@ -1,10 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {organizationApi, type Organization} from '../../entities/organization';
-import {Table, TableHeader, TableBody, TableRow, TableCell} from '../../shared/ui/Table';
-import {Button} from '../../shared/ui/Button';
-import {Modal} from '../../shared/ui/Modal';
-import {Input} from '../../shared/ui/Input';
+import {type Organization, organizationApi} from '../../entities/organization';
+import {Button, Input, Modal, Table, TableBody, TableCell, TableHeader, TableRow} from '../../shared/ui';
 import {useModal} from '../../shared/lib/hooks';
 import './OrganizationsListPage.css';
 

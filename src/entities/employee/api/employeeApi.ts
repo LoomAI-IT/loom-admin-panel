@@ -1,14 +1,14 @@
-import {employeeClient} from '../../../shared/api/employeeClient';
+import {employeeClient} from '../../../shared/api';
 import type {
     CreateEmployeeRequest,
     CreateEmployeeResponse,
+    DeleteEmployeeResponse,
+    Employee,
     GetEmployeesByOrganizationResponse,
     UpdateEmployeePermissionsRequest,
     UpdateEmployeePermissionsResponse,
     UpdateEmployeeRoleRequest,
     UpdateEmployeeRoleResponse,
-    DeleteEmployeeResponse,
-    Employee,
 } from '../model/types';
 
 export const employeeApi = {

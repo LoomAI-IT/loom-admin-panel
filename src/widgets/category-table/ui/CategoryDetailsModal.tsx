@@ -1,8 +1,7 @@
-import {Modal} from '../../../shared/ui/Modal';
-import {Button} from '../../../shared/ui/Button';
+import {Button, Modal} from '../../../shared/ui';
 import {type Category} from '../../../entities/category';
 import {JsonViewModal} from '../../../features/json-import';
-import {useModal} from '../../../shared/lib/hooks/useModal';
+import {useModal} from '../../../shared/lib/hooks';
 import './CategoryDetailsModal.css';
 
 interface CategoryDetailsModalProps {

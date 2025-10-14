@@ -1,21 +1,11 @@
-/**
- * "@0=AD>@<5@K 4;O @01>BK A D>@<0<8 >@30=870F88
- * !;54C5B ?@8=F8?C DRY - 2A5 B@0=AD>@<0F88 2 >4=>< <5AB5
- */
-
 import type {
-    Organization,
     CostMultiplier,
-    UpdateOrganizationRequest,
+    Organization,
     UpdateCostMultiplierRequest,
+    UpdateOrganizationRequest,
 } from '../model/types';
 
-/**
- * "8? 40==KE D>@<K >@30=870F88
- * 1J548=O5B 40==K5 Organization + CostMultiplier
- */
 export interface OrganizationFormData {
-    // A=>2=K5 40==K5 >@30=870F88
     name: string;
     video_cut_description_end_sample: string;
     publication_text_end_sample: string;
@@ -34,9 +24,6 @@ export interface OrganizationFormData {
     transcribe_audio_cost_multiplier: number;
 }
 
-/**
- * @5>1@07C5B Organization + CostMultiplier 2 D>@<C 4;O @540:B8@>20=8O
- */
 export const organizationToForm = (
     organization: Organization,
     costMultiplier: CostMultiplier | null
@@ -57,9 +44,6 @@ export const organizationToForm = (
     transcribe_audio_cost_multiplier: costMultiplier?.transcribe_audio_cost_multiplier ?? 1,
 });
 
-/**
- * @5>1@07C5B JSON 2 D>@<C (4;O 8<?>@B0)
- */
 export const jsonToForm = (
     jsonData: any,
     currentCostMultiplier: CostMultiplier | null
@@ -80,9 +64,6 @@ export const jsonToForm = (
     transcribe_audio_cost_multiplier: jsonData.transcribe_audio_cost_multiplier ?? currentCostMultiplier?.transcribe_audio_cost_multiplier ?? 1,
 });
 
-/**
- * #B8;8B0 4;O D8;LB@0F88 ?CABKE AB@>: 8 >1J5:B>2
- */
 const filterNonEmpty = <T>(items: T[]): T[] => {
     if (!items || items.length === 0) return [];
 
@@ -95,9 +76,6 @@ const filterNonEmpty = <T>(items: T[]): T[] => {
     return items;
 };
 
-/**
- * @5>1@07C5B D>@<C 2 UpdateOrganizationRequest
- */
 export const formToUpdateOrganizationRequest = (
     data: OrganizationFormData,
     organizationId: number
@@ -115,9 +93,6 @@ export const formToUpdateOrganizationRequest = (
     locale: data.locale,
 });
 
-/**
- * @5>1@07C5B D>@<C 2 UpdateCostMultiplierRequest
- */
 export const formToUpdateCostMultiplierRequest = (
     data: OrganizationFormData,
     organizationId: number
@@ -129,15 +104,11 @@ export const formToUpdateCostMultiplierRequest = (
     transcribe_audio_cost_multiplier: data.transcribe_audio_cost_multiplier,
 });
 
-/**
- * 0;840F8O D>@<K >@30=870F88
- */
 export const validateOrganizationForm = (data: OrganizationFormData): string | null => {
     if (!data.name.trim()) {
-        return '0720=85 >@30=870F88 >1O70B5;L=> 4;O 70?>;=5=8O';
+        return 'Ошибка валидации';
     }
 
-    // 0;840F8O cost multipliers
     const multipliers = [
         {value: data.generate_text_cost_multiplier, name: 'Generate text cost multiplier'},
         {value: data.generate_image_cost_multiplier, name: 'Generate image cost multiplier'},
@@ -147,7 +118,7 @@ export const validateOrganizationForm = (data: OrganizationFormData): string | n
 
     for (const {value, name} of multipliers) {
         if (value < 0) {
-            return `${name} =5 <>65B 1KBL >B@8F0B5;L=K<`;
+            return `${name} что-то там`;
         }
     }
 

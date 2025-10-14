@@ -1,14 +1,14 @@
-import {organizationClient} from '../../../shared/api/organizationClient';
+import {organizationClient} from '../../../shared/api';
 import type {
+    CostMultiplier,
     CreateOrganizationRequest,
     CreateOrganizationResponse,
+    DeleteOrganizationResponse,
     GetAllOrganizationsResponse,
+    Organization,
+    UpdateCostMultiplierRequest,
     UpdateOrganizationRequest,
     UpdateOrganizationResponse,
-    DeleteOrganizationResponse,
-    Organization,
-    CostMultiplier,
-    UpdateCostMultiplierRequest,
 } from '../model/types';
 
 export const organizationApi = {
