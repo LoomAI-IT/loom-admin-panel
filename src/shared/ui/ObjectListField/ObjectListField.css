@@ -1,0 +1,236 @@
+/* Object List Field Container */
+.object-list-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    width: 100%;
+}
+
+/* Field Title */
+.object-list-field .field-title {
+    margin: 0;
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--color-text-primary);
+}
+
+/* ============ EDIT MODE ============ */
+
+/* Object List Edit Container */
+.object-list-edit {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+/* Object Item Edit Card */
+.object-item-edit-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-fast);
+}
+
+.object-item-edit-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* Object Item Edit Header */
+.object-item-edit-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.object-item-edit-header .object-item-title {
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    color: var(--color-text-primary);
+}
+
+.object-item-edit-header .remove-item-button {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-2xl);
+    line-height: 1;
+}
+
+/* Object Item Edit Fields Container */
+.object-item-edit-fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+/* Object Field Row */
+.object-field-row {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: flex-start;
+    padding: var(--spacing-md);
+    background-color: var(--color-gray-50);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.object-field-row:hover {
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Field Key Input in Object */
+.object-field-row .field-key-input {
+    flex: 0 0 200px;
+    min-width: 150px;
+}
+
+/* Field Value Textarea in Object */
+.object-field-row .textarea-wrapper {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Remove Field Button in Object */
+.object-field-row .remove-field-button {
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: 28px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-2xl);
+    line-height: 1;
+}
+
+/* Add Field Button in Object */
+.object-item-edit-fields .add-field-button {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+/* Add Item Button */
+.object-list-field > .add-item-button {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+/* ============ VIEW MODE ============ */
+
+/* Object List View Container */
+.object-list-view {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+/* Object Item View Card */
+.object-item-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background-color: var(--color-gray-50);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+}
+
+/* Object Item Header */
+.object-item-header {
+    display: flex;
+    align-items: center;
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.object-item-header .object-item-title {
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    color: var(--color-text-primary);
+}
+
+/* Object Item Fields Container */
+.object-item-fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+/* Object Field Item */
+.object-field-item {
+    display: flex;
+    gap: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.object-field-item:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+/* Field Key in View Mode */
+.object-field-item .field-key {
+    flex: 0 0 200px;
+    font-weight: var(--font-semibold);
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+}
+
+/* Field Value in View Mode */
+.object-field-item .field-value {
+    flex: 1;
+    color: var(--color-text-primary);
+    font-size: var(--text-sm);
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .object-item-edit-card {
+        padding: var(--spacing-md);
+    }
+
+    .object-field-row {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .object-field-row .field-key-input {
+        flex: 1;
+        width: 100%;
+    }
+
+    .object-field-row .remove-field-button {
+        align-self: flex-end;
+        margin-top: 0;
+    }
+
+    .object-field-item {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+
+    .object-field-item .field-key {
+        flex: none;
+    }
+}

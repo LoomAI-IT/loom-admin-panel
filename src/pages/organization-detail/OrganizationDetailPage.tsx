@@ -1,9 +1,6 @@
 import {useNavigate, useParams} from 'react-router-dom';
 import {organizationApi} from '../../entities/organization';
-import {OrganizationDetail} from '../../widgets/organization-detail';
 import {CategoriesTable} from '../../widgets/category-table';
-import {AutopostingTable} from '../../widgets/autoposting-table';
-import {EmployeesTable} from '../../widgets/employees-table';
 import {Button} from '../../shared/ui';
 import {useConfirmDialog, useNotification, useOrganizationData,} from '../../shared/lib/hooks';
 import {NotificationContainer} from '../../features/notification';
@@ -83,13 +80,13 @@ export const OrganizationDetailPage = () => {
                 </div>
 
                 <div className="organization-content">
-                    <OrganizationDetail organization={organization} costMultiplier={costMultiplier} onUpdate={reload}/>
+                    {/*<OrganizationDetail organization={organization} costMultiplier={costMultiplier} onUpdate={reload}/>*/}
 
                     <CategoriesTable organizationId={organization.id}/>
 
-                    <AutopostingTable organizationId={organization.id}/>
+                    {/*<AutopostingTable organizationId={organization.id}/>*/}
 
-                    <EmployeesTable organizationId={organization.id}/>
+                    {/*<EmployeesTable organizationId={organization.id}/>*/}
                 </div>
             </div>
         </>

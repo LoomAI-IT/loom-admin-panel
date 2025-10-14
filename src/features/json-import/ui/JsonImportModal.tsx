@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {Button, Modal, Textarea} from '../../../shared/ui';
+import {Button, DebouncedTextarea, Modal} from '../../../shared/ui';
 import './JsonImportModal.css';
 
 interface JsonImportModalProps {
@@ -34,7 +34,7 @@ export const JsonImportModal = ({isOpen, onClose, onImport, zIndex}: JsonImportM
     return (
         <Modal isOpen={isOpen} onClose={handleClose} title="Вставить JSON" zIndex={zIndex}>
             <div className="json-import-modal">
-                <Textarea
+                <DebouncedTextarea
                     value={jsonText}
                     onChange={(e) => setJsonText(e.target.value)}
                     placeholder="Вставьте JSON данные..."
