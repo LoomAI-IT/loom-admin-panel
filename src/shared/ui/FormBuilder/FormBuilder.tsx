@@ -210,6 +210,7 @@ export const FormBuilder = <TEntityFormData extends Record<string, any>>(
                 isOpen={jsonImportModal.isOpen}
                 onClose={jsonImportModal.close}
                 onImport={handleJsonImport}
+                zIndex={1200}
             />
             <Modal
                 isOpen={isOpen}
@@ -219,12 +220,14 @@ export const FormBuilder = <TEntityFormData extends Record<string, any>>(
                 <form className="form-builder" onSubmit={onSubmit}>
                     <div className="form-builder-actions">
                         <Button
+                            type="button"
                             variant="secondary"
                             onClick={jsonImportModal.open}
                             disabled={isSubmitting}
                             size="small"
                         >Вставить JSON</Button>
                         <Button
+                            type="button"
                             variant="secondary"
                             onClick={handleLoadJsonFile}
                             disabled={isSubmitting}
