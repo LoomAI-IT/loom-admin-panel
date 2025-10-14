@@ -1,0 +1,40 @@
+.confirm-dialog-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.confirm-dialog-icon {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.confirm-dialog-message {
+  flex: 1;
+  line-height: 1.5;
+}
+
+.confirm-dialog-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+/* Цветовые схемы для разных типов диалогов */
+.confirm-dialog-danger .confirm-dialog-icon {
+  color: var(--color-danger, #dc2626);
+}
+
+.confirm-dialog-warning .confirm-dialog-icon {
+  color: var(--color-warning, #f59e0b);
+}
+
+.confirm-dialog-success .confirm-dialog-icon {
+  color: var(--color-success, #10b981);
+}
+
+.confirm-dialog-info .confirm-dialog-icon {
+  color: var(--color-primary, #3b82f6);
+}
