@@ -628,7 +628,7 @@ export const CategoriesTable = (
                     </div>
                     <DetailsViewer<CategoryFormData>
                         sections={categoryDetailsSections}
-                        values={categoryForm.formData}
+                        values={categoryToForm(selectedCategory)}
                     />
                 </Modal>
             )}
