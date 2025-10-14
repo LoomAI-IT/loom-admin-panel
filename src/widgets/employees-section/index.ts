@@ -1,1 +1,1 @@
-export { EmployeesSection } from './ui/EmployeesSection';
+export {EmployeesSection} from './ui/EmployeesSection';

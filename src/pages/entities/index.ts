@@ -1,1 +1,1 @@
-export { EntitiesPage } from './EntitiesPage';
+export {EntitiesPage} from './EntitiesPage';

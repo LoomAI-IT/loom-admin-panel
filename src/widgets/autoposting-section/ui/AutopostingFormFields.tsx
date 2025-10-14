@@ -12,271 +12,271 @@
  * - Простая работа с формой через updateField
  */
 
-import { type AutopostingFormData } from '../../../entities/autoposting';
-import { Input, Textarea, ArrayField, GoodSamplesEditor } from '../../../shared/ui';
+import {type AutopostingFormData} from '../../../entities/autoposting';
+import {Input, Textarea, ArrayField, GoodSamplesEditor} from '../../../shared/ui';
 import '../../../widgets/categories-section/ui/CategoryFormFields.css';
 
 interface AutopostingFormFieldsProps {
-  formData: AutopostingFormData;
-  onChange: (data: AutopostingFormData) => void;
+    formData: AutopostingFormData;
+    onChange: (data: AutopostingFormData) => void;
 }
 
-export const AutopostingFormFields = ({ formData, onChange }: AutopostingFormFieldsProps) => {
-  // Универсальный обработчик для обновления полей формы
-  const updateField = <K extends keyof AutopostingFormData>(field: K, value: AutopostingFormData[K]) => {
-    onChange({ ...formData, [field]: value });
-  };
+export const AutopostingFormFields = ({formData, onChange}: AutopostingFormFieldsProps) => {
+    // Универсальный обработчик для обновления полей формы
+    const updateField = <K extends keyof AutopostingFormData>(field: K, value: AutopostingFormData[K]) => {
+        onChange({...formData, [field]: value});
+    };
 
-  return (
-    <div className="category-form-fields">
-      {/* Настройки автопостинга */}
-      <section className="form-section">
-        <h3 className="form-section-title">Настройки автопостинга</h3>
+    return (
+        <div className="category-form-fields">
+            {/* Настройки автопостинга */}
+            <section className="form-section">
+                <h3 className="form-section-title">Настройки автопостинга</h3>
 
-        <Input
-          label="Период в часах *"
-          type="text"
-          inputMode="numeric"
-          value={formData.period_in_hours}
-          onChange={(e) => updateField('period_in_hours', e.target.value)}
-          required
-          placeholder="24"
-        />
+                <Input
+                    label="Период в часах *"
+                    type="text"
+                    inputMode="numeric"
+                    value={formData.period_in_hours}
+                    onChange={(e) => updateField('period_in_hours', e.target.value)}
+                    required
+                    placeholder="24"
+                />
 
-        <Textarea
-          label="Промпт фильтра *"
-          value={formData.filter_prompt}
-          onChange={(e) => updateField('filter_prompt', e.target.value)}
-          placeholder="Введите промпт для фильтрации контента"
-          required
-        />
+                <Textarea
+                    label="Промпт фильтра *"
+                    value={formData.filter_prompt}
+                    onChange={(e) => updateField('filter_prompt', e.target.value)}
+                    placeholder="Введите промпт для фильтрации контента"
+                    required
+                />
 
-        <ArrayField
-          label="Telegram каналы"
-          value={formData.tg_channels}
-          onChange={(value) => updateField('tg_channels', value)}
-          placeholder="@channel_name"
-          variant="input"
-        />
+                <ArrayField
+                    label="Telegram каналы"
+                    value={formData.tg_channels}
+                    onChange={(value) => updateField('tg_channels', value)}
+                    placeholder="@channel_name"
+                    variant="input"
+                />
 
-        <div className="input-wrapper">
-          <label className="input-label">
-            <input
-              type="checkbox"
-              checked={formData.required_moderation}
-              onChange={(e) => updateField('required_moderation', e.target.checked)}
-              style={{ marginRight: '8px' }}
-            />
-            Требуется модерация
-          </label>
+                <div className="input-wrapper">
+                    <label className="input-label">
+                        <input
+                            type="checkbox"
+                            checked={formData.required_moderation}
+                            onChange={(e) => updateField('required_moderation', e.target.checked)}
+                            style={{marginRight: '8px'}}
+                        />
+                        Требуется модерация
+                    </label>
+                </div>
+
+                <div className="input-wrapper">
+                    <label className="input-label">
+                        <input
+                            type="checkbox"
+                            checked={formData.need_image}
+                            onChange={(e) => updateField('need_image', e.target.checked)}
+                            style={{marginRight: '8px'}}
+                        />
+                        Требуется изображение
+                    </label>
+                </div>
+            </section>
+
+            {/* Основная информация */}
+            <section className="form-section">
+                <h3 className="form-section-title">Основная информация рубрики</h3>
+
+                <Input
+                    label="Название рубрики *"
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => updateField('name', e.target.value)}
+                    required
+                    placeholder="Введите название"
+                />
+
+                <Textarea
+                    label="Цель *"
+                    value={formData.goal}
+                    onChange={(e) => updateField('goal', e.target.value)}
+                    placeholder="Введите цель рубрики"
+                    required
+                />
+
+                <Textarea
+                    label="Промпт для стиля изображения *"
+                    value={formData.prompt_for_image_style}
+                    onChange={(e) => updateField('prompt_for_image_style', e.target.value)}
+                    placeholder="Введите промпт для стиля изображения"
+                    required
+                />
+            </section>
+
+            {/* Структура контента */}
+            <section className="form-section">
+                <h3 className="form-section-title">Структура контента</h3>
+
+                <ArrayField
+                    label="Структура скелет *"
+                    value={formData.structure_skeleton}
+                    onChange={(value) => updateField('structure_skeleton', value)}
+                    placeholder="элемент структуры"
+                />
+
+                <div className="input-grid-2">
+                    <Input
+                        label="Мин. уровень гибкости *"
+                        type="text"
+                        inputMode="numeric"
+                        value={formData.structure_flex_level_min}
+                        onChange={(e) => updateField('structure_flex_level_min', e.target.value)}
+                        placeholder="0"
+                        required
+                    />
+                    <Input
+                        label="Макс. уровень гибкости *"
+                        type="text"
+                        inputMode="numeric"
+                        value={formData.structure_flex_level_max}
+                        onChange={(e) => updateField('structure_flex_level_max', e.target.value)}
+                        placeholder="100"
+                        required
+                    />
+                </div>
+
+                <Textarea
+                    label="Комментарий к уровню гибкости *"
+                    value={formData.structure_flex_level_comment}
+                    onChange={(e) => updateField('structure_flex_level_comment', e.target.value)}
+                    placeholder="Комментарий"
+                    required
+                />
+            </section>
+
+            {/* Правила контента */}
+            <section className="form-section">
+                <h3 className="form-section-title">Правила контента</h3>
+
+                <ArrayField
+                    label="Обязательные элементы *"
+                    value={formData.must_have}
+                    onChange={(value) => updateField('must_have', value)}
+                    placeholder="обязательный элемент"
+                />
+
+                <ArrayField
+                    label="Запрещённые элементы *"
+                    value={formData.must_avoid}
+                    onChange={(value) => updateField('must_avoid', value)}
+                    placeholder="запрещённый элемент"
+                />
+            </section>
+
+            {/* Параметры текста */}
+            <section className="form-section">
+                <h3 className="form-section-title">Параметры текста</h3>
+
+                <div className="input-grid-2">
+                    <Input
+                        label="Мин. длина текста *"
+                        type="text"
+                        inputMode="numeric"
+                        value={formData.len_min}
+                        onChange={(e) => updateField('len_min', e.target.value)}
+                        placeholder="0"
+                        required
+                    />
+                    <Input
+                        label="Макс. длина текста *"
+                        type="text"
+                        inputMode="numeric"
+                        value={formData.len_max}
+                        onChange={(e) => updateField('len_max', e.target.value)}
+                        placeholder="5000"
+                        required
+                    />
+                </div>
+
+                <div className="input-grid-2">
+                    <Input
+                        label="Мин. количество хэштегов *"
+                        type="text"
+                        inputMode="numeric"
+                        value={formData.n_hashtags_min}
+                        onChange={(e) => updateField('n_hashtags_min', e.target.value)}
+                        placeholder="0"
+                        required
+                    />
+                    <Input
+                        label="Макс. количество хэштегов *"
+                        type="text"
+                        inputMode="numeric"
+                        value={formData.n_hashtags_max}
+                        onChange={(e) => updateField('n_hashtags_max', e.target.value)}
+                        placeholder="10"
+                        required
+                    />
+                </div>
+
+                <Input
+                    label="Тип призыва к действию (CTA) *"
+                    type="text"
+                    value={formData.cta_type}
+                    onChange={(e) => updateField('cta_type', e.target.value)}
+                    placeholder="Например: подписка, покупка, лайк"
+                    required
+                />
+
+                <Textarea
+                    label="Правила для соцсетей *"
+                    value={formData.social_networks_rules}
+                    onChange={(e) => updateField('social_networks_rules', e.target.value)}
+                    placeholder="Правила публикации в соцсетях"
+                    required
+                />
+            </section>
+
+            {/* Стиль и тон */}
+            <section className="form-section">
+                <h3 className="form-section-title">Стиль и тон</h3>
+
+                <ArrayField
+                    label="Тон общения *"
+                    value={formData.tone_of_voice}
+                    onChange={(value) => updateField('tone_of_voice', value)}
+                    placeholder="тон общения"
+                />
+
+                <ArrayField
+                    label="Правила бренда *"
+                    value={formData.brand_rules}
+                    onChange={(value) => updateField('brand_rules', value)}
+                    placeholder="правило бренда"
+                />
+            </section>
+
+            {/* Примеры */}
+            <section className="form-section">
+                <h3 className="form-section-title">Хорошие примеры</h3>
+
+                <GoodSamplesEditor
+                    value={formData.good_samples}
+                    onChange={(value) => updateField('good_samples', value)}
+                />
+            </section>
+
+            {/* Дополнительная информация */}
+            <section className="form-section">
+                <h3 className="form-section-title">Дополнительная информация</h3>
+
+                <ArrayField
+                    value={formData.additional_info}
+                    onChange={(value) => updateField('additional_info', value)}
+                    placeholder="информацию"
+                />
+            </section>
         </div>
-
-        <div className="input-wrapper">
-          <label className="input-label">
-            <input
-              type="checkbox"
-              checked={formData.need_image}
-              onChange={(e) => updateField('need_image', e.target.checked)}
-              style={{ marginRight: '8px' }}
-            />
-            Требуется изображение
-          </label>
-        </div>
-      </section>
-
-      {/* Основная информация */}
-      <section className="form-section">
-        <h3 className="form-section-title">Основная информация рубрики</h3>
-
-        <Input
-          label="Название рубрики *"
-          type="text"
-          value={formData.name}
-          onChange={(e) => updateField('name', e.target.value)}
-          required
-          placeholder="Введите название"
-        />
-
-        <Textarea
-          label="Цель *"
-          value={formData.goal}
-          onChange={(e) => updateField('goal', e.target.value)}
-          placeholder="Введите цель рубрики"
-          required
-        />
-
-        <Textarea
-          label="Промпт для стиля изображения *"
-          value={formData.prompt_for_image_style}
-          onChange={(e) => updateField('prompt_for_image_style', e.target.value)}
-          placeholder="Введите промпт для стиля изображения"
-          required
-        />
-      </section>
-
-      {/* Структура контента */}
-      <section className="form-section">
-        <h3 className="form-section-title">Структура контента</h3>
-
-        <ArrayField
-          label="Структура скелет *"
-          value={formData.structure_skeleton}
-          onChange={(value) => updateField('structure_skeleton', value)}
-          placeholder="элемент структуры"
-        />
-
-        <div className="input-grid-2">
-          <Input
-            label="Мин. уровень гибкости *"
-            type="text"
-            inputMode="numeric"
-            value={formData.structure_flex_level_min}
-            onChange={(e) => updateField('structure_flex_level_min', e.target.value)}
-            placeholder="0"
-            required
-          />
-          <Input
-            label="Макс. уровень гибкости *"
-            type="text"
-            inputMode="numeric"
-            value={formData.structure_flex_level_max}
-            onChange={(e) => updateField('structure_flex_level_max', e.target.value)}
-            placeholder="100"
-            required
-          />
-        </div>
-
-        <Textarea
-          label="Комментарий к уровню гибкости *"
-          value={formData.structure_flex_level_comment}
-          onChange={(e) => updateField('structure_flex_level_comment', e.target.value)}
-          placeholder="Комментарий"
-          required
-        />
-      </section>
-
-      {/* Правила контента */}
-      <section className="form-section">
-        <h3 className="form-section-title">Правила контента</h3>
-
-        <ArrayField
-          label="Обязательные элементы *"
-          value={formData.must_have}
-          onChange={(value) => updateField('must_have', value)}
-          placeholder="обязательный элемент"
-        />
-
-        <ArrayField
-          label="Запрещённые элементы *"
-          value={formData.must_avoid}
-          onChange={(value) => updateField('must_avoid', value)}
-          placeholder="запрещённый элемент"
-        />
-      </section>
-
-      {/* Параметры текста */}
-      <section className="form-section">
-        <h3 className="form-section-title">Параметры текста</h3>
-
-        <div className="input-grid-2">
-          <Input
-            label="Мин. длина текста *"
-            type="text"
-            inputMode="numeric"
-            value={formData.len_min}
-            onChange={(e) => updateField('len_min', e.target.value)}
-            placeholder="0"
-            required
-          />
-          <Input
-            label="Макс. длина текста *"
-            type="text"
-            inputMode="numeric"
-            value={formData.len_max}
-            onChange={(e) => updateField('len_max', e.target.value)}
-            placeholder="5000"
-            required
-          />
-        </div>
-
-        <div className="input-grid-2">
-          <Input
-            label="Мин. количество хэштегов *"
-            type="text"
-            inputMode="numeric"
-            value={formData.n_hashtags_min}
-            onChange={(e) => updateField('n_hashtags_min', e.target.value)}
-            placeholder="0"
-            required
-          />
-          <Input
-            label="Макс. количество хэштегов *"
-            type="text"
-            inputMode="numeric"
-            value={formData.n_hashtags_max}
-            onChange={(e) => updateField('n_hashtags_max', e.target.value)}
-            placeholder="10"
-            required
-          />
-        </div>
-
-        <Input
-          label="Тип призыва к действию (CTA) *"
-          type="text"
-          value={formData.cta_type}
-          onChange={(e) => updateField('cta_type', e.target.value)}
-          placeholder="Например: подписка, покупка, лайк"
-          required
-        />
-
-        <Textarea
-          label="Правила для соцсетей *"
-          value={formData.social_networks_rules}
-          onChange={(e) => updateField('social_networks_rules', e.target.value)}
-          placeholder="Правила публикации в соцсетях"
-          required
-        />
-      </section>
-
-      {/* Стиль и тон */}
-      <section className="form-section">
-        <h3 className="form-section-title">Стиль и тон</h3>
-
-        <ArrayField
-          label="Тон общения *"
-          value={formData.tone_of_voice}
-          onChange={(value) => updateField('tone_of_voice', value)}
-          placeholder="тон общения"
-        />
-
-        <ArrayField
-          label="Правила бренда *"
-          value={formData.brand_rules}
-          onChange={(value) => updateField('brand_rules', value)}
-          placeholder="правило бренда"
-        />
-      </section>
-
-      {/* Примеры */}
-      <section className="form-section">
-        <h3 className="form-section-title">Хорошие примеры</h3>
-
-        <GoodSamplesEditor
-          value={formData.good_samples}
-          onChange={(value) => updateField('good_samples', value)}
-        />
-      </section>
-
-      {/* Дополнительная информация */}
-      <section className="form-section">
-        <h3 className="form-section-title">Дополнительная информация</h3>
-
-        <ArrayField
-          value={formData.additional_info}
-          onChange={(value) => updateField('additional_info', value)}
-          placeholder="информацию"
-        />
-      </section>
-    </div>
-  );
+    );
 };

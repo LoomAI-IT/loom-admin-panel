@@ -1,55 +1,55 @@
 .json-view-modal {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  width: 100%;
-  max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 100%;
 }
 
 @media (min-width: 768px) {
-  .json-view-modal {
-    width: 800px;
-  }
+    .json-view-modal {
+        width: 800px;
+    }
 }
 
 .json-content {
-  background-color: #1f2937;
-  color: #f3f4f6;
-  padding: 20px;
-  border-radius: 8px;
-  overflow: auto;
-  font-size: 13px;
-  font-family: 'Courier New', Monaco, monospace;
-  max-height: 60vh;
-  white-space: pre;
-  width: 100%;
-  box-sizing: border-box;
-  line-height: 1.6;
-  border: 1px solid #374151;
+    background-color: #1f2937;
+    color: #f3f4f6;
+    padding: 20px;
+    border-radius: 8px;
+    overflow: auto;
+    font-size: 13px;
+    font-family: 'Courier New', Monaco, monospace;
+    max-height: 60vh;
+    white-space: pre;
+    width: 100%;
+    box-sizing: border-box;
+    line-height: 1.6;
+    border: 1px solid #374151;
 }
 
 .json-content::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+    width: 10px;
+    height: 10px;
 }
 
 .json-content::-webkit-scrollbar-track {
-  background: #111827;
-  border-radius: 4px;
+    background: #111827;
+    border-radius: 4px;
 }
 
 .json-content::-webkit-scrollbar-thumb {
-  background: #4b5563;
-  border-radius: 4px;
+    background: #4b5563;
+    border-radius: 4px;
 }
 
 .json-content::-webkit-scrollbar-thumb:hover {
-  background: #6b7280;
+    background: #6b7280;
 }
 
 .modal-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  flex-wrap: wrap;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
 }

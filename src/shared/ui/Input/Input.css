@@ -1,54 +1,54 @@
 .input-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    width: 100%;
 }
 
 .input-label {
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  color: var(--color-text-primary);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-text-primary);
 }
 
 .input {
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-sm);
-  transition: border-color var(--transition-base);
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  font-family: inherit;
-  color: var(--color-text-primary);
-  background-color: var(--color-surface);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    transition: border-color var(--transition-base);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+    color: var(--color-text-primary);
+    background-color: var(--color-surface);
 }
 
 textarea.input {
-  resize: vertical !important;
-  min-height: 60px;
-  height: auto;
-  font-family: inherit;
+    resize: vertical !important;
+    min-height: 60px;
+    height: auto;
+    font-family: inherit;
 }
 
 .input:focus {
-  outline: none;
-  border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    outline: none;
+    border-color: var(--color-border-focus);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .input:disabled {
-  background-color: var(--color-gray-100);
-  cursor: not-allowed;
-  color: var(--color-text-disabled);
+    background-color: var(--color-gray-100);
+    cursor: not-allowed;
+    color: var(--color-text-disabled);
 }
 
 .input-error {
-  border-color: var(--color-danger);
+    border-color: var(--color-danger);
 }
 
 .input-error-message {
-  font-size: var(--text-xs);
-  color: var(--color-danger);
+    font-size: var(--text-xs);
+    color: var(--color-danger);
 }

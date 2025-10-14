@@ -1,158 +1,158 @@
 .object-list-editor {
-  background: var(--color-gray-50);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-xl);
-  margin-bottom: var(--spacing-xl);
+    background: var(--color-gray-50);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
 }
 
 .editor-title {
-  font-size: var(--text-base);
-  font-weight: var(--font-semibold);
-  color: var(--color-text-primary);
-  margin: 0 0 var(--spacing-lg) 0;
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-lg) 0;
 }
 
 /* View mode */
 .object-list-view {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-  max-height: 400px;
-  overflow-y: auto;
-  padding-right: var(--spacing-xs);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: var(--spacing-xs);
 }
 
 .object-item-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
 }
 
 .object-item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-md);
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .object-item-title {
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  color: var(--color-gray-700);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--color-gray-700);
 }
 
 .object-item-fields {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
 }
 
 .object-field-item {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: var(--spacing-md);
-  padding: var(--spacing-xs);
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: var(--spacing-md);
+    padding: var(--spacing-xs);
 }
 
 .field-key {
-  font-weight: var(--font-medium);
-  color: var(--color-gray-700);
+    font-weight: var(--font-medium);
+    color: var(--color-gray-700);
 }
 
 .field-value {
-  color: var(--color-text-secondary);
-  word-break: break-word;
-  white-space: pre-wrap;
+    color: var(--color-text-secondary);
+    word-break: break-word;
+    white-space: pre-wrap;
 }
 
 /* Edit mode */
 .object-list-edit {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-  max-height: 400px;
-  overflow-y: auto;
-  padding-right: var(--spacing-xs);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: var(--spacing-xs);
 }
 
 .object-item-edit-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
 }
 
 .object-item-edit-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-md);
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .remove-item-button {
-  margin: 0;
+    margin: 0;
 }
 
 .object-item-edit-fields {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
 }
 
 .object-field-row {
-  display: flex;
-  gap: var(--spacing-sm);
-  align-items: flex-start;
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: flex-start;
 }
 
 .field-key-input {
-  flex: 0 0 180px;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--color-gray-300);
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  font-family: inherit;
-  transition: border-color var(--transition-fast);
+    flex: 0 0 180px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-family: inherit;
+    transition: border-color var(--transition-fast);
 }
 
 .field-key-input:focus {
-  outline: none;
-  border-color: var(--color-primary-light);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    outline: none;
+    border-color: var(--color-primary-light);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .field-value-input {
-  flex: 1;
+    flex: 1;
 }
 
 .object-field-row .textarea-wrapper {
-  flex: 1;
+    flex: 1;
 }
 
 .object-field-row .textarea {
-  min-height: 38px;
+    min-height: 38px;
 }
 
 .remove-field-button {
-  flex-shrink: 0;
-  font-size: var(--text-xl);
-  line-height: 1;
-  padding: var(--spacing-sm) 10px !important;
-  min-width: auto;
-  margin-top: 2px;
+    flex-shrink: 0;
+    font-size: var(--text-xl);
+    line-height: 1;
+    padding: var(--spacing-sm) 10px !important;
+    min-width: auto;
+    margin-top: 2px;
 }
 
 .add-field-button {
-  align-self: flex-start;
-  margin-top: var(--spacing-xs);
+    align-self: flex-start;
+    margin-top: var(--spacing-xs);
 }
 
 .add-item-button {
-  margin-top: var(--spacing-md);
+    margin-top: var(--spacing-md);
 }

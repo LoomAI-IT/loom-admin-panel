@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import {useState, useCallback} from 'react';
 
 /**
  * Хук для управления диалогами подтверждения
@@ -9,156 +9,156 @@ import { useState, useCallback } from 'react';
 export type ConfirmDialogType = 'info' | 'warning' | 'danger' | 'success';
 
 export interface ConfirmDialogState {
-  isOpen: boolean;
-  title: string;
-  message: string;
-  type: ConfirmDialogType;
-  confirmText?: string;
-  cancelText?: string;
-  onConfirm?: () => void | Promise<void>;
-  onCancel?: () => void;
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: ConfirmDialogType;
+    confirmText?: string;
+    cancelText?: string;
+    onConfirm?: () => void | Promise<void>;
+    onCancel?: () => void;
 }
 
 interface UseConfirmDialogReturn {
-  // Состояние диалога
-  dialog: ConfirmDialogState;
-  isProcessing: boolean;
+    // Состояние диалога
+    dialog: ConfirmDialogState;
+    isProcessing: boolean;
 
-  // Методы управления
-  confirm: (config: Omit<ConfirmDialogState, 'isOpen'>) => void;
-  close: () => void;
-  handleConfirm: () => Promise<void>;
-  handleCancel: () => void;
+    // Методы управления
+    confirm: (config: Omit<ConfirmDialogState, 'isOpen'>) => void;
+    close: () => void;
+    handleConfirm: () => Promise<void>;
+    handleCancel: () => void;
 
-  // Утилиты для быстрого создания диалогов
-  confirmDelete: (entityName: string, onConfirm: () => void | Promise<void>) => void;
-  confirmAction: (title: string, message: string, onConfirm: () => void | Promise<void>) => void;
-  showInfo: (title: string, message: string) => void;
-  showWarning: (title: string, message: string) => void;
+    // Утилиты для быстрого создания диалогов
+    confirmDelete: (entityName: string, onConfirm: () => void | Promise<void>) => void;
+    confirmAction: (title: string, message: string, onConfirm: () => void | Promise<void>) => void;
+    showInfo: (title: string, message: string) => void;
+    showWarning: (title: string, message: string) => void;
 }
 
 const defaultState: ConfirmDialogState = {
-  isOpen: false,
-  title: '',
-  message: '',
-  type: 'info',
-  confirmText: 'Подтвердить',
-  cancelText: 'Отмена',
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info',
+    confirmText: 'Подтвердить',
+    cancelText: 'Отмена',
 };
 
 export const useConfirmDialog = (): UseConfirmDialogReturn => {
-  const [dialog, setDialog] = useState<ConfirmDialogState>(defaultState);
-  const [isProcessing, setIsProcessing] = useState(false);
+    const [dialog, setDialog] = useState<ConfirmDialogState>(defaultState);
+    const [isProcessing, setIsProcessing] = useState(false);
 
-  // Открыть диалог с заданной конфигурацией
-  const confirm = useCallback((config: Omit<ConfirmDialogState, 'isOpen'>) => {
-    setDialog({
-      isOpen: true,
-      confirmText: 'Подтвердить',
-      cancelText: 'Отмена',
-      ...config,
-    });
-  }, []);
+    // Открыть диалог с заданной конфигурацией
+    const confirm = useCallback((config: Omit<ConfirmDialogState, 'isOpen'>) => {
+        setDialog({
+            isOpen: true,
+            confirmText: 'Подтвердить',
+            cancelText: 'Отмена',
+            ...config,
+        });
+    }, []);
 
-  // Закрыть диалог
-  const close = useCallback(() => {
-    setDialog(defaultState);
-    setIsProcessing(false);
-  }, []);
+    // Закрыть диалог
+    const close = useCallback(() => {
+        setDialog(defaultState);
+        setIsProcessing(false);
+    }, []);
 
-  // Обработать подтверждение
-  const handleConfirm = useCallback(async () => {
-    if (!dialog.onConfirm) {
-      close();
-      return;
-    }
+    // Обработать подтверждение
+    const handleConfirm = useCallback(async () => {
+        if (!dialog.onConfirm) {
+            close();
+            return;
+        }
 
-    try {
-      setIsProcessing(true);
-      await dialog.onConfirm();
-      close();
-    } catch (error) {
-      console.error('Error during confirmation:', error);
-      // Не закрываем диалог при ошибке, чтобы пользователь мог повторить
-      setIsProcessing(false);
-    }
-  }, [dialog.onConfirm, close]);
+        try {
+            setIsProcessing(true);
+            await dialog.onConfirm();
+            close();
+        } catch (error) {
+            console.error('Error during confirmation:', error);
+            // Не закрываем диалог при ошибке, чтобы пользователь мог повторить
+            setIsProcessing(false);
+        }
+    }, [dialog.onConfirm, close]);
 
-  // Обработать отмену
-  const handleCancel = useCallback(() => {
-    if (dialog.onCancel) {
-      dialog.onCancel();
-    }
-    close();
-  }, [dialog.onCancel, close]);
+    // Обработать отмену
+    const handleCancel = useCallback(() => {
+        if (dialog.onCancel) {
+            dialog.onCancel();
+        }
+        close();
+    }, [dialog.onCancel, close]);
 
-  // Утилита для подтверждения удаления
-  const confirmDelete = useCallback((entityName: string, onConfirm: () => void | Promise<void>) => {
-    confirm({
-      title: 'Удалить элемент',
-      message: `Вы уверены, что хотите удалить "${entityName}"? Это действие нельзя отменить.`,
-      type: 'danger',
-      confirmText: 'Удалить',
-      cancelText: 'Отмена',
-      onConfirm,
-    });
-  }, [confirm]);
+    // Утилита для подтверждения удаления
+    const confirmDelete = useCallback((entityName: string, onConfirm: () => void | Promise<void>) => {
+        confirm({
+            title: 'Удалить элемент',
+            message: `Вы уверены, что хотите удалить "${entityName}"? Это действие нельзя отменить.`,
+            type: 'danger',
+            confirmText: 'Удалить',
+            cancelText: 'Отмена',
+            onConfirm,
+        });
+    }, [confirm]);
 
-  // Утилита для подтверждения действия
-  const confirmAction = useCallback(
-    (title: string, message: string, onConfirm: () => void | Promise<void>) => {
-      confirm({
-        title,
-        message,
-        type: 'warning',
-        confirmText: 'Подтвердить',
-        cancelText: 'Отмена',
-        onConfirm,
-      });
-    },
-    [confirm]
-  );
+    // Утилита для подтверждения действия
+    const confirmAction = useCallback(
+        (title: string, message: string, onConfirm: () => void | Promise<void>) => {
+            confirm({
+                title,
+                message,
+                type: 'warning',
+                confirmText: 'Подтвердить',
+                cancelText: 'Отмена',
+                onConfirm,
+            });
+        },
+        [confirm]
+    );
 
-  // Утилита для информационного диалога
-  const showInfo = useCallback(
-    (title: string, message: string) => {
-      confirm({
-        title,
-        message,
-        type: 'info',
-        confirmText: 'ОК',
-        onConfirm: close,
-      });
-    },
-    [confirm, close]
-  );
+    // Утилита для информационного диалога
+    const showInfo = useCallback(
+        (title: string, message: string) => {
+            confirm({
+                title,
+                message,
+                type: 'info',
+                confirmText: 'ОК',
+                onConfirm: close,
+            });
+        },
+        [confirm, close]
+    );
 
-  // Утилита для предупреждающего диалога
-  const showWarning = useCallback(
-    (title: string, message: string) => {
-      confirm({
-        title,
-        message,
-        type: 'warning',
-        confirmText: 'Понятно',
-        onConfirm: close,
-      });
-    },
-    [confirm, close]
-  );
+    // Утилита для предупреждающего диалога
+    const showWarning = useCallback(
+        (title: string, message: string) => {
+            confirm({
+                title,
+                message,
+                type: 'warning',
+                confirmText: 'Понятно',
+                onConfirm: close,
+            });
+        },
+        [confirm, close]
+    );
 
-  return {
-    dialog,
-    isProcessing,
+    return {
+        dialog,
+        isProcessing,
 
-    confirm,
-    close,
-    handleConfirm,
-    handleCancel,
+        confirm,
+        close,
+        handleConfirm,
+        handleCancel,
 
-    confirmDelete,
-    confirmAction,
-    showInfo,
-    showWarning,
-  };
+        confirmDelete,
+        confirmAction,
+        showInfo,
+        showWarning,
+    };
 };

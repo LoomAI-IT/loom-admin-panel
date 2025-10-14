@@ -1,2 +1,2 @@
-export { OrganizationsListPage } from './OrganizationsListPage';
-export { OrganizationDetailPage } from './OrganizationDetailPage';
+export {OrganizationsListPage} from './OrganizationsListPage';
+export {OrganizationDetailPage} from './OrganizationDetailPage';

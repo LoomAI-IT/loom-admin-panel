@@ -1,16 +1,16 @@
-import { Navigate } from 'react-router-dom';
-import { useAuthStore } from '../../features/auth';
+import {Navigate} from 'react-router-dom';
+import {useAuthStore} from '../../features/auth';
 
 interface PrivateRouteProps {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }
 
-export const PrivateRoute = ({ children }: PrivateRouteProps) => {
-  const { isAuthenticated } = useAuthStore();
+export const PrivateRoute = ({children}: PrivateRouteProps) => {
+    const {isAuthenticated} = useAuthStore();
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace/>;
+    }
 
-  return <>{children}</>;
+    return <>{children}</>;
 };

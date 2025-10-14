@@ -1,1 +1,1 @@
-export { GoodSamplesEditor } from './GoodSamplesEditor';
+export {GoodSamplesEditor} from './GoodSamplesEditor';

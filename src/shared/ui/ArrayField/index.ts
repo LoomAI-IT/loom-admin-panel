@@ -1,1 +1,1 @@
-export { ArrayField } from './ArrayField';
+export {ArrayField} from './ArrayField';
