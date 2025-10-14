@@ -14,13 +14,11 @@ import {
     jsonToForm,
     validateAutopostingForm,
 } from '../../../entities/autoposting';
-import {Button, Modal, DataTable, type DataTableColumn, type DataTableAction} from '../../../shared/ui';
+import {Button, DataTable, type DataTableAction, type DataTableColumn, Modal} from '../../../shared/ui';
 import {useConfirmDialog, useEntityForm, useEntityList, useModal, useNotification,} from '../../../shared/lib/hooks';
 import {JsonImportModal, loadJsonFromFile} from '../../../features/json-import';
 import {NotificationContainer} from '../../../features/notification';
 import {ConfirmDialog} from '../../../features/confirmation-dialog';
-import {AutopostingFormFields} from './AutopostingFormFields';
-import {AutopostingDetailsModal} from './AutopostingDetailsModal';
 import '../../category-table/ui/CategoriesTable.css';
 
 interface AutopostingTableProps {
@@ -270,7 +268,8 @@ export const AutopostingTable = ({organizationId}: AutopostingTableProps) => {
         },
         {
             label: 'Включить/Отключить',
-            onClick: () => {}, // пустой onClick, т.к. используем custom render
+            onClick: () => {
+            }, // пустой onClick, т.к. используем custom render
             render: (autoposting) => (
                 <Button
                     size="small"

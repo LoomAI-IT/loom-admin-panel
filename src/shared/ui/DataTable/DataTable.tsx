@@ -1,11 +1,11 @@
-import {ReactNode} from 'react';
-import {Button, Table, TableHeader, TableBody, TableRow, TableCell} from '../';
+import {JSX, ReactNode} from 'react';
+import {Button, Table, TableBody, TableCell, TableHeader, TableRow} from '../';
 import './DataTable.css';
 
 export interface DataTableColumn<T> {
     header: string;
     key?: keyof T;
-    render?: (item: T) => ReactNode;
+    render?: (item: T) => JSX.Element;
     className?: string;
 }
 
@@ -30,18 +30,20 @@ interface DataTableProps<T> {
     getRowKey: (item: T) => string | number;
 }
 
-export const DataTable = <T,>({
-    title,
-    data,
-    columns,
-    actions = [],
-    loading = false,
-    error = null,
-    emptyMessage = 'Нет данных',
-    onAdd,
-    addButtonLabel = 'Добавить',
-    getRowKey,
-}: DataTableProps<T>) => {
+export const DataTable = <T, >(
+    {
+        title,
+        data,
+        columns,
+        actions = [],
+        loading = false,
+        error = null,
+        emptyMessage = 'Нет данных',
+        onAdd,
+        addButtonLabel = 'Добавить',
+        getRowKey,
+    }: DataTableProps<T>
+) => {
     if (loading) {
         return <div className="data-table-section loading">Загрузка...</div>;
     }
@@ -90,8 +92,8 @@ export const DataTable = <T,>({
                                         {col.render
                                             ? col.render(item)
                                             : col.key
-                                            ? String(item[col.key])
-                                            : ''}
+                                                ? String(item[col.key])
+                                                : ''}
                                     </TableCell>
                                 ))}
                                 {actions.map((action, actionIdx) => (

@@ -1,5 +1,6 @@
+import * as React from 'react';
 import {ReactNode} from 'react';
-import {DebouncedInput, DebouncedTextarea, StringListField, ObjectListField} from '../';
+import {DebouncedInput, DebouncedTextarea, ObjectListField, StringListField} from '../';
 import './FormBuilder.css';
 
 export type FormFieldType = 'input' | 'textarea' | 'stringList' | 'objectList' | 'checkbox' | 'custom';
@@ -31,13 +32,15 @@ interface FormBuilderProps<T> {
     children?: ReactNode;
 }
 
-export const FormBuilder = <T extends Record<string, any>>({
-    sections,
-    values,
-    onChange,
-    onSubmit,
-    children,
-}: FormBuilderProps<T>) => {
+export const FormBuilder = <T extends Record<string, any>>(
+    {
+        sections,
+        values,
+        onChange,
+        onSubmit,
+        children,
+    }: FormBuilderProps<T>
+) => {
     const updateField = <K extends keyof T>(field: K, value: T[K]) => {
         onChange({...values, [field]: value});
     };

@@ -9,10 +9,6 @@ interface ConfirmDialogProps {
     onCancel: () => void;
 }
 
-/**
- * Компонент диалога подтверждения
- * Заменяет стандартные alert() и confirm()
- */
 export const ConfirmDialog = ({dialog, isProcessing, onConfirm, onCancel}: ConfirmDialogProps) => {
     if (!dialog.isOpen) return null;
 
