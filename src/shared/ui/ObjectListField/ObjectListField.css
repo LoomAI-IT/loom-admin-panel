@@ -1,0 +1,58 @@
+.object-list-field {
+  width: 100%;
+  margin-bottom: var(--spacing-4);
+}
+
+.object-list-field-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-2);
+}
+
+.object-list-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
+}
+
+.object-list-item {
+  padding: var(--spacing-4);
+  background-color: var(--color-gray-50);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  animation: slideInUp var(--transition-fast) ease-out;
+  transition: all var(--transition-fast);
+}
+
+.object-list-item:hover {
+  box-shadow: var(--shadow-sm);
+  border-color: var(--color-gray-300);
+}
+
+.object-list-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-3);
+  padding-bottom: var(--spacing-2);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.object-list-item-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+}
+
+.object-list-item-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-3);
+}
+
+.object-list-add-button {
+  width: 100%;
+}

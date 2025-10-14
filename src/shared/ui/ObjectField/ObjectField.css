@@ -1,0 +1,42 @@
+.object-field {
+  width: 100%;
+  margin-bottom: var(--spacing-4);
+}
+
+.object-field-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-2);
+}
+
+.object-field-container {
+  padding: var(--spacing-4);
+  background-color: var(--color-gray-50);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+}
+
+.object-field-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
+}
+
+.object-field-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: var(--spacing-2);
+  align-items: flex-start;
+  animation: slideInUp var(--transition-fast) ease-out;
+}
+
+.object-field-item-actions {
+  padding-top: calc(var(--spacing-3) + 8px);
+}
+
+.object-field-add-button {
+  width: 100%;
+}

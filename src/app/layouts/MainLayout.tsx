@@ -6,10 +6,12 @@ import './MainLayout.css';
 
 export const MainLayout = () => {
     return (
-        <div>
+        <div className="main-layout">
             <Sidebar/>
-            <main>
-                <Outlet/>
+            <main className="main-layout-content">
+                <div className="main-layout-container">
+                    <Outlet/>
+                </div>
             </main>
         </div>
     );

@@ -25,35 +25,37 @@ export const ConfirmDialog = ({dialog, isProcessing, onConfirm, onCancel}: Confi
         }
     };
 
-    return (
-        <Modal
-            isOpen={dialog.isOpen}
-            onClose={onCancel}
-            title={dialog.title}
-        >
-            <div>
-                <div>{getTypeIcon()}</div>
-                <div>{dialog.message}</div>
-            </div>
+    if (!dialog.isOpen) return null;
 
-            <div>
-                {dialog.cancelText && (
-                    <Button
-                        variant="secondary"
-                        onClick={onCancel}
-                        disabled={isProcessing}
-                    >
-                        {dialog.cancelText}
-                    </Button>
-                )}
-                <Button
-                    variant={dialog.type === 'danger' ? 'danger' : 'primary'}
-                    onClick={onConfirm}
-                    disabled={isProcessing}
-                >
-                    {isProcessing ? 'Обработка...' : dialog.confirmText}
-                </Button>
+    return (
+        <div className="confirm-dialog-overlay" onClick={onCancel}>
+            <div className={`confirm-dialog confirm-dialog--${dialog.type || 'info'}`} onClick={(e) => e.stopPropagation()}>
+                <div className="confirm-dialog-content">
+                    <div className="confirm-dialog-icon">
+                        {getTypeIcon()}
+                    </div>
+                    <h3 className="confirm-dialog-title">{dialog.title}</h3>
+                    <p className="confirm-dialog-message">{dialog.message}</p>
+                    <div className="confirm-dialog-actions">
+                        {dialog.cancelText && (
+                            <Button
+                                variant="secondary"
+                                onClick={onCancel}
+                                disabled={isProcessing}
+                            >
+                                {dialog.cancelText}
+                            </Button>
+                        )}
+                        <Button
+                            variant={dialog.type === 'danger' ? 'danger' : 'primary'}
+                            onClick={onConfirm}
+                            loading={isProcessing}
+                        >
+                            {dialog.confirmText}
+                        </Button>
+                    </div>
+                </div>
             </div>
-        </Modal>
+        </div>
     );
 };

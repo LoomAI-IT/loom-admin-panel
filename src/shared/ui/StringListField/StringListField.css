@@ -1,0 +1,40 @@
+.string-list-field {
+  width: 100%;
+  margin-bottom: var(--spacing-4);
+}
+
+.string-list-field-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-2);
+}
+
+.string-list-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
+}
+
+.string-list-item {
+  display: flex;
+  gap: var(--spacing-2);
+  align-items: flex-start;
+  animation: slideInUp var(--transition-fast) ease-out;
+}
+
+.string-list-item-input {
+  flex: 1;
+}
+
+.string-list-item-actions {
+  display: flex;
+  gap: var(--spacing-1);
+  padding-top: calc(var(--spacing-3) + 8px);
+}
+
+.string-list-add-button {
+  width: 100%;
+}

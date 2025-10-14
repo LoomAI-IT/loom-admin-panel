@@ -184,20 +184,22 @@ export const FormBuilder = <TEntityFormData extends Record<string, any>>(
         });
 
         return (
-            <section key={section.title}>
-                <h3>{section.title}</h3>
-                {processedFields.map((fieldOrGroup, idx) => {
-                    if (Array.isArray(fieldOrGroup)) {
-                        return (
-                            <div key={idx}>
-                                {fieldOrGroup.map((field) => (
-                                    <div key={field.name}>{renderField(field)}</div>
-                                ))}
-                            </div>
-                        );
-                    }
-                    return <div key={fieldOrGroup.name}>{renderField(fieldOrGroup)}</div>;
-                })}
+            <section key={section.title} className="form-builder-section">
+                <h3 className="form-builder-section-title">{section.title}</h3>
+                <div className="form-builder-fields">
+                    {processedFields.map((fieldOrGroup, idx) => {
+                        if (Array.isArray(fieldOrGroup)) {
+                            return (
+                                <div key={idx} className="form-builder-field-group">
+                                    {fieldOrGroup.map((field) => (
+                                        <div key={field.name}>{renderField(field)}</div>
+                                    ))}
+                                </div>
+                            );
+                        }
+                        return <div key={fieldOrGroup.name}>{renderField(fieldOrGroup)}</div>;
+                    })}
+                </div>
             </section>
         );
     };
@@ -214,8 +216,8 @@ export const FormBuilder = <TEntityFormData extends Record<string, any>>(
                 onClose={onClose}
                 title={title}
             >
-                <form onSubmit={onSubmit}>
-                    <div>
+                <form className="form-builder" onSubmit={onSubmit}>
+                    <div className="form-builder-actions">
                         <Button
                             variant="secondary"
                             onClick={jsonImportModal.open}
@@ -229,10 +231,10 @@ export const FormBuilder = <TEntityFormData extends Record<string, any>>(
                             size="small"
                         >Загрузить JSON</Button>
                     </div>
-                    <div>
+                    <div className="form-builder-sections">
                         {sections.map((section) => renderSection(section))}
                     </div>
-                    <div>
+                    <div className="form-builder-footer">
                         <Button
                             type="button"
                             variant="secondary"
@@ -241,8 +243,8 @@ export const FormBuilder = <TEntityFormData extends Record<string, any>>(
                         >Отмена</Button>
                         <Button
                             type="submit"
-                            disabled={isSubmitting}
-                        >{isSubmitting ? 'Сохранение...' : 'Сохранить'}</Button>
+                            loading={isSubmitting}
+                        >Сохранить</Button>
                     </div>
                 </form>
             </Modal>

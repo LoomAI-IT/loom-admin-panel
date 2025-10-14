@@ -1,0 +1,27 @@
+.main-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-background-secondary);
+}
+
+.main-layout-content {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  padding: var(--spacing-6);
+  min-height: 100vh;
+  transition: margin-left var(--transition-base);
+  animation: fadeIn var(--transition-base) ease-out;
+}
+
+.main-layout-container {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .main-layout-content {
+    margin-left: 0;
+    padding: var(--spacing-4);
+  }
+}
