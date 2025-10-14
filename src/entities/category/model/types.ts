@@ -1,4 +1,4 @@
-import {DetailSection, FormSection} from "../../../shared/ui";
+import type {DetailSection, FormSection} from "../../../shared/ui";
 import type {CategoryFormData} from "../lib/transformers.ts";
 
 export interface Category {

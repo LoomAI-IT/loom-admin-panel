@@ -4,6 +4,8 @@ export type {
     CreateCategoryRequest,
     UpdateCategoryRequest,
     CategoryResponse,
+} from './model/types';
+export {
     categoryDetailsSections,
     categoryFormSections
 } from './model/types';
