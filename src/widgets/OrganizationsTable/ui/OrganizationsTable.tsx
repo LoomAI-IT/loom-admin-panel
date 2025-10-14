@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {useCallback} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {
     type Organization,
     organizationApi,
@@ -24,6 +25,8 @@ import {NotificationContainer} from '../../../features/notification';
 import {ConfirmDialog} from '../../../features/confirmation-dialog';
 
 export const OrganizationsTable = () => {
+    const navigate = useNavigate();
+
     const loadOrganizations = useCallback(
         async () => {
             const response = await organizationApi.getAll();
@@ -83,6 +86,10 @@ export const OrganizationsTable = () => {
         }
     };
 
+    const handleOpenDetails = (organization: Organization) => {
+        navigate(`/organizations/${organization.id}`);
+    };
+
     const handleDelete = (organization: Organization) => {
         confirmDialog.confirm({
             title: 'Удалить организацию',
@@ -124,6 +131,11 @@ export const OrganizationsTable = () => {
     ];
 
     const actions: DataTableAction<Organization>[] = [
+        {
+            label: 'Детали',
+            onClick: handleOpenDetails,
+            variant: 'secondary',
+        },
         {
             label: 'Удалить',
             onClick: handleDelete,

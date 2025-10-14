@@ -2,6 +2,7 @@ import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
 import {LoginPage} from '../../pages/Login';
 import {MainMenuPage} from '../../pages/MainMenu';
 import {OrganizationsMenuPage} from '../../pages/OrganizationsMenu';
+import {OrganizationDetailPage} from '../../pages/OrganizationDetail';
 import {MainLayout} from '../layouts/MainLayout';
 import {PrivateRoute} from './PrivateRoute';
 
@@ -20,6 +21,7 @@ export const AppRouter = () => {
                 >
                     <Route index element={<MainMenuPage/>}/>
                     <Route path="organizations" element={<OrganizationsMenuPage/>}/>
+                    <Route path="organizations/:organizationId" element={<OrganizationDetailPage/>}/>
                 </Route>
                 <Route path="*" element={<Navigate to="/" replace/>}/>
             </Routes>
