@@ -1,0 +1,51 @@
+.select-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.select-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.select-required {
+    color: #ef4444;
+    margin-left: 4px;
+}
+
+.select-input {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background-color: white;
+    color: #1f2937;
+    transition: all 0.2s;
+    cursor: pointer;
+    outline: none;
+}
+
+.select-input:hover:not(:disabled) {
+    border-color: #9ca3af;
+}
+
+.select-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.select-input:disabled {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.select-input option {
+    padding: 8px;
+}
+
+.select-input option:disabled {
+    color: #9ca3af;
+}

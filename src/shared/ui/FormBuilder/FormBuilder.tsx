@@ -1,12 +1,13 @@
 import * as React from 'react';
 import {ReactNode} from 'react';
 import {JsonImportModal, loadJsonFromFile} from "../../../features/json-import";
-import {Button, DebouncedInput, DebouncedTextarea, Modal, ObjectField, ObjectListField, StringListField} from '../';
+import {Button, DebouncedInput, DebouncedTextarea, Modal, ObjectField, ObjectListField, Select, StringListField} from '../';
+import type {SelectOption} from '../';
 import {useModal, useNotification} from "../../lib/hooks";
 
 import './FormBuilder.css';
 
-export type FormFieldType = 'input' | 'textarea' | 'stringList' | 'objectList' | 'object' | 'checkbox' | 'custom';
+export type FormFieldType = 'input' | 'textarea' | 'stringList' | 'objectList' | 'object' | 'checkbox' | 'select' | 'custom';
 
 export interface FormField<TEntityFormData = any> {
     name: string;
@@ -17,6 +18,7 @@ export interface FormField<TEntityFormData = any> {
     inputMode?: 'text' | 'numeric' | 'tel' | 'email' | 'url';
     inputType?: string;
     debounceDelay?: number;
+    options?: SelectOption[];
     customRender?: (value: any, onChange: (value: any) => void) => ReactNode;
     groupWith?: string[];
 }
@@ -172,6 +174,18 @@ export const FormBuilder = <TEntityFormData extends Record<string, any>>(
                             {field.label}
                         </label>
                     </div>
+                );
+
+            case 'select':
+                return (
+                    <Select
+                        label={field.label}
+                        value={String(value || '')}
+                        onChange={(newValue) => updateField(field.name as keyof TEntityFormData, newValue as TEntityFormData[keyof TEntityFormData])}
+                        options={field.options || []}
+                        placeholder={field.placeholder}
+                        required={field.required}
+                    />
                 );
 
             default:

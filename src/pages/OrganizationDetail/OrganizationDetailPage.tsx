@@ -1,8 +1,8 @@
-import * as React from 'react';
 import {useParams} from 'react-router-dom';
 
 import {CategoriesTable} from '../../widgets/CategoriesTable';
 import {AutopostingsTable} from '../../widgets/AutopostingsTable';
+import {EmployeesTable} from '../../widgets/EmployeesTable';
 import {OrganizationDetail} from '../../widgets/OrganizationDetail';
 
 import './OrganizationDetailPage.css';
@@ -27,6 +27,8 @@ export const OrganizationDetailPage = () => {
             <CategoriesTable organizationId={Number(organizationId)}/>
 
             <AutopostingsTable organizationId={Number(organizationId)}/>
+
+            <EmployeesTable organizationId={Number(organizationId)}/>
         </div>
     );
 };

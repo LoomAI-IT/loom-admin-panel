@@ -7,6 +7,8 @@ export {Table, TableHeader, TableBody, TableRow, TableCell} from './Table';
 export {StringListField} from './StringListField';
 export {ObjectListField} from './ObjectListField';
 export {ObjectField} from './ObjectField';
+export {Select} from './Select';
+export type {SelectOption} from './Select';
 export {DataTable} from './DataTable';
 export type {DataTableColumn, DataTableAction} from './DataTable';
 export {FormBuilder} from './FormBuilder';

@@ -153,3 +153,26 @@ export const hasPermissionsChanged = (
 export const hasRoleChanged = (formData: EmployeeEditFormData, employee: Employee): boolean => {
     return formData.role !== employee.role;
 };
+
+/**
+ * Преобразует JSON в форму создания сотрудника (для импорта)
+ */
+export const jsonToEmployeeCreateForm = (jsonData: any): EmployeeCreateFormData => ({
+    account_id: jsonData.account_id?.toString() || '',
+    name: jsonData.name || '',
+    role: jsonData.role || 'employee',
+});
+
+/**
+ * Преобразует JSON в форму редактирования сотрудника (для импорта)
+ */
+export const jsonToEmployeeEditForm = (jsonData: any): EmployeeEditFormData => ({
+    name: jsonData.name || '',
+    role: jsonData.role || 'employee',
+    required_moderation: jsonData.required_moderation ?? false,
+    autoposting_permission: jsonData.autoposting_permission ?? false,
+    add_employee_permission: jsonData.add_employee_permission ?? false,
+    edit_employee_perm_permission: jsonData.edit_employee_perm_permission ?? false,
+    top_up_balance_permission: jsonData.top_up_balance_permission ?? false,
+    sign_up_social_net_permission: jsonData.sign_up_social_net_permission ?? false,
+});

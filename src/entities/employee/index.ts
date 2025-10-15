@@ -11,4 +11,9 @@ export type {
     UpdateEmployeeRoleResponse,
     DeleteEmployeeResponse,
 } from './model/types';
+export {
+    employeeCreateFormSections,
+    employeeEditFormSections,
+    employeeDetailsSections,
+} from './model/types';
 export * from './lib/transformers';

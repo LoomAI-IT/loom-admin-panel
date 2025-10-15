@@ -1,3 +1,6 @@
+import type {DetailSection, FormSection} from "../../../shared/ui";
+import type {EmployeeCreateFormData, EmployeeEditFormData} from "../lib/transformers";
+
 export const EmployeeRole = {
     ADMIN: 'admin',
     MODERATOR: 'moderator',
@@ -66,3 +69,145 @@ export interface UpdateEmployeeRoleResponse {
 export interface DeleteEmployeeResponse {
     message: string;
 }
+
+export const employeeRoleOptions = [
+    {value: EmployeeRole.ADMIN, label: 'Администратор'},
+    {value: EmployeeRole.MODERATOR, label: 'Модератор'},
+    {value: EmployeeRole.EMPLOYEE, label: 'Сотрудник'},
+];
+
+export const employeeCreateFormSections: FormSection<EmployeeCreateFormData>[] = [
+    {
+        title: 'Основная информация',
+        fields: [
+            {
+                name: 'account_id',
+                type: 'input',
+                label: 'Account ID',
+                placeholder: 'Введите ID аккаунта',
+                required: true,
+                inputType: 'text',
+            },
+            {
+                name: 'name',
+                type: 'input',
+                label: 'Имя сотрудника',
+                placeholder: 'Введите имя сотрудника',
+                required: true,
+                inputType: 'text',
+            },
+            {
+                name: 'role',
+                type: 'select',
+                label: 'Роль',
+                placeholder: 'Выберите роль',
+                required: true,
+                options: employeeRoleOptions,
+            },
+        ],
+    },
+];
+
+export const employeeEditFormSections: FormSection<EmployeeEditFormData>[] = [
+    {
+        title: 'Основная информация',
+        fields: [
+            {
+                name: 'name',
+                type: 'input',
+                label: 'Имя сотрудника',
+                placeholder: 'Введите имя сотрудника',
+                required: true,
+                inputType: 'text',
+            },
+            {
+                name: 'role',
+                type: 'select',
+                label: 'Роль',
+                placeholder: 'Выберите роль',
+                required: true,
+                options: employeeRoleOptions,
+            },
+        ],
+    },
+    {
+        title: 'Права доступа',
+        fields: [
+            {
+                name: 'required_moderation',
+                type: 'checkbox',
+                label: 'Требуется модерация',
+            },
+            {
+                name: 'autoposting_permission',
+                type: 'checkbox',
+                label: 'Разрешение на автопостинг',
+            },
+            {
+                name: 'add_employee_permission',
+                type: 'checkbox',
+                label: 'Разрешение на добавление сотрудников',
+            },
+            {
+                name: 'edit_employee_perm_permission',
+                type: 'checkbox',
+                label: 'Разрешение на редактирование прав сотрудников',
+            },
+            {
+                name: 'top_up_balance_permission',
+                type: 'checkbox',
+                label: 'Разрешение на пополнение баланса',
+            },
+            {
+                name: 'sign_up_social_net_permission',
+                type: 'checkbox',
+                label: 'Разрешение на подключение соц. сетей',
+            },
+        ],
+    },
+];
+
+export const employeeDetailsSections: DetailSection<EmployeeEditFormData>[] = [
+    {
+        title: 'Основная информация',
+        fields: [
+            {
+                name: 'name',
+                label: 'Имя сотрудника',
+            },
+            {
+                name: 'role',
+                label: 'Роль',
+            },
+        ],
+    },
+    {
+        title: 'Права доступа',
+        fields: [
+            {
+                name: 'required_moderation',
+                label: 'Требуется модерация',
+            },
+            {
+                name: 'autoposting_permission',
+                label: 'Разрешение на автопостинг',
+            },
+            {
+                name: 'add_employee_permission',
+                label: 'Разрешение на добавление сотрудников',
+            },
+            {
+                name: 'edit_employee_perm_permission',
+                label: 'Разрешение на редактирование прав сотрудников',
+            },
+            {
+                name: 'top_up_balance_permission',
+                label: 'Разрешение на пополнение баланса',
+            },
+            {
+                name: 'sign_up_social_net_permission',
+                label: 'Разрешение на подключение соц. сетей',
+            },
+        ],
+    },
+];
