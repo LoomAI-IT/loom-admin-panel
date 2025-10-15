@@ -136,7 +136,7 @@ export const EmployeesTable = ({organizationId}: EmployeesTableProps) => {
         try {
             setIsSubmitting(true);
             // TODO: Replace with actual current account ID from auth context
-            const currentAccountId = 1;
+            const currentAccountId = 0;
             const request = formToCreateRequest(createFormData, organizationId, currentAccountId);
             await employeeApi.create(request);
             notification.success('Сотрудник успешно создан');
