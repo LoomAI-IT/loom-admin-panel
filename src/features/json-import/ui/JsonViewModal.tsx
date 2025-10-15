@@ -9,8 +9,32 @@ interface JsonViewModalProps {
     zIndex?: number;
 }
 
+const syntaxHighlight = (json: string) => {
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    return json.replace(
+        /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+        (match) => {
+            let cls = 'json-number';
+            if (/^"/.test(match)) {
+                if (/:$/.test(match)) {
+                    cls = 'json-key';
+                } else {
+                    cls = 'json-string';
+                }
+            } else if (/true|false/.test(match)) {
+                cls = 'json-boolean';
+            } else if (/null/.test(match)) {
+                cls = 'json-null';
+            }
+            return '<span class="' + cls + '">' + match + '</span>';
+        }
+    );
+};
+
 export const JsonViewModal = ({isOpen, onClose, data, organizationId, zIndex}: JsonViewModalProps) => {
     const jsonString = JSON.stringify(data, null, 2);
+    const highlightedJson = syntaxHighlight(jsonString);
 
     const handleCopy = () => {
         navigator.clipboard.writeText(jsonString);
@@ -33,9 +57,9 @@ export const JsonViewModal = ({isOpen, onClose, data, organizationId, zIndex}: J
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Просмотр JSON" zIndex={zIndex}>
-            <div>
-                <pre>{jsonString}</pre>
-                <div>
+            <div className="json-view-modal">
+                <pre className="json-viewer" dangerouslySetInnerHTML={{__html: highlightedJson}} />
+                <div className="json-view-actions">
                     <Button variant="secondary" onClick={handleCopy}>
                         Копировать
                     </Button>
