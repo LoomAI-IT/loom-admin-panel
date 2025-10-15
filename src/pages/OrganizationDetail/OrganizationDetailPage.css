@@ -1,0 +1,20 @@
+/* ========================================
+   Organization Detail Page
+   ======================================== */
+
+.organization-detail-page {
+    animation: fadeIn var(--transition-base) ease-out;
+}
+
+/* ========================================
+   Animations
+   ======================================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
