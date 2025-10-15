@@ -41,9 +41,11 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
     const renderFieldValue = (value: any, fieldName: string, label: string): ReactNode => {
         if (value === null || value === undefined || value === '') {
             return (
-                <div>
-                    <span>{label}:</span>
-                    <span>Не указано</span>
+                <div className="details-viewer-field">
+                    <div className="details-viewer-field-label">{label}</div>
+                    <div className="details-viewer-field-value details-viewer-field-value--empty">
+                        Не указано
+                    </div>
                 </div>
             );
         }
@@ -51,9 +53,11 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
         if (Array.isArray(value)) {
             if (value.length === 0) {
                 return (
-                    <div>
-                        <span>{label}:</span>
-                        <span>Пустой список</span>
+                    <div className="details-viewer-field">
+                        <div className="details-viewer-field-label">{label}</div>
+                        <div className="details-viewer-field-value details-viewer-field-value--empty">
+                            Пустой список
+                        </div>
                     </div>
                 );
             }
@@ -61,22 +65,24 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
             // Массив объектов
             if (value.length > 0 && typeof value[0] === 'object' && value[0] !== null) {
                 return (
-                    <div>
-                        <span>{label}:</span>
-                        <div>
+                    <div className="details-viewer-field">
+                        <div className="details-viewer-field-label">{label}</div>
+                        <div className="details-viewer-object-list">
                             {value.map((item, index) => (
-                                <div key={index}>
-                                    <div>Элемент {index + 1}</div>
-                                    <div>
+                                <div key={index} className="details-viewer-object-card">
+                                    <div className="details-viewer-object-card-header">
+                                        Элемент {index + 1}
+                                    </div>
+                                    <div className="details-viewer-object-card-content">
                                         {Object.entries(item).map(([key, val]) => (
-                                            <div key={key}>
-                                                <span>{key}:</span>
-                                                <span>
+                                            <div key={key} className="details-viewer-object-field">
+                                                <div className="details-viewer-object-field-key">{key}:</div>
+                                                <div className="details-viewer-object-field-value">
                                                     {typeof val === 'object'
                                                         ? <pre>{JSON.stringify(val, null, 2)}</pre>
                                                         : String(val)
                                                     }
-                                                </span>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
@@ -87,61 +93,63 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
                 );
             }
 
-            // Обычный массив строк
+            // Обычный массив строк/чисел
             return (
-                <div>
-                    <span>{label}:</span>
-                    <ul>
-                        {value.map((item, index) => (
-                            <li key={index}>
-                                {String(item)}
-                            </li>
-                        ))}
-                    </ul>
+                <div className="details-viewer-field">
+                    <div className="details-viewer-field-label">{label}</div>
+                    <div className="details-viewer-field-value">
+                        <ul className="details-viewer-array-list">
+                            {value.map((item, index) => (
+                                <li key={index}>
+                                    {String(item)}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 </div>
             );
         }
 
         if (typeof value === 'boolean') {
             return (
-                <div>
-                    <span>{label}:</span>
-                    <span>
+                <div className="details-viewer-field">
+                    <div className="details-viewer-field-label">{label}</div>
+                    <div className={`details-viewer-field-value details-viewer-field-value--boolean ${value ? 'is-true' : 'is-false'}`}>
                         {value ? '✓ Да' : '✗ Нет'}
-                    </span>
+                    </div>
                 </div>
             );
         }
 
         if (typeof value === 'number') {
             return (
-                <div>
-                    <span>{label}:</span>
-                    <span>
+                <div className="details-viewer-field">
+                    <div className="details-viewer-field-label">{label}</div>
+                    <div className="details-viewer-field-value">
                         {value}
-                    </span>
+                    </div>
                 </div>
             );
         }
 
-        // Для textarea-подобных полей с переносами
+        // Для textarea-подобных полей с переносами или длинного текста
         if (typeof value === 'string' && (value.includes('\n') || value.length > 100)) {
             return (
-                <div>
-                    <span>{label}:</span>
-                    <div>
-                        <p>{value}</p>
+                <div className="details-viewer-field">
+                    <div className="details-viewer-field-label">{label}</div>
+                    <div className="details-viewer-field-value details-viewer-field-value--long-text">
+                        {value}
                     </div>
                 </div>
             );
         }
 
         return (
-            <div>
-                <span>{label}:</span>
-                <span>
+            <div className="details-viewer-field">
+                <div className="details-viewer-field-label">{label}</div>
+                <div className="details-viewer-field-value">
                     {String(value)}
-                </span>
+                </div>
             </div>
         );
     };
@@ -151,11 +159,7 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
 
         const value = values[field.name as keyof TEntityFormData];
 
-        return (
-            <div>
-                {renderFieldValue(value, field.name, field.label)}
-            </div>
-        );
+        return renderFieldValue(value, field.name, field.label);
     };
 
     const renderSection = (section: DetailSection<TEntityFormData>) => {
@@ -182,24 +186,24 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
         });
 
         const renderedFields = processedFields
-            .map((fieldOrGroup) => {
+            .map((fieldOrGroup, idx) => {
                 if (Array.isArray(fieldOrGroup)) {
                     return (
-                        <div key={fieldOrGroup[0].name}>
+                        <div key={idx} className="details-viewer-field-group">
                             {fieldOrGroup.map((field) => renderField(field))}
                         </div>
                     );
                 }
-                return renderField(fieldOrGroup);
+                return <div key={fieldOrGroup.name}>{renderField(fieldOrGroup)}</div>;
             })
             .filter(Boolean);
 
         if (renderedFields.length === 0) return null;
 
         return (
-            <section key={section.title}>
-                <h3>{section.title}</h3>
-                <div>
+            <section key={section.title} className="details-viewer-section">
+                <h3 className="details-viewer-section-title">{section.title}</h3>
+                <div className="details-viewer-fields">
                     {renderedFields}
                 </div>
             </section>
@@ -220,21 +224,24 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
                 isOpen={isOpen}
                 onClose={onClose}
                 title={title}
+                size="large"
             >
-                <div>
-                    {sections.map(renderSection)}
-                </div>
-                <div>
-                    <Button
-                        variant="secondary"
-                        onClick={jsonViewModal.open}
-                        size="small"
-                    >Посмотреть JSON</Button>
-                    <Button
-                        type="button"
-                        variant="secondary"
-                        onClick={onClose}
-                    >Закрыть</Button>
+                <div className="details-viewer">
+                    <div className="details-viewer-sections">
+                        {sections.map(renderSection)}
+                    </div>
+                    <div className="details-viewer-footer">
+                        <Button
+                            variant="secondary"
+                            onClick={jsonViewModal.open}
+                            size="small"
+                        >Посмотреть JSON</Button>
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={onClose}
+                        >Закрыть</Button>
+                    </div>
                 </div>
             </Modal>
         </>
