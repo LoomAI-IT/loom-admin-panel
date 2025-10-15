@@ -9,4 +9,8 @@ export type {
     UpdateAutopostingCategoryRequest,
     AutopostingCategoryResponse,
 } from './model/types';
+export {
+    autopostingFormSections,
+    autopostingDetailsSections
+} from './model/types';
 export * from './lib/transformers';
