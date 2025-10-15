@@ -46,7 +46,7 @@ export const DataTable = <T, >(
     // Skeleton Loader Component
     const SkeletonRow = () => (
         <div className="skeleton-row">
-            {[...Array(columns.length + actions.length)].map((_, idx) => (
+            {[...Array(columns.length + (actions.length > 0 ? 1 : 0))].map((_, idx) => (
                 <div key={idx} className="skeleton skeleton-cell" />
             ))}
         </div>
@@ -96,11 +96,10 @@ export const DataTable = <T, >(
                                         {col.header}
                                     </TableCell>
                                 ))}
-                                {actions.map((action, idx) => (
-                                    <TableCell key={`action-${idx}`} header>
-                                        {''}
+                                {actions.length > 0 && (
+                                    <TableCell key="actions-header" header className="actions-column">
                                     </TableCell>
-                                ))}
+                                )}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -115,22 +114,29 @@ export const DataTable = <T, >(
                                                     : ''}
                                         </TableCell>
                                     ))}
-                                    {actions.map((action, actionIdx) => (
-                                        <TableCell key={`action-${actionIdx}`}>
-                                            {action.render ? (
-                                                action.render(item)
-                                            ) : (
-                                                <Button
-                                                    size="small"
-                                                    variant={action.variant || 'primary'}
-                                                    onClick={() => action.onClick(item)}
-                                                    disabled={action.disabled?.(item)}
-                                                >
-                                                    {action.label}
-                                                </Button>
-                                            )}
+                                    {actions.length > 0 && (
+                                        <TableCell key="actions" className="actions-column">
+                                            <div className="action-buttons">
+                                                {actions.map((action, actionIdx) => (
+                                                    action.render ? (
+                                                        <div key={`action-${actionIdx}`}>
+                                                            {action.render(item)}
+                                                        </div>
+                                                    ) : (
+                                                        <Button
+                                                            key={`action-${actionIdx}`}
+                                                            size="small"
+                                                            variant={action.variant || 'primary'}
+                                                            onClick={() => action.onClick(item)}
+                                                            disabled={action.disabled?.(item)}
+                                                        >
+                                                            {action.label}
+                                                        </Button>
+                                                    )
+                                                ))}
+                                            </div>
                                         </TableCell>
-                                    ))}
+                                    )}
                                 </TableRow>
                             ))}
                         </TableBody>

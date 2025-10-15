@@ -88,6 +88,20 @@
   border: none;
 }
 
+/* Actions column */
+.actions-column {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.action-buttons {
+  display: flex;
+  gap: var(--spacing-2);
+  justify-content: flex-end;
+  align-items: center;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .data-table-header {
