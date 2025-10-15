@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
-import {Building2, Calendar, Wallet} from 'lucide-react';
+import {Building2, Calendar, Wallet, TrendingUp} from 'lucide-react';
 
 import {NotificationContainer} from '../../../features/notification';
 
@@ -210,6 +210,50 @@ export const OrganizationDetail = () => {
                         </div>
                     </div>
                 </div>
+
+                {costMultiplier && (
+                    <div className="organization-summary-section">
+                        <h3 className="organization-summary-section-title">Множители стоимости</h3>
+                        <div className="organization-summary-stats">
+                            <div className="summary-stat-item">
+                                <div className="summary-stat-icon summary-stat-icon--info">
+                                    <TrendingUp size={20}/>
+                                </div>
+                                <div className="summary-stat-content">
+                                    <div className="summary-stat-label">Генерация текста</div>
+                                    <div className="summary-stat-value">×{costMultiplier.generate_text_cost_multiplier}</div>
+                                </div>
+                            </div>
+                            <div className="summary-stat-item">
+                                <div className="summary-stat-icon summary-stat-icon--info">
+                                    <TrendingUp size={20}/>
+                                </div>
+                                <div className="summary-stat-content">
+                                    <div className="summary-stat-label">Генерация изображений</div>
+                                    <div className="summary-stat-value">×{costMultiplier.generate_image_cost_multiplier}</div>
+                                </div>
+                            </div>
+                            <div className="summary-stat-item">
+                                <div className="summary-stat-icon summary-stat-icon--info">
+                                    <TrendingUp size={20}/>
+                                </div>
+                                <div className="summary-stat-content">
+                                    <div className="summary-stat-label">Генерация видео</div>
+                                    <div className="summary-stat-value">×{costMultiplier.generate_vizard_video_cut_cost_multiplier}</div>
+                                </div>
+                            </div>
+                            <div className="summary-stat-item">
+                                <div className="summary-stat-icon summary-stat-icon--info">
+                                    <TrendingUp size={20}/>
+                                </div>
+                                <div className="summary-stat-content">
+                                    <div className="summary-stat-label">Транскрибация аудио</div>
+                                    <div className="summary-stat-value">×{costMultiplier.transcribe_audio_cost_multiplier}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <DetailsViewer<OrganizationFormData>

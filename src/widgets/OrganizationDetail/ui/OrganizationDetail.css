@@ -115,6 +115,20 @@
     box-shadow: var(--shadow-sm);
 }
 
+/* Summary Section */
+.organization-summary-section {
+    margin-top: var(--spacing-6);
+    padding-top: var(--spacing-6);
+    border-top: 1px solid var(--color-border-light);
+}
+
+.organization-summary-section-title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+}
+
 /* Stats Section */
 .organization-summary-stats {
     display: grid;
@@ -166,6 +180,11 @@
 .summary-stat-icon--danger {
     background: var(--color-danger-100);
     color: var(--color-danger-600);
+}
+
+.summary-stat-icon--info {
+    background: var(--color-primary-100);
+    color: var(--color-primary-600);
 }
 
 .summary-stat-content {
