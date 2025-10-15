@@ -63,8 +63,9 @@
 .modal-header-actions {
   display: flex;
   align-items: center;
-  gap: var(--spacing-2);
+  gap: var(--spacing-4);
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .modal-close {
