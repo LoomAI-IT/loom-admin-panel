@@ -1,0 +1,23 @@
+/* ========================================
+   Organization Detail Page
+   ======================================== */
+
+.organization-detail-page {
+    animation: fadeIn var(--transition-base) ease-out;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* ========================================
+   Animations
+   ======================================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

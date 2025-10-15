@@ -1,0 +1,133 @@
+.object-list-field {
+  width: 100%;
+  margin-bottom: var(--spacing-4);
+}
+
+.object-list-field-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-3);
+}
+
+.object-list-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-3);
+}
+
+.object-list-item {
+  padding: var(--spacing-4);
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  animation: slideInUp var(--transition-fast) ease-out;
+}
+
+.object-list-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-3);
+  padding-bottom: var(--spacing-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.object-list-item-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+}
+
+.object-list-item-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.object-list-item-fields .input-wrapper,
+.object-list-item-fields .textarea-wrapper {
+  margin-bottom: 0;
+}
+
+.object-list-item-fields > div {
+  padding: var(--spacing-3);
+  background: white;
+  border-radius: var(--radius-base);
+  border: 1px solid var(--color-border-light);
+}
+
+.object-list-add-button {
+  width: 100%;
+  margin-top: var(--spacing-2);
+}
+
+/* Empty state */
+.object-list-items:empty::before {
+  content: 'Нет элементов';
+  display: block;
+  text-align: center;
+  padding: var(--spacing-4);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+/* View mode styles */
+.object-list-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.object-list-view-item {
+  padding: var(--spacing-4);
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+}
+
+.object-list-view-item-header {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-3);
+  padding-bottom: var(--spacing-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.object-list-view-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.object-list-view-field {
+  padding: var(--spacing-3);
+  background: white;
+  border-radius: var(--radius-base);
+  border: 1px solid var(--color-border-light);
+}
+
+.object-list-view-field-key {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-2);
+}
+
+.object-list-view-field-value {
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.object-list-view-field-value.is-object {
+  font-family: var(--font-mono, monospace);
+  background: var(--color-gray-100);
+  padding: var(--spacing-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+}

@@ -1,0 +1,49 @@
+.string-list-field {
+  width: 100%;
+  margin-bottom: var(--spacing-4);
+}
+
+.string-list-field-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-3);
+}
+
+.string-list-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
+}
+
+.string-list-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-base);
+  border: 1px solid var(--color-border-light);
+  animation: slideInUp var(--transition-fast) ease-out;
+}
+
+.string-list-item-input {
+  flex: 1;
+}
+
+.string-list-item-input .textarea-wrapper {
+  margin-bottom: 0;
+}
+
+.string-list-item-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-2);
+}
+
+.string-list-add-button {
+  width: 100%;
+  margin-top: var(--spacing-2);
+}

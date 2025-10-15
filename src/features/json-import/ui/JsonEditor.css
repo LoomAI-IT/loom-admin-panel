@@ -1,0 +1,120 @@
+.json-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.json-editor-container {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  border: 1px solid var(--color-border, #e5e5e5);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #1e1e1e;
+}
+
+.json-editor-highlight-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 16px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.json-editor-highlight {
+  margin: 0;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre;
+  word-wrap: normal;
+  overflow-wrap: normal;
+  color: #d4d4d4;
+  background-color: transparent;
+}
+
+.json-editor-textarea {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 16px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre;
+  word-wrap: normal;
+  overflow-wrap: normal;
+  box-sizing: border-box;
+  color: transparent;
+  background-color: transparent;
+  caret-color: #d4d4d4;
+  border: none;
+  outline: none;
+  resize: none;
+  overflow: auto;
+  z-index: 2;
+}
+
+.json-editor-textarea::selection {
+  background-color: rgba(38, 79, 120, 0.8);
+}
+
+.json-editor-textarea::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.json-editor-textarea::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.json-editor-textarea::-webkit-scrollbar-thumb {
+  background: #424242;
+  border-radius: 6px;
+}
+
+.json-editor-textarea::-webkit-scrollbar-thumb:hover {
+  background: #4e4e4e;
+}
+
+.json-editor-textarea::placeholder {
+  color: #858585;
+}
+
+.json-editor-error {
+  color: var(--color-error, #dc2626);
+  font-size: 13px;
+  padding-left: 4px;
+}
+
+/* JSON syntax highlighting */
+.json-editor-highlight .json-key {
+  color: #9cdcfe;
+  font-weight: 600;
+}
+
+.json-editor-highlight .json-string {
+  color: #ce9178;
+}
+
+.json-editor-highlight .json-number {
+  color: #b5cea8;
+}
+
+.json-editor-highlight .json-boolean {
+  color: #569cd6;
+  font-weight: 600;
+}
+
+.json-editor-highlight .json-null {
+  color: #569cd6;
+  font-style: italic;
+}

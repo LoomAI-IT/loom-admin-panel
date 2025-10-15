@@ -1,68 +1,212 @@
+import type {DetailSection, FormSection} from "../../../shared/ui";
+
 export const EmployeeRole = {
-  ADMIN: 'admin',
-  MODERATOR: 'moderator',
-  EMPLOYEE: 'employee',
+    ADMIN: 'admin',
+    MODERATOR: 'moderator',
+    EMPLOYEE: 'employee',
 } as const;
 
 export type EmployeeRole = typeof EmployeeRole[keyof typeof EmployeeRole];
 
 export interface Employee {
-  id: number;
-  organization_id: number;
-  account_id: number;
-  invited_from_account_id: number;
-  required_moderation: boolean;
-  autoposting_permission: boolean;
-  add_employee_permission: boolean;
-  edit_employee_perm_permission: boolean;
-  top_up_balance_permission: boolean;
-  sign_up_social_net_permission: boolean;
-  name: string;
-  role: string;
-  created_at: string;
+    id: number;
+    organization_id: number;
+    account_id: number;
+    invited_from_account_id: number;
+    required_moderation: boolean;
+    autoposting_permission: boolean;
+    add_employee_permission: boolean;
+    edit_employee_perm_permission: boolean;
+    top_up_balance_permission: boolean;
+    sign_up_social_net_permission: boolean;
+    name: string;
+    role: string;
+    created_at: string;
 }
 
 export interface CreateEmployeeRequest {
-  account_id: number;
-  organization_id: number;
-  invited_from_account_id: number;
-  name: string;
-  role: string;
+    account_id: number;
+    organization_id: number;
+    invited_from_account_id: number;
+    name: string;
+    role: string;
 }
 
 export interface UpdateEmployeePermissionsRequest {
-  account_id: number;
-  required_moderation?: boolean;
-  autoposting_permission?: boolean;
-  add_employee_permission?: boolean;
-  edit_employee_perm_permission?: boolean;
-  top_up_balance_permission?: boolean;
-  sign_up_social_net_permission?: boolean;
+    account_id: number;
+    required_moderation?: boolean;
+    autoposting_permission?: boolean;
+    add_employee_permission?: boolean;
+    edit_employee_perm_permission?: boolean;
+    top_up_balance_permission?: boolean;
+    sign_up_social_net_permission?: boolean;
 }
 
 export interface UpdateEmployeeRoleRequest {
-  account_id: number;
-  role: string;
+    account_id: number;
+    role: string;
 }
 
 export interface CreateEmployeeResponse {
-  message: string;
-  employee_id: number;
+    message: string;
+    employee_id: number;
 }
 
 export interface GetEmployeesByOrganizationResponse {
-  message: string;
-  employees: Employee[];
+    message: string;
+    employees: Employee[];
 }
 
 export interface UpdateEmployeePermissionsResponse {
-  message: string;
+    message: string;
 }
 
 export interface UpdateEmployeeRoleResponse {
-  message: string;
+    message: string;
 }
 
 export interface DeleteEmployeeResponse {
-  message: string;
+    message: string;
 }
+
+export const employeeRoleOptions = [
+    {value: EmployeeRole.ADMIN, label: 'Администратор'},
+    {value: EmployeeRole.MODERATOR, label: 'Модератор'},
+    {value: EmployeeRole.EMPLOYEE, label: 'Сотрудник'},
+];
+
+export const employeeCreateFormSections: FormSection[] = [
+    {
+        title: 'Основная информация',
+        fields: [
+            {
+                name: 'account_id',
+                type: 'input',
+                label: 'Account ID',
+                placeholder: 'Введите ID аккаунта',
+                required: true,
+                inputType: 'text',
+            },
+            {
+                name: 'name',
+                type: 'input',
+                label: 'Имя сотрудника',
+                placeholder: 'Введите имя сотрудника',
+                required: true,
+                inputType: 'text',
+            },
+            {
+                name: 'role',
+                type: 'select',
+                label: 'Роль',
+                placeholder: 'Выберите роль',
+                required: true,
+                options: employeeRoleOptions,
+            },
+        ],
+    },
+];
+
+export const employeeEditFormSections: FormSection[] = [
+    {
+        title: 'Основная информация',
+        fields: [
+            {
+                name: 'name',
+                type: 'input',
+                label: 'Имя сотрудника',
+                placeholder: 'Введите имя сотрудника',
+                required: true,
+                inputType: 'text',
+            },
+            {
+                name: 'role',
+                type: 'select',
+                label: 'Роль',
+                placeholder: 'Выберите роль',
+                required: true,
+                options: employeeRoleOptions,
+            },
+        ],
+    },
+    {
+        title: 'Права доступа',
+        fields: [
+            {
+                name: 'required_moderation',
+                type: 'checkbox',
+                label: 'Требуется модерация',
+            },
+            {
+                name: 'autoposting_permission',
+                type: 'checkbox',
+                label: 'Разрешение на автопостинг',
+            },
+            {
+                name: 'add_employee_permission',
+                type: 'checkbox',
+                label: 'Разрешение на добавление сотрудников',
+            },
+            {
+                name: 'edit_employee_perm_permission',
+                type: 'checkbox',
+                label: 'Разрешение на редактирование прав сотрудников',
+            },
+            {
+                name: 'top_up_balance_permission',
+                type: 'checkbox',
+                label: 'Разрешение на пополнение баланса',
+            },
+            {
+                name: 'sign_up_social_net_permission',
+                type: 'checkbox',
+                label: 'Разрешение на подключение соц. сетей',
+            },
+        ],
+    },
+];
+
+export const employeeDetailsSections: DetailSection[] = [
+    {
+        title: 'Основная информация',
+        fields: [
+            {
+                name: 'name',
+                label: 'Имя сотрудника',
+            },
+            {
+                name: 'role',
+                label: 'Роль',
+            },
+        ],
+    },
+    {
+        title: 'Права доступа',
+        fields: [
+            {
+                name: 'required_moderation',
+                label: 'Требуется модерация',
+            },
+            {
+                name: 'autoposting_permission',
+                label: 'Разрешение на автопостинг',
+            },
+            {
+                name: 'add_employee_permission',
+                label: 'Разрешение на добавление сотрудников',
+            },
+            {
+                name: 'edit_employee_perm_permission',
+                label: 'Разрешение на редактирование прав сотрудников',
+            },
+            {
+                name: 'top_up_balance_permission',
+                label: 'Разрешение на пополнение баланса',
+            },
+            {
+                name: 'sign_up_social_net_permission',
+                label: 'Разрешение на подключение соц. сетей',
+            },
+        ],
+    },
+];

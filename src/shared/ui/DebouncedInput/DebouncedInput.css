@@ -1,0 +1,123 @@
+.input-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: var(--spacing-4);
+}
+
+.input {
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
+  padding-top: calc(var(--spacing-3) + 8px);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  background-color: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  outline: none;
+  transition: border-color var(--transition-fast);
+  font-family: var(--font-family-base);
+}
+
+.input::placeholder {
+  color: transparent;
+}
+
+/* Floating Label */
+.input-label {
+  position: absolute;
+  left: var(--spacing-4);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+  pointer-events: none;
+  background-color: white;
+  padding: 0 var(--spacing-1);
+}
+
+/* Label Float State */
+.input:focus + .input-label,
+.input:not(:placeholder-shown) + .input-label {
+  top: 0;
+  font-size: var(--text-xs);
+  color: var(--color-primary-600);
+  transform: translateY(0);
+}
+
+/* Focus State */
+.input:focus {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 2px var(--color-primary-100);
+}
+
+/* Error State */
+.input--error {
+  border-color: var(--color-danger-500);
+}
+
+.input--error:focus {
+  box-shadow: 0 0 0 3px var(--color-danger-100);
+}
+
+/* Disabled State */
+.input:disabled {
+  background-color: var(--color-gray-50);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+  opacity: 0.7;
+  border-color: var(--color-gray-200);
+  box-shadow: none;
+}
+
+.input:disabled + .input-label {
+  color: var(--color-text-disabled);
+  opacity: 0.7;
+}
+
+/* Animations */
+.input-wrapper {
+  animation: slideInUp var(--transition-fast) ease-out;
+}
+
+/* Required Field Indicator */
+.input[required] + .input-label::after {
+  content: ' *';
+  color: var(--color-danger-500);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .input {
+    padding: var(--spacing-2) var(--spacing-3);
+    padding-top: calc(var(--spacing-2) + 8px);
+    font-size: var(--text-sm);
+  }
+
+  .input-label {
+    left: var(--spacing-3);
+    font-size: var(--text-sm);
+  }
+
+  .input-wrapper {
+    margin-bottom: var(--spacing-3);
+  }
+}
+
+@media (max-width: 374px) {
+  .input {
+    padding: var(--spacing-2);
+    padding-top: calc(var(--spacing-2) + 6px);
+    font-size: 0.813rem;
+  }
+
+  .input-label {
+    left: var(--spacing-2);
+    font-size: 0.813rem;
+  }
+
+  .input:focus + .input-label,
+  .input:not(:placeholder-shown) + .input-label {
+    font-size: 0.688rem;
+  }
+}

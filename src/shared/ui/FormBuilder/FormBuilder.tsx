@@ -1,0 +1,286 @@
+import * as React from 'react';
+import {type ReactNode} from 'react';
+import {JsonImportModal, loadJsonFromFile} from "../../../features/json-import";
+import {
+    AnimatedSelect,
+    Button,
+    DebouncedInput,
+    DebouncedTextarea,
+    Modal,
+    ObjectField,
+    ObjectListField,
+    StringListField
+} from '../';
+import type {SelectOption} from '../';
+import {useModal, useNotification} from "../../lib/hooks";
+
+import './FormBuilder.css';
+
+export type FormFieldType =
+    'input'
+    | 'textarea'
+    | 'stringList'
+    | 'objectList'
+    | 'object'
+    | 'checkbox'
+    | 'select'
+    | 'custom';
+
+export interface FormField {
+    name: string;
+    type: FormFieldType;
+    label?: string;
+    placeholder?: string;
+    required?: boolean;
+    inputMode?: 'text' | 'numeric' | 'tel' | 'email' | 'url';
+    inputType?: string;
+    debounceDelay?: number;
+    options?: SelectOption[];
+    customRender?: (value: any, onChange: (value: any) => void) => ReactNode;
+    groupWith?: string[];
+}
+
+export interface FormSection {
+    title: string;
+    fields: FormField[];
+}
+
+interface FormBuilderProps<TEntityFormData> {
+    title: string;
+    sections: FormSection[];
+    values: TEntityFormData;
+    isSubmitting: boolean;
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (e: React.FormEvent) => void;
+    jsonToForm: (jsonData: any) => TEntityFormData;
+    setFormData: (formData: TEntityFormData) => void;
+}
+
+export const FormBuilder = <TEntityFormData extends Record<string, any>>(
+    {
+        title,
+        sections,
+        values,
+        isSubmitting,
+        isOpen,
+        onClose,
+        onSubmit,
+        jsonToForm,
+        setFormData,
+    }: FormBuilderProps<TEntityFormData>
+) => {
+    const jsonImportModal = useModal();
+
+    const notification = useNotification();
+
+    const handleJsonImport = (jsonData: any) => {
+        const formData = jsonToForm(jsonData);
+        setFormData(formData);
+        jsonImportModal.close();
+        notification.success('Настройки успешно загружены из JSON');
+    };
+
+    const handleLoadJsonFile = async () => {
+        try {
+            const jsonData = await loadJsonFromFile();
+            handleJsonImport(jsonData);
+        } catch (err) {
+            notification.error('Ошибка при загрузке JSON файла');
+        }
+    };
+
+    const headerActions = (
+        <>
+            <Button
+                type="button"
+                variant="secondary"
+                onClick={jsonImportModal.open}
+                disabled={isSubmitting}
+                size="small"
+            >Вставить JSON</Button>
+            <Button
+                type="button"
+                variant="secondary"
+                onClick={handleLoadJsonFile}
+                disabled={isSubmitting}
+                size="small"
+            >Загрузить JSON</Button>
+        </>
+    );
+
+    const updateField = <K extends keyof TEntityFormData>(field: K, value: TEntityFormData[K]) => {
+        setFormData({...values, [field]: value});
+    };
+
+    const renderField = (field: FormField) => {
+        const value = values[field.name as keyof TEntityFormData];
+
+        if (field.type === 'custom' && field.customRender) {
+            return field.customRender(value, (newValue) => updateField(field.name as keyof TEntityFormData, newValue));
+        }
+
+        switch (field.type) {
+            case 'input':
+                return (
+                    <DebouncedInput
+                        label={field.label}
+                        type={field.inputType || 'text'}
+                        inputMode={field.inputMode}
+                        value={String(value || '')}
+                        onChange={(newValue) => updateField(field.name as keyof TEntityFormData, newValue as TEntityFormData[keyof TEntityFormData])}
+                        placeholder={field.placeholder}
+                        required={field.required}
+                        debounceDelay={field.debounceDelay || 300}
+                    />
+                );
+
+            case 'textarea':
+                return (
+                    <DebouncedTextarea
+                        label={field.label}
+                        value={String(value || '')}
+                        onChange={(newValue) => updateField(field.name as keyof TEntityFormData, newValue as TEntityFormData[keyof TEntityFormData])}
+                        placeholder={field.placeholder}
+                        required={field.required}
+                        debounceDelay={field.debounceDelay || 300}
+                    />
+                );
+
+            case 'stringList':
+                return (
+                    <StringListField
+                        label={field.label}
+                        value={(value as string[]) || []}
+                        onChange={(newValue) => updateField(field.name as keyof TEntityFormData, newValue as TEntityFormData[keyof TEntityFormData])}
+                        placeholder={field.placeholder || 'элемент'}
+                        debounceDelay={field.debounceDelay || 300}
+                    />
+                );
+
+            case 'objectList':
+                return (
+                    <ObjectListField
+                        label={field.label}
+                        value={(value as Record<string, any>[]) || []}
+                        onChange={(newValue) => updateField(field.name as keyof TEntityFormData, newValue as TEntityFormData[keyof TEntityFormData])}
+                        debounceDelay={field.debounceDelay || 300}
+                    />
+                );
+
+            case 'object':
+                return (
+                    <ObjectField
+                        label={field.label}
+                        value={(value as Record<string, any>) || {}}
+                        onChange={(newValue) => updateField(field.name as keyof TEntityFormData, newValue as TEntityFormData[keyof TEntityFormData])}
+                        debounceDelay={field.debounceDelay || 300}
+                    />
+                );
+
+            case 'checkbox':
+                return (
+                    <div>
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={Boolean(value)}
+                                onChange={(e) => updateField(field.name as keyof TEntityFormData, e.target.checked as TEntityFormData[keyof TEntityFormData])}
+                                style={{marginRight: '8px'}}
+                            />
+                            {field.label}
+                        </label>
+                    </div>
+                );
+
+            case 'select':
+                return (
+                    <AnimatedSelect
+                        label={field.label}
+                        value={String(value || '')}
+                        onChange={(newValue) => updateField(field.name as keyof TEntityFormData, newValue as TEntityFormData[keyof TEntityFormData])}
+                        options={field.options || []}
+                        placeholder={field.placeholder}
+                        required={field.required}
+                    />
+                );
+
+            default:
+                return null;
+        }
+    };
+
+    const renderSection = (section: FormSection) => {
+        // Группируем поля для grid
+        const processedFields: Array<FormField | FormField[]> = [];
+        const groupedFieldsSet = new Set<string>();
+
+        section.fields.forEach((field) => {
+            if (groupedFieldsSet.has(field.name)) return;
+
+            if (field.groupWith && field.groupWith.length > 0) {
+                const group = [field];
+                field.groupWith.forEach((groupFieldName) => {
+                    const groupField = section.fields.find((f) => f.name === groupFieldName);
+                    if (groupField) {
+                        group.push(groupField);
+                        groupedFieldsSet.add(groupFieldName);
+                    }
+                });
+                processedFields.push(group);
+            } else {
+                processedFields.push(field);
+            }
+        });
+
+        return (
+            <section key={section.title} className="form-builder-section">
+                <h3 className="form-builder-section-title">{section.title}</h3>
+                <div className="form-builder-fields">
+                    {processedFields.map((fieldOrGroup, idx) => {
+                        if (Array.isArray(fieldOrGroup)) {
+                            return (
+                                <div key={idx} className="form-builder-field-group">
+                                    {fieldOrGroup.map((field) => (
+                                        <div key={field.name}>{renderField(field)}</div>
+                                    ))}
+                                </div>
+                            );
+                        }
+                        return <div key={fieldOrGroup.name}>{renderField(fieldOrGroup)}</div>;
+                    })}
+                </div>
+            </section>
+        );
+    };
+
+    return (
+        <>
+            <JsonImportModal
+                isOpen={jsonImportModal.isOpen}
+                onClose={jsonImportModal.close}
+                onImport={handleJsonImport}
+                zIndex={1200}
+            />
+            <Modal
+                isOpen={isOpen}
+                onClose={onClose}
+                title={title}
+                size="large"
+                headerActions={headerActions}
+            >
+                <form className="form-builder" onSubmit={onSubmit}>
+                    <div className="form-builder-sections">
+                        {sections.map((section) => renderSection(section))}
+                    </div>
+                    <div className="form-builder-footer">
+                        <Button
+                            type="submit"
+                            loading={isSubmitting}
+                        >Сохранить</Button>
+                    </div>
+                </form>
+            </Modal>
+        </>
+    );
+};

@@ -1,0 +1,89 @@
+.object-field {
+  width: 100%;
+  margin-bottom: var(--spacing-4);
+}
+
+.object-field-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-3);
+}
+
+.object-field-container {
+  padding: 0;
+}
+
+.object-field-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
+}
+
+.object-field-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-base);
+  border: 1px solid var(--color-border-light);
+  animation: slideInUp var(--transition-fast) ease-out;
+}
+
+.object-field-item > * {
+  min-width: 0;
+}
+
+.object-field-item .input-wrapper,
+.object-field-item .textarea-wrapper {
+  margin-bottom: 0;
+}
+
+.object-field-item-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-2);
+}
+
+.object-field-add-button {
+  width: 100%;
+  margin-top: var(--spacing-2);
+}
+
+.object-field-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.object-field-view-item {
+  padding: var(--spacing-3);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-base);
+  border: 1px solid var(--color-border-light);
+}
+
+.object-field-view-key {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-2);
+}
+
+.object-field-view-value {
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.object-field-view-value.is-object {
+  font-family: var(--font-mono, monospace);
+  background: var(--color-gray-100);
+  padding: var(--spacing-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+}
