@@ -344,7 +344,8 @@ export const categoryDetailsSections: DetailSection<CategoryFormData>[] = [
         title: 'Социальные сети и брендинг',
         fields: [
             {
-                name: 'social_networks_rules', label: 'Правила для соцсетей'
+                name: 'social_networks_rules',
+                label: 'Правила для соцсетей'
             },
             {
                 name: 'tone_of_voice',

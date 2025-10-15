@@ -75,10 +75,10 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
                                     </div>
                                     <div className="details-viewer-object-card-content">
                                         {Object.entries(item).map(([key, val]) => (
-                                            <div key={key} className="details-viewer-object-field">
-                                                <div className="details-viewer-object-field-key">{key}:</div>
+                                            <div key={key} className="details-viewer-object-field details-viewer-object-field--vertical">
+                                                <div className="details-viewer-object-field-key">{key}</div>
                                                 <div className="details-viewer-object-field-value">
-                                                    {typeof val === 'object'
+                                                    {typeof val === 'object' && val !== null
                                                         ? <pre>{JSON.stringify(val, null, 2)}</pre>
                                                         : String(val)
                                                     }
@@ -127,6 +127,43 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
                     <div className="details-viewer-field-label">{label}</div>
                     <div className="details-viewer-field-value">
                         {value}
+                    </div>
+                </div>
+            );
+        }
+
+        // Обработка объектов (Record<string, any>)
+        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+            const entries = Object.entries(value);
+
+            if (entries.length === 0) {
+                return (
+                    <div className="details-viewer-field">
+                        <div className="details-viewer-field-label">{label}</div>
+                        <div className="details-viewer-field-value details-viewer-field-value--empty">
+                            Пустой объект
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="details-viewer-field">
+                    <div className="details-viewer-field-label">{label}</div>
+                    <div className="details-viewer-object-card">
+                        <div className="details-viewer-object-card-content">
+                            {entries.map(([key, val]) => (
+                                <div key={key} className="details-viewer-object-field details-viewer-object-field--vertical">
+                                    <div className="details-viewer-object-field-key">{key}</div>
+                                    <div className="details-viewer-object-field-value">
+                                        {typeof val === 'object' && val !== null
+                                            ? <pre>{JSON.stringify(val, null, 2)}</pre>
+                                            : String(val)
+                                        }
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             );

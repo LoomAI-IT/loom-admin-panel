@@ -154,15 +154,20 @@ export const ObjectField = memo((
             {(title || label) && <label className="object-field-label">{title || label}</label>}
 
             {mode === 'view' ? (
-                <div>
-                    {Object.entries(value).map(([key, val]) => (
-                        <div key={key}>
-                            <span>{key}:</span>
-                            <span>
-                                    {typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val)}
-                                </span>
-                        </div>
-                    ))}
+                <div className="object-field-view">
+                    {Object.entries(value).map(([key, val]) => {
+                        const isObject = typeof val === 'object' && val !== null;
+                        const displayValue = isObject ? JSON.stringify(val, null, 2) : String(val);
+
+                        return (
+                            <div key={key} className="object-field-view-item">
+                                <div className="object-field-view-key">{key}</div>
+                                <div className={`object-field-view-value ${isObject ? 'is-object' : ''}`}>
+                                    {displayValue}
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             ) : (
                 <div className="object-field-container">

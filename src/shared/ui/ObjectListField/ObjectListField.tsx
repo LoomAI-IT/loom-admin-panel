@@ -273,23 +273,26 @@ export const ObjectListField = memo((
             {(title || label) && <label className="object-list-field-label">{title || label}</label>}
 
             {mode === 'view' ? (
-                <div>
+                <div className="object-list-view">
                     {value.map((obj, objIdx) => (
-                        <div key={objIdx}>
-                            <div>
-                                <span>Элемент {objIdx + 1}</span>
+                        <div key={objIdx} className="object-list-view-item">
+                            <div className="object-list-view-item-header">
+                                Элемент {objIdx + 1}
                             </div>
-                            <div>
-                                {Object.entries(obj).map(([key, val]) => (
-                                    <div key={key}>
-                                        <span>{key}:</span>
-                                        <span>
-                                                {typeof val === 'object'
-                                                    ? JSON.stringify(val, null, 2)
-                                                    : String(val)}
-                                            </span>
-                                    </div>
-                                ))}
+                            <div className="object-list-view-fields">
+                                {Object.entries(obj).map(([key, val]) => {
+                                    const isObject = typeof val === 'object' && val !== null;
+                                    const displayValue = isObject ? JSON.stringify(val, null, 2) : String(val);
+
+                                    return (
+                                        <div key={key} className="object-list-view-field">
+                                            <div className="object-list-view-field-key">{key}</div>
+                                            <div className={`object-list-view-field-value ${isObject ? 'is-object' : ''}`}>
+                                                {displayValue}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     ))}
