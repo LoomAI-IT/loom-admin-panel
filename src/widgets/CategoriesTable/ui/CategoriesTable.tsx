@@ -96,6 +96,7 @@ export const CategoriesTable = (
 
     const handleOpenDetails = (category: Category) => {
         setSelectedCategory(category);
+        categoryForm.setFormData(categoryToForm(category));
         detailsModal.open();
     };
 
