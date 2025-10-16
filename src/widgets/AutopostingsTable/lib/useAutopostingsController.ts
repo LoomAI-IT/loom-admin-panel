@@ -1,5 +1,4 @@
-import * as React from 'react';
-import {useState} from 'react';
+import {useState, type FormEvent} from 'react';
 import {
     type Autoposting,
     type AutopostingFormData,
@@ -171,7 +170,7 @@ export const useAutopostingsController = ({
         });
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         const success = await autopostingForm.submit();
         if (!success && autopostingForm.error) {

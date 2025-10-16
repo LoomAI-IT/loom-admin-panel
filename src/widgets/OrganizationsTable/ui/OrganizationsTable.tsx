@@ -1,22 +1,11 @@
-import * as React from 'react';
-import {useCallback} from 'react';
-import {useNavigate} from 'react-router-dom';
-
 import {NotificationContainer} from '../../../features/notification';
 import {ConfirmDialog} from '../../../features/confirmation-dialog';
 
 import {
     type Organization,
     type OrganizationFormData,
-    organizationApi,
     organizationFormSections,
-    organizationToForm,
     jsonToOrganizationForm,
-    validateOrganizationForm,
-    createEmptyOrganizationForm,
-    formToCreateOrganizationRequest,
-    formToUpdateCostMultiplierRequest,
-    formToUpdateOrganizationRequest
 } from '../../../entities/organization';
 
 import {
@@ -26,99 +15,11 @@ import {
     FormBuilder,
 } from '../../../shared/ui';
 
-import {
-    useConfirmDialog,
-    useEntityForm,
-    useEntityList,
-    useModal,
-    useNotification
-} from '../../../shared/lib/hooks';
+import {useOrganizationsController} from '../lib/useOrganizationsController';
 
 
 export const OrganizationsTable = () => {
-    const navigate = useNavigate();
-
-    const loadOrganizations = useCallback(
-        async () => {
-            const response = await organizationApi.getAll();
-            return response.organizations;
-        },
-        []
-    );
-
-    const organizationList = useEntityList<Organization>({
-        loadFn: loadOrganizations,
-    });
-
-    const organizationForm = useEntityForm<OrganizationFormData, Organization>({
-        initialData: createEmptyOrganizationForm(),
-        transformEntityToForm: (org) => organizationToForm(org, null),
-        validateFn: validateOrganizationForm,
-        onSubmit: async (data, mode) => {
-            if (mode === 'create') {
-                // Сначала создаем организацию с минимальными данными
-                const createRequest = formToCreateOrganizationRequest(data);
-                const createResponse = await organizationApi.create(createRequest);
-                const orgId = createResponse.organization_id;
-
-                // Затем сразу обновляем её с полными данными
-                const updateRequest = formToUpdateOrganizationRequest(data, orgId);
-                await organizationApi.update(updateRequest);
-
-                // И обновляем cost multipliers
-                const costRequest = formToUpdateCostMultiplierRequest(data, orgId);
-                await organizationApi.updateCostMultiplier(costRequest);
-
-                notification.success('Организация успешно создана');
-                await organizationList.refresh();
-                addModal.close();
-            } else {
-                // Режим редактирования пока не реализован
-                notification.error('Редактирование пока не поддерживается');
-            }
-        },
-    });
-
-    const notification = useNotification();
-    const confirmDialog = useConfirmDialog();
-
-    const addModal = useModal();
-
-    const handleOpenAddModal = () => {
-        organizationForm.switchToCreate();
-        addModal.open();
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const success = await organizationForm.submit();
-        if (!success && organizationForm.error) {
-            notification.error(organizationForm.error);
-        }
-    };
-
-    const handleOpenDetails = (organization: Organization) => {
-        navigate(`/organizations/${organization.id}`);
-    };
-
-    const handleDelete = (organization: Organization) => {
-        confirmDialog.confirm({
-            title: 'Удалить организацию',
-            message: `Вы уверены, что хотите удалить организацию "${organization.name}"?`,
-            type: 'danger',
-            confirmText: 'Удалить',
-            onConfirm: async () => {
-                try {
-                    await organizationApi.delete(organization.id);
-                    notification.success('Организация успешно удалена');
-                    await organizationList.refresh();
-                } catch (err) {
-                    notification.error('Ошибка при удалении организации');
-                    console.error('Failed to delete organization:', err);
-                }
-            },
-        });
-    };
+    const controller = useOrganizationsController();
 
     const columns: DataTableColumn<Organization>[] = [
         {
@@ -144,7 +45,7 @@ export const OrganizationsTable = () => {
     const actions: DataTableAction<Organization>[] = [
         {
             label: 'Удалить',
-            onClick: handleDelete,
+            onClick: controller.handleDelete,
             variant: 'danger',
         },
     ];
@@ -152,41 +53,41 @@ export const OrganizationsTable = () => {
     return (
         <>
             <NotificationContainer
-                notifications={notification.notifications}
-                onRemove={notification.remove}
+                notifications={controller.notification.notifications}
+                onRemove={controller.notification.remove}
             />
 
             <ConfirmDialog
-                dialog={confirmDialog.dialog}
-                isProcessing={confirmDialog.isProcessing}
-                onConfirm={confirmDialog.handleConfirm}
-                onCancel={confirmDialog.handleCancel}
+                dialog={controller.confirmDialog.dialog}
+                isProcessing={controller.confirmDialog.isProcessing}
+                onConfirm={controller.confirmDialog.handleConfirm}
+                onCancel={controller.confirmDialog.handleCancel}
             />
 
             <DataTable<Organization>
                 title="Организации"
-                data={organizationList.entities}
+                data={controller.organizations}
                 columns={columns}
                 actions={actions}
-                loading={organizationList.loading}
-                error={organizationList.error}
+                loading={controller.loading}
+                error={controller.error}
                 emptyMessage="Организации не найдены"
-                onAdd={handleOpenAddModal}
+                onAdd={controller.handleOpenAddModal}
                 addButtonLabel="Добавить организацию"
                 getRowKey={(organization) => organization.id}
-                onRowClick={handleOpenDetails}
+                onRowClick={controller.handleOpenDetails}
             />
 
             <FormBuilder<OrganizationFormData>
                 title="Добавить организацию"
                 sections={organizationFormSections}
-                values={organizationForm.formData}
-                isSubmitting={organizationForm.isSubmitting}
-                isOpen={addModal.isOpen}
-                onClose={addModal.close}
-                onSubmit={handleSubmit}
+                values={controller.organizationForm.formData}
+                isSubmitting={controller.organizationForm.isSubmitting}
+                isOpen={controller.addModal.isOpen}
+                onClose={controller.addModal.close}
+                onSubmit={controller.handleSubmit}
                 jsonToForm={(jsonData) => jsonToOrganizationForm(jsonData, null)}
-                setFormData={organizationForm.setFormData}
+                setFormData={controller.organizationForm.setFormData}
             />
         </>
     );

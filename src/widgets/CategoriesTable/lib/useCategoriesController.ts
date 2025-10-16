@@ -1,5 +1,4 @@
-import * as React from 'react';
-import {useState} from 'react';
+import {useState, type FormEvent} from 'react';
 import {
     type Category,
     type CategoryFormData,
@@ -94,7 +93,7 @@ export const useCategoriesController = ({
         });
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         const success = await categoryForm.submit();
         if (!success && categoryForm.error) {

@@ -1,5 +1,4 @@
-import * as React from 'react';
-import {useState} from 'react';
+import {useState, type FormEvent} from 'react';
 import {
     type Employee,
     type EmployeeCreateFormData,
@@ -91,7 +90,7 @@ export const useEmployeesController = ({
         });
     };
 
-    const handleCreateSubmit = async (e: React.FormEvent) => {
+    const handleCreateSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
         const validationError = validateEmployeeCreateForm(createFormData);
@@ -121,7 +120,7 @@ export const useEmployeesController = ({
         }
     };
 
-    const handleEditSubmit = async (e: React.FormEvent) => {
+    const handleEditSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
         if (!selectedEmployee) {

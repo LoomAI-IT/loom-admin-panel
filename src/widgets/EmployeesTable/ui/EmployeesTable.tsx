@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import {NotificationContainer} from '../../../features/notification';
 import {ConfirmDialog} from '../../../features/confirmation-dialog';
 
