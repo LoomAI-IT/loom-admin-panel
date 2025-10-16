@@ -1,5 +1,10 @@
 import {useCallback} from 'react';
-import {type Category, categoryApi} from '../../../entities/category';
+import {
+    type Category,
+    type CreateCategoryRequest,
+    type UpdateCategoryRequest,
+    categoryApi,
+} from '../../../entities/category';
 import {useEntityList} from '../../../shared/lib/hooks';
 
 interface UseCategoriesModelProps {
@@ -16,11 +21,11 @@ export const useCategoriesModel = ({organizationId}: UseCategoriesModelProps) =>
         loadFn: loadCategories,
     });
 
-    const createCategory = async (request: any) => {
+    const createCategory = async (request: CreateCategoryRequest) => {
         await categoryApi.create(request);
     };
 
-    const updateCategory = async (categoryId: number, request: any) => {
+    const updateCategory = async (categoryId: number, request: UpdateCategoryRequest) => {
         await categoryApi.update(categoryId, request);
     };
 

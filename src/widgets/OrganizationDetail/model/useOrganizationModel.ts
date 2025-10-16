@@ -1,5 +1,11 @@
 import {useCallback, useEffect, useState} from 'react';
-import {type Organization, type CostMultiplier, organizationApi} from '../../../entities/organization';
+import {
+    type Organization,
+    type CostMultiplier,
+    type UpdateOrganizationRequest,
+    type UpdateCostMultiplierRequest,
+    organizationApi,
+} from '../../../entities/organization';
 
 interface UseOrganizationModelProps {
     organizationId: number;
@@ -33,11 +39,11 @@ export const useOrganizationModel = ({organizationId}: UseOrganizationModelProps
         loadOrganization();
     }, [loadOrganization]);
 
-    const updateOrganization = async (request: any) => {
+    const updateOrganization = async (request: UpdateOrganizationRequest) => {
         await organizationApi.update(request);
     };
 
-    const updateCostMultiplier = async (request: any) => {
+    const updateCostMultiplier = async (request: UpdateCostMultiplierRequest) => {
         await organizationApi.updateCostMultiplier(request);
     };
 

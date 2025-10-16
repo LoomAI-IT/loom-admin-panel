@@ -2,6 +2,10 @@ import {useCallback} from 'react';
 import {
     type Autoposting,
     type AutopostingCategory,
+    type CreateAutopostingCategoryRequest,
+    type CreateAutopostingRequest,
+    type UpdateAutopostingCategoryRequest,
+    type UpdateAutopostingRequest,
     autopostingApi,
     autopostingCategoryApi,
 } from '../../../entities/autoposting';
@@ -36,8 +40,8 @@ export const useAutopostingsModel = ({organizationId}: UseAutopostingsModelProps
     };
 
     const createAutoposting = async (
-        categoryRequest: any,
-        autopostingRequest: any
+        categoryRequest: CreateAutopostingCategoryRequest,
+        autopostingRequest: CreateAutopostingRequest
     ) => {
         const categoryResponse = await autopostingCategoryApi.create(categoryRequest);
 
@@ -56,8 +60,8 @@ export const useAutopostingsModel = ({organizationId}: UseAutopostingsModelProps
     const updateAutoposting = async (
         autopostingId: number,
         categoryId: number,
-        categoryRequest: any,
-        autopostingRequest: any
+        categoryRequest: UpdateAutopostingCategoryRequest,
+        autopostingRequest: UpdateAutopostingRequest
     ) => {
         await autopostingCategoryApi.update(categoryId, categoryRequest);
         await autopostingApi.update(autopostingId, autopostingRequest);

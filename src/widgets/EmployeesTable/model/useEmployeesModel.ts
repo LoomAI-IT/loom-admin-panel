@@ -1,6 +1,12 @@
 import * as React from 'react';
 import {useCallback, useState} from 'react';
-import {type Employee, employeeApi} from '../../../entities/employee';
+import {
+    type Employee,
+    type CreateEmployeeRequest,
+    type UpdateEmployeeRoleRequest,
+    type UpdateEmployeePermissionsRequest,
+    employeeApi,
+} from '../../../entities/employee';
 
 interface UseEmployeesModelProps {
     organizationId: number;
@@ -29,16 +35,16 @@ export const useEmployeesModel = ({organizationId}: UseEmployeesModelProps) => {
         loadEmployees();
     }, [loadEmployees]);
 
-    const createEmployee = async (request: any) => {
+    const createEmployee = async (request: CreateEmployeeRequest) => {
         await employeeApi.create(request);
     };
 
-    const updateEmployeeRole = async (roleRequest: any) => {
-        await employeeApi.updateRole(roleRequest);
+    const updateEmployeeRole = async (request: UpdateEmployeeRoleRequest) => {
+        await employeeApi.updateRole(request);
     };
 
-    const updateEmployeePermissions = async (permissionsRequest: any) => {
-        await employeeApi.updatePermissions(permissionsRequest);
+    const updateEmployeePermissions = async (request: UpdateEmployeePermissionsRequest) => {
+        await employeeApi.updatePermissions(request);
     };
 
     const deleteEmployee = async (accountId: number) => {
