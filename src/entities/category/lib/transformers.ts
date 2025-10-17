@@ -12,23 +12,29 @@ import type {Category, CreateCategoryRequest, UpdateCategoryRequest} from '../mo
 export interface CategoryFormData {
     name: string;
     goal: string;
-    prompt_for_image_style: string;
-    structure_skeleton: string[];
-    structure_flex_level_min: string;
-    structure_flex_level_max: string;
-    structure_flex_level_comment: string;
-    must_have: string[];
-    must_avoid: string[];
-    social_networks_rules: string;
+    tone_of_voice: string[];
+    brand_rules: string[];
+    brand_vocabulary: Record<string, any>[];
+    tone_variations: Record<string, any>[];
+    structure_variations: Record<string, any>[];
+    creativity_level: string;
+    experimentation_zones: string[];
+    surprise_factors: Record<string, any>[];
+    humor_policy: Record<string, any>;
+    audience_segments: Record<string, any>[];
+    emotional_palette: Record<string, any>[];
+    must_have: Record<string, any>[];
+    must_avoid: Record<string, any>[];
     len_min: string;
     len_max: string;
     n_hashtags_min: string;
     n_hashtags_max: string;
     cta_type: string;
-    tone_of_voice: string[];
-    brand_rules: string[];
+    cta_strategy: Record<string, any>;
     good_samples: Record<string, any>[];
-    additional_info: string[];
+    bad_samples: Record<string, any>[];
+    additional_info: Record<string, any>[];
+    prompt_for_image_style: string;
 }
 
 /**
@@ -37,23 +43,29 @@ export interface CategoryFormData {
 export const createEmptyCategoryForm = (): CategoryFormData => ({
     name: '',
     goal: '',
-    prompt_for_image_style: '',
-    structure_skeleton: [],
-    structure_flex_level_min: '',
-    structure_flex_level_max: '',
-    structure_flex_level_comment: '',
+    tone_of_voice: [],
+    brand_rules: [],
+    brand_vocabulary: [],
+    tone_variations: [],
+    structure_variations: [],
+    creativity_level: '',
+    experimentation_zones: [],
+    surprise_factors: [],
+    humor_policy: {},
+    audience_segments: [],
+    emotional_palette: [],
     must_have: [],
     must_avoid: [],
-    social_networks_rules: '',
     len_min: '',
     len_max: '',
     n_hashtags_min: '',
     n_hashtags_max: '',
     cta_type: '',
-    tone_of_voice: [],
-    brand_rules: [],
+    cta_strategy: {},
     good_samples: [],
+    bad_samples: [],
     additional_info: [],
+    prompt_for_image_style: '',
 });
 
 /**
@@ -62,23 +74,29 @@ export const createEmptyCategoryForm = (): CategoryFormData => ({
 export const categoryToForm = (category: Category): CategoryFormData => ({
     name: category.name,
     goal: category.goal || '',
-    prompt_for_image_style: category.prompt_for_image_style || '',
-    structure_skeleton: category.structure_skeleton || [],
-    structure_flex_level_min: category.structure_flex_level_min?.toString() || '',
-    structure_flex_level_max: category.structure_flex_level_max?.toString() || '',
-    structure_flex_level_comment: category.structure_flex_level_comment || '',
+    tone_of_voice: category.tone_of_voice || [],
+    brand_rules: category.brand_rules || [],
+    brand_vocabulary: category.brand_vocabulary || [],
+    tone_variations: category.tone_variations || [],
+    structure_variations: category.structure_variations || [],
+    creativity_level: category.creativity_level?.toString() || '',
+    experimentation_zones: category.experimentation_zones || [],
+    surprise_factors: category.surprise_factors || [],
+    humor_policy: category.humor_policy || {},
+    audience_segments: category.audience_segments || [],
+    emotional_palette: category.emotional_palette || [],
     must_have: category.must_have || [],
     must_avoid: category.must_avoid || [],
-    social_networks_rules: category.social_networks_rules || '',
     len_min: category.len_min?.toString() || '',
     len_max: category.len_max?.toString() || '',
     n_hashtags_min: category.n_hashtags_min?.toString() || '',
     n_hashtags_max: category.n_hashtags_max?.toString() || '',
     cta_type: category.cta_type || '',
-    tone_of_voice: category.tone_of_voice || [],
-    brand_rules: category.brand_rules || [],
+    cta_strategy: category.cta_strategy || {},
     good_samples: category.good_samples || [],
+    bad_samples: category.bad_samples || [],
     additional_info: category.additional_info || [],
+    prompt_for_image_style: category.prompt_for_image_style || '',
 });
 
 /**
@@ -87,23 +105,29 @@ export const categoryToForm = (category: Category): CategoryFormData => ({
 export const jsonToCategoryForm = (jsonData: any): CategoryFormData => ({
     name: jsonData.name || '',
     goal: jsonData.goal || '',
-    prompt_for_image_style: jsonData.prompt_for_image_style || '',
-    structure_skeleton: jsonData.structure_skeleton || [],
-    structure_flex_level_min: jsonData.structure_flex_level_min?.toString() || '',
-    structure_flex_level_max: jsonData.structure_flex_level_max?.toString() || '',
-    structure_flex_level_comment: jsonData.structure_flex_level_comment || '',
+    tone_of_voice: jsonData.tone_of_voice || [],
+    brand_rules: jsonData.brand_rules || [],
+    brand_vocabulary: jsonData.brand_vocabulary || [],
+    tone_variations: jsonData.tone_variations || [],
+    structure_variations: jsonData.structure_variations || [],
+    creativity_level: jsonData.creativity_level?.toString() || '',
+    experimentation_zones: jsonData.experimentation_zones || [],
+    surprise_factors: jsonData.surprise_factors || [],
+    humor_policy: jsonData.humor_policy || {},
+    audience_segments: jsonData.audience_segments || [],
+    emotional_palette: jsonData.emotional_palette || [],
     must_have: jsonData.must_have || [],
     must_avoid: jsonData.must_avoid || [],
-    social_networks_rules: jsonData.social_networks_rules || '',
     len_min: jsonData.len_min?.toString() || '',
     len_max: jsonData.len_max?.toString() || '',
     n_hashtags_min: jsonData.n_hashtags_min?.toString() || '',
     n_hashtags_max: jsonData.n_hashtags_max?.toString() || '',
     cta_type: jsonData.cta_type || '',
-    tone_of_voice: jsonData.tone_of_voice || [],
-    brand_rules: jsonData.brand_rules || [],
+    cta_strategy: jsonData.cta_strategy || {},
     good_samples: jsonData.good_samples || [],
+    bad_samples: jsonData.bad_samples || [],
     additional_info: jsonData.additional_info || [],
+    prompt_for_image_style: jsonData.prompt_for_image_style || '',
 });
 
 /**
@@ -123,6 +147,13 @@ const filterObjects = (items: Record<string, any>[]): Record<string, any>[] | un
 };
 
 /**
+ * Фильтрует одиночный объект (возвращает undefined если пустой)
+ */
+const filterObject = (obj: Record<string, any>): Record<string, any> | undefined => {
+    return Object.keys(obj).length > 0 ? obj : undefined;
+};
+
+/**
  * Преобразует форму в CreateCategoryRequest
  */
 export const formToCreateCategoryRequest = (
@@ -132,23 +163,29 @@ export const formToCreateCategoryRequest = (
     organization_id: organizationId,
     name: formData.name,
     goal: stringOrUndefined(formData.goal),
-    prompt_for_image_style: stringOrUndefined(formData.prompt_for_image_style),
-    structure_skeleton: filterStrings(formData.structure_skeleton),
-    structure_flex_level_min: parseNumberOrUndefined(formData.structure_flex_level_min),
-    structure_flex_level_max: parseNumberOrUndefined(formData.structure_flex_level_max),
-    structure_flex_level_comment: stringOrUndefined(formData.structure_flex_level_comment),
-    must_have: filterStrings(formData.must_have),
-    must_avoid: filterStrings(formData.must_avoid),
-    social_networks_rules: stringOrUndefined(formData.social_networks_rules),
+    tone_of_voice: filterStrings(formData.tone_of_voice),
+    brand_rules: filterStrings(formData.brand_rules),
+    brand_vocabulary: filterObjects(formData.brand_vocabulary),
+    tone_variations: filterObjects(formData.tone_variations),
+    structure_variations: filterObjects(formData.structure_variations),
+    creativity_level: parseNumberOrUndefined(formData.creativity_level),
+    experimentation_zones: filterStrings(formData.experimentation_zones),
+    surprise_factors: filterObjects(formData.surprise_factors),
+    humor_policy: filterObject(formData.humor_policy),
+    audience_segments: filterObjects(formData.audience_segments),
+    emotional_palette: filterObjects(formData.emotional_palette),
+    must_have: filterObjects(formData.must_have),
+    must_avoid: filterObjects(formData.must_avoid),
     len_min: parseNumberOrUndefined(formData.len_min),
     len_max: parseNumberOrUndefined(formData.len_max),
     n_hashtags_min: parseNumberOrUndefined(formData.n_hashtags_min),
     n_hashtags_max: parseNumberOrUndefined(formData.n_hashtags_max),
     cta_type: stringOrUndefined(formData.cta_type),
-    tone_of_voice: filterStrings(formData.tone_of_voice),
-    brand_rules: filterStrings(formData.brand_rules),
+    cta_strategy: filterObject(formData.cta_strategy),
     good_samples: filterObjects(formData.good_samples),
-    additional_info: filterStrings(formData.additional_info),
+    bad_samples: filterObjects(formData.bad_samples),
+    additional_info: filterObjects(formData.additional_info),
+    prompt_for_image_style: stringOrUndefined(formData.prompt_for_image_style),
 });
 
 /**
@@ -157,23 +194,29 @@ export const formToCreateCategoryRequest = (
 export const formToUpdateCategoryRequest = (formData: CategoryFormData): UpdateCategoryRequest => ({
     name: formData.name,
     goal: stringOrUndefined(formData.goal),
-    prompt_for_image_style: stringOrUndefined(formData.prompt_for_image_style),
-    structure_skeleton: filterStrings(formData.structure_skeleton) || [],
-    structure_flex_level_min: parseNumberOrUndefined(formData.structure_flex_level_min),
-    structure_flex_level_max: parseNumberOrUndefined(formData.structure_flex_level_max),
-    structure_flex_level_comment: stringOrUndefined(formData.structure_flex_level_comment),
-    must_have: filterStrings(formData.must_have) || [],
-    must_avoid: filterStrings(formData.must_avoid) || [],
-    social_networks_rules: stringOrUndefined(formData.social_networks_rules),
+    tone_of_voice: filterStrings(formData.tone_of_voice) || [],
+    brand_rules: filterStrings(formData.brand_rules) || [],
+    brand_vocabulary: filterObjects(formData.brand_vocabulary) || [],
+    tone_variations: filterObjects(formData.tone_variations) || [],
+    structure_variations: filterObjects(formData.structure_variations) || [],
+    creativity_level: parseNumberOrUndefined(formData.creativity_level),
+    experimentation_zones: filterStrings(formData.experimentation_zones) || [],
+    surprise_factors: filterObjects(formData.surprise_factors) || [],
+    humor_policy: filterObject(formData.humor_policy),
+    audience_segments: filterObjects(formData.audience_segments) || [],
+    emotional_palette: filterObjects(formData.emotional_palette) || [],
+    must_have: filterObjects(formData.must_have) || [],
+    must_avoid: filterObjects(formData.must_avoid) || [],
     len_min: parseNumberOrUndefined(formData.len_min),
     len_max: parseNumberOrUndefined(formData.len_max),
     n_hashtags_min: parseNumberOrUndefined(formData.n_hashtags_min),
     n_hashtags_max: parseNumberOrUndefined(formData.n_hashtags_max),
     cta_type: stringOrUndefined(formData.cta_type),
-    tone_of_voice: filterStrings(formData.tone_of_voice) || [],
-    brand_rules: filterStrings(formData.brand_rules) || [],
+    cta_strategy: filterObject(formData.cta_strategy),
     good_samples: filterObjects(formData.good_samples) || [],
-    additional_info: filterStrings(formData.additional_info) || [],
+    bad_samples: filterObjects(formData.bad_samples) || [],
+    additional_info: filterObjects(formData.additional_info) || [],
+    prompt_for_image_style: stringOrUndefined(formData.prompt_for_image_style),
 });
 
 /**

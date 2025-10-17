@@ -4,70 +4,88 @@ export interface Category {
     id: number;
     organization_id: number;
     name: string;
-    prompt_for_image_style: string;
     goal: string;
-    structure_skeleton: string[];
-    structure_flex_level_min: number;
-    structure_flex_level_max: number;
-    structure_flex_level_comment: string;
-    must_have: string[];
-    must_avoid: string[];
-    social_networks_rules: string;
+    tone_of_voice: string[];
+    brand_rules: string[];
+    brand_vocabulary: Record<string, any>[];
+    tone_variations: Record<string, any>[];
+    structure_variations: Record<string, any>[];
+    creativity_level: number;
+    experimentation_zones: string[];
+    surprise_factors: Record<string, any>[];
+    humor_policy: Record<string, any>;
+    audience_segments: Record<string, any>[];
+    emotional_palette: Record<string, any>[];
+    must_have: Record<string, any>[];
+    must_avoid: Record<string, any>[];
     len_min: number;
     len_max: number;
     n_hashtags_min: number;
     n_hashtags_max: number;
     cta_type: string;
-    tone_of_voice: string[];
-    brand_rules: string[];
+    cta_strategy: Record<string, any>;
     good_samples: Record<string, any>[];
-    additional_info: string[];
+    bad_samples: Record<string, any>[];
+    additional_info: Record<string, any>[];
+    prompt_for_image_style: string;
     created_at: string;
 }
 
 export interface CreateCategoryRequest {
     organization_id: number;
     name: string;
-    prompt_for_image_style?: string;
     goal?: string;
-    structure_skeleton?: string[];
-    structure_flex_level_min?: number;
-    structure_flex_level_max?: number;
-    structure_flex_level_comment?: string;
-    must_have?: string[];
-    must_avoid?: string[];
-    social_networks_rules?: string;
+    tone_of_voice?: string[];
+    brand_rules?: string[];
+    brand_vocabulary?: Record<string, any>[];
+    tone_variations?: Record<string, any>[];
+    structure_variations?: Record<string, any>[];
+    creativity_level?: number;
+    experimentation_zones?: string[];
+    surprise_factors?: Record<string, any>[];
+    humor_policy?: Record<string, any>;
+    audience_segments?: Record<string, any>[];
+    emotional_palette?: Record<string, any>[];
+    must_have?: Record<string, any>[];
+    must_avoid?: Record<string, any>[];
     len_min?: number;
     len_max?: number;
     n_hashtags_min?: number;
     n_hashtags_max?: number;
     cta_type?: string;
-    tone_of_voice?: string[];
-    brand_rules?: string[];
+    cta_strategy?: Record<string, any>;
     good_samples?: Record<string, any>[];
-    additional_info?: string[];
+    bad_samples?: Record<string, any>[];
+    additional_info?: Record<string, any>[];
+    prompt_for_image_style?: string;
 }
 
 export interface UpdateCategoryRequest {
     name?: string;
-    prompt_for_image_style?: string;
     goal?: string;
-    structure_skeleton?: string[];
-    structure_flex_level_min?: number;
-    structure_flex_level_max?: number;
-    structure_flex_level_comment?: string;
-    must_have?: string[];
-    must_avoid?: string[];
-    social_networks_rules?: string;
+    tone_of_voice?: string[];
+    brand_rules?: string[];
+    brand_vocabulary?: Record<string, any>[];
+    tone_variations?: Record<string, any>[];
+    structure_variations?: Record<string, any>[];
+    creativity_level?: number;
+    experimentation_zones?: string[];
+    surprise_factors?: Record<string, any>[];
+    humor_policy?: Record<string, any>;
+    audience_segments?: Record<string, any>[];
+    emotional_palette?: Record<string, any>[];
+    must_have?: Record<string, any>[];
+    must_avoid?: Record<string, any>[];
     len_min?: number;
     len_max?: number;
     n_hashtags_min?: number;
     n_hashtags_max?: number;
     cta_type?: string;
-    tone_of_voice?: string[];
-    brand_rules?: string[];
+    cta_strategy?: Record<string, any>;
     good_samples?: Record<string, any>[];
-    additional_info?: string[];
+    bad_samples?: Record<string, any>[];
+    additional_info?: Record<string, any>[];
+    prompt_for_image_style?: string;
 }
 
 export interface CategoryResponse {
@@ -88,14 +106,6 @@ export const categoryFormSections: FormSection[] = [
                 inputType: 'text',
             },
             {
-                name: 'prompt_for_image_style',
-                type: 'textarea',
-                label: 'Промпт для стиля изображения',
-                placeholder: 'Описание стиля изображения...',
-                required: true,
-                debounceDelay: 500,
-            },
-            {
                 name: 'goal',
                 type: 'textarea',
                 label: 'Цель рубрики',
@@ -104,51 +114,91 @@ export const categoryFormSections: FormSection[] = [
                 debounceDelay: 500,
             },
             {
-                name: 'cta_type',
-                type: 'input',
-                label: 'Тип CTA',
-                placeholder: 'Тип призыва к действию',
+                name: 'prompt_for_image_style',
+                type: 'textarea',
+                label: 'Промпт для стиля изображения',
+                placeholder: 'Описание стиля изображения...',
                 required: true,
-                inputType: 'text',
+                debounceDelay: 500,
             },
         ],
     },
     {
-        title: 'Структура контента',
+        title: 'Тон и бренд',
         fields: [
             {
-                name: 'structure_skeleton',
+                name: 'tone_of_voice',
                 type: 'stringList',
-                label: 'Скелет структуры',
-                placeholder: 'элемент структуры',
+                label: 'Тон голоса',
+                placeholder: 'тон/стиль',
                 required: true,
             },
             {
-                name: 'structure_flex_level_min',
+                name: 'brand_rules',
+                type: 'stringList',
+                label: 'Правила бренда',
+                placeholder: 'правило бренда',
+                required: true,
+            },
+            {
+                name: 'brand_vocabulary',
+                type: 'objectList',
+                label: 'Словарь бренда',
+            },
+            {
+                name: 'tone_variations',
+                type: 'objectList',
+                label: 'Вариации тона',
+            },
+        ],
+    },
+    {
+        title: 'Структура и креативность',
+        fields: [
+            {
+                name: 'structure_variations',
+                type: 'objectList',
+                label: 'Вариации структуры',
+            },
+            {
+                name: 'creativity_level',
                 type: 'input',
-                label: 'Минимальный уровень гибкости структуры',
-                placeholder: '0',
+                label: 'Уровень креативности',
+                placeholder: '0-10',
                 required: true,
                 inputType: 'number',
                 inputMode: 'numeric',
-                groupWith: ['structure_flex_level_max'],
             },
             {
-                name: 'structure_flex_level_max',
-                type: 'input',
-                label: 'Максимальный уровень гибкости структуры',
-                placeholder: '10',
-                required: true,
-                inputType: 'number',
-                inputMode: 'numeric',
+                name: 'experimentation_zones',
+                type: 'stringList',
+                label: 'Зоны экспериментов',
+                placeholder: 'зона эксперимента',
             },
             {
-                name: 'structure_flex_level_comment',
-                type: 'textarea',
-                label: 'Комментарий к гибкости структуры',
-                placeholder: 'Пояснения к уровням гибкости...',
-                required: true,
-                debounceDelay: 300,
+                name: 'surprise_factors',
+                type: 'objectList',
+                label: 'Факторы удивления',
+            },
+            {
+                name: 'humor_policy',
+                type: 'object',
+                label: 'Политика юмора',
+            },
+        ],
+    },
+    {
+        title: 'Аудитория и эмоции',
+        fields: [
+            {
+                name: 'audience_segments',
+                type: 'objectList',
+                label: 'Сегменты аудитории',
+            },
+            {
+                name: 'emotional_palette',
+                type: 'objectList',
+                label: 'Эмоциональная палитра',
             },
         ],
     },
@@ -157,17 +207,13 @@ export const categoryFormSections: FormSection[] = [
         fields: [
             {
                 name: 'must_have',
-                type: 'stringList',
+                type: 'objectList',
                 label: 'Обязательные элементы',
-                placeholder: 'обязательный элемент',
-                required: true,
             },
             {
                 name: 'must_avoid',
-                type: 'stringList',
+                type: 'objectList',
                 label: 'Запрещенные элементы',
-                placeholder: 'запрещенный элемент',
-                required: true,
             },
         ],
     },
@@ -215,34 +261,25 @@ export const categoryFormSections: FormSection[] = [
         ],
     },
     {
-        title: 'Социальные сети и брендинг',
+        title: 'Призыв к действию',
         fields: [
             {
-                name: 'social_networks_rules',
-                type: 'textarea',
-                label: 'Правила для социальных сетей',
-                placeholder: 'Специфические правила для разных платформ...',
+                name: 'cta_type',
+                type: 'input',
+                label: 'Тип CTA',
+                placeholder: 'Тип призыва к действию',
                 required: true,
-                debounceDelay: 500,
+                inputType: 'text',
             },
             {
-                name: 'tone_of_voice',
-                type: 'stringList',
-                label: 'Тон голоса',
-                placeholder: 'тон/стиль',
-                required: true,
-            },
-            {
-                name: 'brand_rules',
-                type: 'stringList',
-                label: 'Правила бренда',
-                placeholder: 'правило бренда',
-                required: true,
+                name: 'cta_strategy',
+                type: 'object',
+                label: 'Стратегия CTA',
             },
         ],
     },
     {
-        title: 'Дополнительно',
+        title: 'Примеры и дополнительная информация',
         fields: [
             {
                 name: 'good_samples',
@@ -250,10 +287,14 @@ export const categoryFormSections: FormSection[] = [
                 label: 'Примеры хорошего контента',
             },
             {
+                name: 'bad_samples',
+                type: 'objectList',
+                label: 'Примеры плохого контента',
+            },
+            {
                 name: 'additional_info',
-                type: 'stringList',
+                type: 'objectList',
                 label: 'Дополнительная информация',
-                placeholder: 'дополнительный пункт',
             },
         ],
     },
@@ -272,34 +313,67 @@ export const categoryDetailsSections: DetailSection[] = [
                 label: 'Цель рубрики',
             },
             {
-                name: 'cta_type',
-                label: 'Тип CTA'
-            },
-            {
                 name: 'prompt_for_image_style',
                 label: 'Промпт для стиля изображения'
             },
         ]
     },
     {
-        title: 'Структура контента',
+        title: 'Тон и бренд',
         fields: [
             {
-                name: 'structure_skeleton',
-                label: 'Скелет структуры'
+                name: 'tone_of_voice',
+                label: 'Тон голоса'
             },
             {
-                name: 'structure_flex_level_min',
-                label: 'Уровень гибкости',
-                groupWith: ['structure_flex_level_max']
+                name: 'brand_rules',
+                label: 'Правила бренда'
             },
             {
-                name: 'structure_flex_level_max',
-                label: 'Максимальный уровень'
+                name: 'brand_vocabulary',
+                label: 'Словарь бренда'
             },
             {
-                name: 'structure_flex_level_comment',
-                label: 'Комментарий к гибкости'
+                name: 'tone_variations',
+                label: 'Вариации тона'
+            },
+        ]
+    },
+    {
+        title: 'Структура и креативность',
+        fields: [
+            {
+                name: 'structure_variations',
+                label: 'Вариации структуры'
+            },
+            {
+                name: 'creativity_level',
+                label: 'Уровень креативности'
+            },
+            {
+                name: 'experimentation_zones',
+                label: 'Зоны экспериментов'
+            },
+            {
+                name: 'surprise_factors',
+                label: 'Факторы удивления'
+            },
+            {
+                name: 'humor_policy',
+                label: 'Политика юмора'
+            },
+        ]
+    },
+    {
+        title: 'Аудитория и эмоции',
+        fields: [
+            {
+                name: 'audience_segments',
+                label: 'Сегменты аудитории'
+            },
+            {
+                name: 'emotional_palette',
+                label: 'Эмоциональная палитра'
             },
         ]
     },
@@ -340,29 +414,28 @@ export const categoryDetailsSections: DetailSection[] = [
         ]
     },
     {
-        title: 'Социальные сети и брендинг',
+        title: 'Призыв к действию',
         fields: [
             {
-                name: 'social_networks_rules',
-                label: 'Правила для соцсетей'
+                name: 'cta_type',
+                label: 'Тип CTA'
             },
             {
-                name: 'tone_of_voice',
-                label: 'Тон голоса'
-            }
-            ,
-            {
-                name: 'brand_rules',
-                label: 'Правила бренда'
+                name: 'cta_strategy',
+                label: 'Стратегия CTA'
             },
         ]
     },
     {
-        title: 'Дополнительно',
+        title: 'Примеры и дополнительная информация',
         fields: [
             {
                 name: 'good_samples',
                 label: 'Примеры хорошего контента',
+            },
+            {
+                name: 'bad_samples',
+                label: 'Примеры плохого контента',
             },
             {
                 name: 'additional_info',
