@@ -242,6 +242,7 @@ export const categoryDetailsSections: DetailSection[] = [
             {
                 name: 'hint',
                 label: 'Подсказка',
+                renderAsHtml: true,
             },
             {
                 name: 'goal',
