@@ -11,20 +11,12 @@ import type {Category, CreateCategoryRequest, UpdateCategoryRequest} from '../mo
  */
 export interface CategoryFormData {
     name: string;
+    hint: string;
     goal: string;
     tone_of_voice: string[];
     brand_rules: string[];
-    brand_vocabulary: Record<string, any>[];
-    tone_variations: Record<string, any>[];
-    structure_variations: Record<string, any>[];
     creativity_level: string;
-    experimentation_zones: string[];
-    surprise_factors: Record<string, any>[];
-    humor_policy: Record<string, any>;
-    audience_segments: Record<string, any>[];
-    emotional_palette: Record<string, any>[];
-    must_have: Record<string, any>[];
-    must_avoid: Record<string, any>[];
+    audience_segments: string;
     len_min: string;
     len_max: string;
     n_hashtags_min: string;
@@ -42,20 +34,12 @@ export interface CategoryFormData {
  */
 export const createEmptyCategoryForm = (): CategoryFormData => ({
     name: '',
+    hint: '',
     goal: '',
     tone_of_voice: [],
     brand_rules: [],
-    brand_vocabulary: [],
-    tone_variations: [],
-    structure_variations: [],
     creativity_level: '',
-    experimentation_zones: [],
-    surprise_factors: [],
-    humor_policy: {},
-    audience_segments: [],
-    emotional_palette: [],
-    must_have: [],
-    must_avoid: [],
+    audience_segments: '',
     len_min: '',
     len_max: '',
     n_hashtags_min: '',
@@ -73,20 +57,12 @@ export const createEmptyCategoryForm = (): CategoryFormData => ({
  */
 export const categoryToForm = (category: Category): CategoryFormData => ({
     name: category.name,
+    hint: category.hint || '',
     goal: category.goal || '',
     tone_of_voice: category.tone_of_voice || [],
     brand_rules: category.brand_rules || [],
-    brand_vocabulary: category.brand_vocabulary || [],
-    tone_variations: category.tone_variations || [],
-    structure_variations: category.structure_variations || [],
     creativity_level: category.creativity_level?.toString() || '',
-    experimentation_zones: category.experimentation_zones || [],
-    surprise_factors: category.surprise_factors || [],
-    humor_policy: category.humor_policy || {},
-    audience_segments: category.audience_segments || [],
-    emotional_palette: category.emotional_palette || [],
-    must_have: category.must_have || [],
-    must_avoid: category.must_avoid || [],
+    audience_segments: category.audience_segments || '',
     len_min: category.len_min?.toString() || '',
     len_max: category.len_max?.toString() || '',
     n_hashtags_min: category.n_hashtags_min?.toString() || '',
@@ -104,20 +80,12 @@ export const categoryToForm = (category: Category): CategoryFormData => ({
  */
 export const jsonToCategoryForm = (jsonData: any): CategoryFormData => ({
     name: jsonData.name || '',
+    hint: jsonData.hint || '',
     goal: jsonData.goal || '',
     tone_of_voice: jsonData.tone_of_voice || [],
     brand_rules: jsonData.brand_rules || [],
-    brand_vocabulary: jsonData.brand_vocabulary || [],
-    tone_variations: jsonData.tone_variations || [],
-    structure_variations: jsonData.structure_variations || [],
     creativity_level: jsonData.creativity_level?.toString() || '',
-    experimentation_zones: jsonData.experimentation_zones || [],
-    surprise_factors: jsonData.surprise_factors || [],
-    humor_policy: jsonData.humor_policy || {},
-    audience_segments: jsonData.audience_segments || [],
-    emotional_palette: jsonData.emotional_palette || [],
-    must_have: jsonData.must_have || [],
-    must_avoid: jsonData.must_avoid || [],
+    audience_segments: jsonData.audience_segments || '',
     len_min: jsonData.len_min?.toString() || '',
     len_max: jsonData.len_max?.toString() || '',
     n_hashtags_min: jsonData.n_hashtags_min?.toString() || '',
@@ -162,20 +130,12 @@ export const formToCreateCategoryRequest = (
 ): CreateCategoryRequest => ({
     organization_id: organizationId,
     name: formData.name,
+    hint: stringOrUndefined(formData.hint),
     goal: stringOrUndefined(formData.goal),
     tone_of_voice: filterStrings(formData.tone_of_voice),
     brand_rules: filterStrings(formData.brand_rules),
-    brand_vocabulary: filterObjects(formData.brand_vocabulary),
-    tone_variations: filterObjects(formData.tone_variations),
-    structure_variations: filterObjects(formData.structure_variations),
     creativity_level: parseNumberOrUndefined(formData.creativity_level),
-    experimentation_zones: filterStrings(formData.experimentation_zones),
-    surprise_factors: filterObjects(formData.surprise_factors),
-    humor_policy: filterObject(formData.humor_policy),
-    audience_segments: filterObjects(formData.audience_segments),
-    emotional_palette: filterObjects(formData.emotional_palette),
-    must_have: filterObjects(formData.must_have),
-    must_avoid: filterObjects(formData.must_avoid),
+    audience_segments: stringOrUndefined(formData.audience_segments),
     len_min: parseNumberOrUndefined(formData.len_min),
     len_max: parseNumberOrUndefined(formData.len_max),
     n_hashtags_min: parseNumberOrUndefined(formData.n_hashtags_min),
@@ -193,20 +153,12 @@ export const formToCreateCategoryRequest = (
  */
 export const formToUpdateCategoryRequest = (formData: CategoryFormData): UpdateCategoryRequest => ({
     name: formData.name,
+    hint: stringOrUndefined(formData.hint),
     goal: stringOrUndefined(formData.goal),
     tone_of_voice: filterStrings(formData.tone_of_voice) || [],
     brand_rules: filterStrings(formData.brand_rules) || [],
-    brand_vocabulary: filterObjects(formData.brand_vocabulary) || [],
-    tone_variations: filterObjects(formData.tone_variations) || [],
-    structure_variations: filterObjects(formData.structure_variations) || [],
     creativity_level: parseNumberOrUndefined(formData.creativity_level),
-    experimentation_zones: filterStrings(formData.experimentation_zones) || [],
-    surprise_factors: filterObjects(formData.surprise_factors) || [],
-    humor_policy: filterObject(formData.humor_policy),
-    audience_segments: filterObjects(formData.audience_segments) || [],
-    emotional_palette: filterObjects(formData.emotional_palette) || [],
-    must_have: filterObjects(formData.must_have) || [],
-    must_avoid: filterObjects(formData.must_avoid) || [],
+    audience_segments: stringOrUndefined(formData.audience_segments),
     len_min: parseNumberOrUndefined(formData.len_min),
     len_max: parseNumberOrUndefined(formData.len_max),
     n_hashtags_min: parseNumberOrUndefined(formData.n_hashtags_min),

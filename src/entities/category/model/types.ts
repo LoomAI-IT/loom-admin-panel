@@ -4,20 +4,12 @@ export interface Category {
     id: number;
     organization_id: number;
     name: string;
+    hint: string;
     goal: string;
     tone_of_voice: string[];
     brand_rules: string[];
-    brand_vocabulary: Record<string, any>[];
-    tone_variations: Record<string, any>[];
-    structure_variations: Record<string, any>[];
     creativity_level: number;
-    experimentation_zones: string[];
-    surprise_factors: Record<string, any>[];
-    humor_policy: Record<string, any>;
-    audience_segments: Record<string, any>[];
-    emotional_palette: Record<string, any>[];
-    must_have: Record<string, any>[];
-    must_avoid: Record<string, any>[];
+    audience_segments: string;
     len_min: number;
     len_max: number;
     n_hashtags_min: number;
@@ -34,20 +26,12 @@ export interface Category {
 export interface CreateCategoryRequest {
     organization_id: number;
     name: string;
+    hint?: string;
     goal?: string;
     tone_of_voice?: string[];
     brand_rules?: string[];
-    brand_vocabulary?: Record<string, any>[];
-    tone_variations?: Record<string, any>[];
-    structure_variations?: Record<string, any>[];
     creativity_level?: number;
-    experimentation_zones?: string[];
-    surprise_factors?: Record<string, any>[];
-    humor_policy?: Record<string, any>;
-    audience_segments?: Record<string, any>[];
-    emotional_palette?: Record<string, any>[];
-    must_have?: Record<string, any>[];
-    must_avoid?: Record<string, any>[];
+    audience_segments?: string;
     len_min?: number;
     len_max?: number;
     n_hashtags_min?: number;
@@ -62,20 +46,12 @@ export interface CreateCategoryRequest {
 
 export interface UpdateCategoryRequest {
     name?: string;
+    hint?: string;
     goal?: string;
     tone_of_voice?: string[];
     brand_rules?: string[];
-    brand_vocabulary?: Record<string, any>[];
-    tone_variations?: Record<string, any>[];
-    structure_variations?: Record<string, any>[];
     creativity_level?: number;
-    experimentation_zones?: string[];
-    surprise_factors?: Record<string, any>[];
-    humor_policy?: Record<string, any>;
-    audience_segments?: Record<string, any>[];
-    emotional_palette?: Record<string, any>[];
-    must_have?: Record<string, any>[];
-    must_avoid?: Record<string, any>[];
+    audience_segments?: string;
     len_min?: number;
     len_max?: number;
     n_hashtags_min?: number;
@@ -104,6 +80,14 @@ export const categoryFormSections: FormSection[] = [
                 placeholder: 'Введите название рубрики',
                 required: true,
                 inputType: 'text',
+            },
+            {
+                name: 'hint',
+                type: 'textarea',
+                label: 'Подсказка',
+                placeholder: 'Краткая подсказка для рубрики...',
+                required: true,
+                debounceDelay: 500,
             },
             {
                 name: 'goal',
@@ -140,26 +124,11 @@ export const categoryFormSections: FormSection[] = [
                 placeholder: 'правило бренда',
                 required: true,
             },
-            {
-                name: 'brand_vocabulary',
-                type: 'objectList',
-                label: 'Словарь бренда',
-            },
-            {
-                name: 'tone_variations',
-                type: 'objectList',
-                label: 'Вариации тона',
-            },
         ],
     },
     {
-        title: 'Структура и креативность',
+        title: 'Креативность и аудитория',
         fields: [
-            {
-                name: 'structure_variations',
-                type: 'objectList',
-                label: 'Вариации структуры',
-            },
             {
                 name: 'creativity_level',
                 type: 'input',
@@ -170,50 +139,12 @@ export const categoryFormSections: FormSection[] = [
                 inputMode: 'numeric',
             },
             {
-                name: 'experimentation_zones',
-                type: 'stringList',
-                label: 'Зоны экспериментов',
-                placeholder: 'зона эксперимента',
-            },
-            {
-                name: 'surprise_factors',
-                type: 'objectList',
-                label: 'Факторы удивления',
-            },
-            {
-                name: 'humor_policy',
-                type: 'object',
-                label: 'Политика юмора',
-            },
-        ],
-    },
-    {
-        title: 'Аудитория и эмоции',
-        fields: [
-            {
                 name: 'audience_segments',
-                type: 'objectList',
+                type: 'textarea',
                 label: 'Сегменты аудитории',
-            },
-            {
-                name: 'emotional_palette',
-                type: 'objectList',
-                label: 'Эмоциональная палитра',
-            },
-        ],
-    },
-    {
-        title: 'Обязательные и запрещенные элементы',
-        fields: [
-            {
-                name: 'must_have',
-                type: 'objectList',
-                label: 'Обязательные элементы',
-            },
-            {
-                name: 'must_avoid',
-                type: 'objectList',
-                label: 'Запрещенные элементы',
+                placeholder: 'Описание целевой аудитории...',
+                required: true,
+                debounceDelay: 500,
             },
         ],
     },
@@ -309,6 +240,10 @@ export const categoryDetailsSections: DetailSection[] = [
                 label: 'Название рубрики',
             },
             {
+                name: 'hint',
+                label: 'Подсказка',
+            },
+            {
                 name: 'goal',
                 label: 'Цель рубрики',
             },
@@ -329,64 +264,18 @@ export const categoryDetailsSections: DetailSection[] = [
                 name: 'brand_rules',
                 label: 'Правила бренда'
             },
-            {
-                name: 'brand_vocabulary',
-                label: 'Словарь бренда'
-            },
-            {
-                name: 'tone_variations',
-                label: 'Вариации тона'
-            },
         ]
     },
     {
-        title: 'Структура и креативность',
+        title: 'Креативность и аудитория',
         fields: [
-            {
-                name: 'structure_variations',
-                label: 'Вариации структуры'
-            },
             {
                 name: 'creativity_level',
                 label: 'Уровень креативности'
             },
             {
-                name: 'experimentation_zones',
-                label: 'Зоны экспериментов'
-            },
-            {
-                name: 'surprise_factors',
-                label: 'Факторы удивления'
-            },
-            {
-                name: 'humor_policy',
-                label: 'Политика юмора'
-            },
-        ]
-    },
-    {
-        title: 'Аудитория и эмоции',
-        fields: [
-            {
                 name: 'audience_segments',
                 label: 'Сегменты аудитории'
-            },
-            {
-                name: 'emotional_palette',
-                label: 'Эмоциональная палитра'
-            },
-        ]
-    },
-    {
-        title: 'Обязательные и запрещенные элементы',
-        fields: [
-            {
-                name: 'must_have',
-                label: 'Обязательные элементы'
-            },
-            {
-                name: 'must_avoid',
-                label: 'Запрещенные элементы'
             },
         ]
     },
