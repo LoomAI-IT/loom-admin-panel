@@ -32,7 +32,7 @@ export const EmployeesTable = ({organizationId}: EmployeesTableProps) => {
     const columns: DataTableColumn<Employee>[] = [
         {
             header: 'ID',
-            key: 'id',
+            key: 'account_id',
         },
         {
             header: 'Имя',
