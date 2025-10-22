@@ -3,6 +3,7 @@ import type {DetailSection, FormSection} from "../../../shared/ui";
 export interface Organization {
     id: number;
     name: string;
+    description: string;
     rub_balance: string;
     tone_of_voice: string[];
     compliance_rules: Record<string, any>[];
@@ -29,6 +30,7 @@ export interface GetAllOrganizationsResponse {
 export interface UpdateOrganizationRequest {
     organization_id: number;
     name?: string;
+    description?: string;
     tone_of_voice?: string[];
     compliance_rules?: Record<string, any>[];
     products?: Record<string, any>[];
@@ -72,6 +74,15 @@ export const organizationFormSections: FormSection[] = [
                 placeholder: 'Введите название организации',
                 required: true,
                 inputType: 'text',
+            },
+
+            {
+                name: 'description',
+                type: 'input',
+                label: 'Описание организации',
+                placeholder: 'Введите описание организации',
+                required: true,
+                inputType: 'textarea',
             },
         ],
     },
@@ -171,6 +182,11 @@ export const organizationDetailsSections: DetailSection[] = [
             {
                 name: 'name',
                 label: 'Название организации',
+            },
+
+            {
+                name: 'description',
+                label: 'Описание организации',
             },
         ],
     },

@@ -8,6 +8,7 @@ import type {
 
 export interface OrganizationFormData {
     name: string;
+    description: string;
     tone_of_voice: string[];
     compliance_rules: Record<string, any>[];
     products: Record<string, any>[];
@@ -26,6 +27,7 @@ export interface OrganizationFormData {
  */
 export const createEmptyOrganizationForm = (): OrganizationFormData => ({
     name: '',
+    description: '',
     tone_of_voice: [],
     compliance_rules: [],
     products: [],
@@ -42,6 +44,7 @@ export const organizationToForm = (
     costMultiplier: CostMultiplier | null
 ): OrganizationFormData => ({
     name: organization.name,
+    description: organization.description,
     tone_of_voice: organization.tone_of_voice || [],
     compliance_rules: organization.compliance_rules || [],
     products: organization.products || [],
@@ -61,6 +64,7 @@ export const jsonToOrganizationForm = (
     currentCostMultiplier: CostMultiplier | null
 ): OrganizationFormData => ({
     name: jsonData.name || '',
+    description: jsonData.description || '',
     tone_of_voice: jsonData.tone_of_voice || [],
     compliance_rules: jsonData.compliance_rules || [],
     products: jsonData.products || [],
@@ -102,6 +106,7 @@ export const formToUpdateOrganizationRequest = (
 ): UpdateOrganizationRequest => ({
     organization_id: organizationId,
     name: data.name,
+    description: data.description,
     tone_of_voice: filterNonEmpty(data.tone_of_voice),
     compliance_rules: filterNonEmpty(data.compliance_rules),
     additional_info: filterNonEmpty(data.additional_info),
