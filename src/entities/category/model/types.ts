@@ -9,7 +9,7 @@ export interface Category {
     tone_of_voice: string[];
     brand_rules: string[];
     creativity_level: number;
-    audience_segments: string;
+    audience_segment: string;
     len_min: number;
     len_max: number;
     n_hashtags_min: number;
@@ -31,7 +31,7 @@ export interface CreateCategoryRequest {
     tone_of_voice?: string[];
     brand_rules?: string[];
     creativity_level?: number;
-    audience_segments?: string;
+    audience_segment?: string;
     len_min?: number;
     len_max?: number;
     n_hashtags_min?: number;
@@ -51,7 +51,7 @@ export interface UpdateCategoryRequest {
     tone_of_voice?: string[];
     brand_rules?: string[];
     creativity_level?: number;
-    audience_segments?: string;
+    audience_segment?: string;
     len_min?: number;
     len_max?: number;
     n_hashtags_min?: number;
@@ -139,7 +139,7 @@ export const categoryFormSections: FormSection[] = [
                 inputMode: 'numeric',
             },
             {
-                name: 'audience_segments',
+                name: 'audience_segment',
                 type: 'textarea',
                 label: 'Сегменты аудитории',
                 placeholder: 'Описание целевой аудитории...',
@@ -275,7 +275,7 @@ export const categoryDetailsSections: DetailSection[] = [
                 label: 'Уровень креативности'
             },
             {
-                name: 'audience_segments',
+                name: 'audience_segment',
                 label: 'Сегменты аудитории'
             },
         ]

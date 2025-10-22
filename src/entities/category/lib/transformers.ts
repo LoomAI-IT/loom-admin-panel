@@ -16,7 +16,7 @@ export interface CategoryFormData {
     tone_of_voice: string[];
     brand_rules: string[];
     creativity_level: string;
-    audience_segments: string;
+    audience_segment: string;
     len_min: string;
     len_max: string;
     n_hashtags_min: string;
@@ -39,7 +39,7 @@ export const createEmptyCategoryForm = (): CategoryFormData => ({
     tone_of_voice: [],
     brand_rules: [],
     creativity_level: '',
-    audience_segments: '',
+    audience_segment: '',
     len_min: '',
     len_max: '',
     n_hashtags_min: '',
@@ -62,7 +62,7 @@ export const categoryToForm = (category: Category): CategoryFormData => ({
     tone_of_voice: category.tone_of_voice || [],
     brand_rules: category.brand_rules || [],
     creativity_level: category.creativity_level?.toString() || '',
-    audience_segments: category.audience_segments || '',
+    audience_segment: category.audience_segment || '',
     len_min: category.len_min?.toString() || '',
     len_max: category.len_max?.toString() || '',
     n_hashtags_min: category.n_hashtags_min?.toString() || '',
@@ -85,7 +85,7 @@ export const jsonToCategoryForm = (jsonData: any): CategoryFormData => ({
     tone_of_voice: jsonData.tone_of_voice || [],
     brand_rules: jsonData.brand_rules || [],
     creativity_level: jsonData.creativity_level?.toString() || '',
-    audience_segments: jsonData.audience_segments || '',
+    audience_segment: jsonData.audience_segment || '',
     len_min: jsonData.len_min?.toString() || '',
     len_max: jsonData.len_max?.toString() || '',
     n_hashtags_min: jsonData.n_hashtags_min?.toString() || '',
@@ -135,7 +135,7 @@ export const formToCreateCategoryRequest = (
     tone_of_voice: filterStrings(formData.tone_of_voice),
     brand_rules: filterStrings(formData.brand_rules),
     creativity_level: parseNumberOrUndefined(formData.creativity_level),
-    audience_segments: stringOrUndefined(formData.audience_segments),
+    audience_segment: stringOrUndefined(formData.audience_segment),
     len_min: parseNumberOrUndefined(formData.len_min),
     len_max: parseNumberOrUndefined(formData.len_max),
     n_hashtags_min: parseNumberOrUndefined(formData.n_hashtags_min),
@@ -158,7 +158,7 @@ export const formToUpdateCategoryRequest = (formData: CategoryFormData): UpdateC
     tone_of_voice: filterStrings(formData.tone_of_voice) || [],
     brand_rules: filterStrings(formData.brand_rules) || [],
     creativity_level: parseNumberOrUndefined(formData.creativity_level),
-    audience_segments: stringOrUndefined(formData.audience_segments),
+    audience_segment: stringOrUndefined(formData.audience_segment),
     len_min: parseNumberOrUndefined(formData.len_min),
     len_max: parseNumberOrUndefined(formData.len_max),
     n_hashtags_min: parseNumberOrUndefined(formData.n_hashtags_min),
