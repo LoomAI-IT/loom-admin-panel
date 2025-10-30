@@ -1,5 +1,5 @@
 import * as React from "react";
-import {memo, useCallback, useMemo} from "react";
+import {memo, useCallback, useMemo, useRef, useEffect} from "react";
 
 import {DebouncedInput} from '../DebouncedInput';
 import {DebouncedTextarea} from '../DebouncedTextarea';
@@ -96,6 +96,32 @@ export const ObjectField = memo((
         debounceDelay = 300
     }: ObjectFieldProps
 ): React.JSX.Element | null => {
+    // Хранилище стабильных ID для каждого ключа
+    const keyIdsRef = useRef(new Map<string, string>());
+    const idCounterRef = useRef(0);
+
+    // Получить или создать стабильный ID для ключа
+    const getStableId = useCallback((key: string): string => {
+        if (!keyIdsRef.current.has(key)) {
+            keyIdsRef.current.set(key, `field-${idCounterRef.current++}`);
+        }
+        return keyIdsRef.current.get(key)!;
+    }, []);
+
+    // Очистить неиспользуемые ID
+    useEffect(() => {
+        const currentKeys = new Set(Object.keys(value));
+        const keysToDelete: string[] = [];
+
+        keyIdsRef.current.forEach((_, key) => {
+            if (!currentKeys.has(key)) {
+                keysToDelete.push(key);
+            }
+        });
+
+        keysToDelete.forEach(key => keyIdsRef.current.delete(key));
+    }, [value]);
+
     const handleAdd = useCallback(() => {
         onChange({...value, '': ''});
     }, [value, onChange]);
@@ -113,10 +139,23 @@ export const ObjectField = memo((
         (oldKey: string, newKey: string) => {
             if (oldKey === newKey) return;
 
-            const newData = {...value};
-            const val = newData[oldKey];
-            delete newData[oldKey];
-            newData[newKey] = val;
+            // Пересоздаем объект с сохранением порядка ключей
+            const newData: Record<string, any> = {};
+            for (const [k, v] of Object.entries(value)) {
+                if (k === oldKey) {
+                    newData[newKey] = v;
+                } else {
+                    newData[k] = v;
+                }
+            }
+
+            // Переносим ID со старого ключа на новый
+            const id = keyIdsRef.current.get(oldKey);
+            if (id) {
+                keyIdsRef.current.delete(oldKey);
+                keyIdsRef.current.set(newKey, id);
+            }
+
             onChange(newData);
         },
         [value, onChange]
@@ -133,7 +172,7 @@ export const ObjectField = memo((
         () =>
             Object.entries(value).map(([key, val]) => (
                 <ObjectFieldItem
-                    key={key}
+                    key={getStableId(key)}
                     itemKey={key}
                     value={val}
                     debounceDelay={debounceDelay}
@@ -142,7 +181,7 @@ export const ObjectField = memo((
                     onRemove={handleRemove}
                 />
             )),
-        [value, debounceDelay, handleKeyUpdate, handleValueUpdate, handleRemove]
+        [value, debounceDelay, handleKeyUpdate, handleValueUpdate, handleRemove, getStableId]
     );
 
     if (mode === 'view' && Object.keys(value).length === 0) {

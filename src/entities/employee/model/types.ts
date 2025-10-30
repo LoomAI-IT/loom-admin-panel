@@ -19,6 +19,8 @@ export interface Employee {
     edit_employee_perm_permission: boolean;
     top_up_balance_permission: boolean;
     sign_up_social_net_permission: boolean;
+    setting_category_permission: boolean;
+    setting_organization_permission: boolean;
     name: string;
     role: string;
     created_at: string;
@@ -40,6 +42,8 @@ export interface UpdateEmployeePermissionsRequest {
     edit_employee_perm_permission?: boolean;
     top_up_balance_permission?: boolean;
     sign_up_social_net_permission?: boolean;
+    setting_category_permission?: boolean;
+    setting_organization_permission?: boolean;
 }
 
 export interface UpdateEmployeeRoleRequest {
@@ -162,6 +166,16 @@ export const employeeEditFormSections: FormSection[] = [
                 type: 'checkbox',
                 label: 'Разрешение на подключение соц. сетей',
             },
+            {
+                name: 'setting_category_permission',
+                type: 'checkbox',
+                label: 'Разрешение на настройку рубрик',
+            },
+            {
+                name: 'setting_organization_permission',
+                type: 'checkbox',
+                label: 'Разрешение на настройку организации',
+            },
         ],
     },
 ];
@@ -206,6 +220,14 @@ export const employeeDetailsSections: DetailSection[] = [
             {
                 name: 'sign_up_social_net_permission',
                 label: 'Разрешение на подключение соц. сетей',
+            },
+            {
+                name: 'setting_category_permission',
+                label: 'Разрешение на настройку рубрик',
+            },
+            {
+                name: 'setting_organization_permission',
+                label: 'Разрешение на настройку организации',
             },
         ],
     },

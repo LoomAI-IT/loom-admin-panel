@@ -8,15 +8,12 @@ import type {
 
 export interface OrganizationFormData {
     name: string;
-    video_cut_description_end_sample: string;
-    publication_text_end_sample: string;
+    description: string;
     tone_of_voice: string[];
-    brand_rules: string[];
-    compliance_rules: string[];
-    audience_insights: string[];
+    compliance_rules: Record<string, any>[];
     products: Record<string, any>[];
     locale: Record<string, any>;
-    additional_info: string[];
+    additional_info: Record<string, any>[];
 
     // Cost multipliers
     generate_text_cost_multiplier: number;
@@ -30,12 +27,9 @@ export interface OrganizationFormData {
  */
 export const createEmptyOrganizationForm = (): OrganizationFormData => ({
     name: '',
-    video_cut_description_end_sample: '',
-    publication_text_end_sample: '',
+    description: '',
     tone_of_voice: [],
-    brand_rules: [],
     compliance_rules: [],
-    audience_insights: [],
     products: [],
     locale: {},
     additional_info: [],
@@ -50,12 +44,9 @@ export const organizationToForm = (
     costMultiplier: CostMultiplier | null
 ): OrganizationFormData => ({
     name: organization.name,
-    video_cut_description_end_sample: organization.video_cut_description_end_sample || '',
-    publication_text_end_sample: organization.publication_text_end_sample || '',
+    description: organization.description,
     tone_of_voice: organization.tone_of_voice || [],
-    brand_rules: organization.brand_rules || [],
     compliance_rules: organization.compliance_rules || [],
-    audience_insights: organization.audience_insights || [],
     products: organization.products || [],
     locale: organization.locale || {},
     additional_info: organization.additional_info || [],
@@ -73,12 +64,9 @@ export const jsonToOrganizationForm = (
     currentCostMultiplier: CostMultiplier | null
 ): OrganizationFormData => ({
     name: jsonData.name || '',
-    video_cut_description_end_sample: jsonData.video_cut_description_end_sample || '',
-    publication_text_end_sample: jsonData.publication_text_end_sample || '',
+    description: jsonData.description || '',
     tone_of_voice: jsonData.tone_of_voice || [],
-    brand_rules: jsonData.brand_rules || [],
     compliance_rules: jsonData.compliance_rules || [],
-    audience_insights: jsonData.audience_insights || [],
     products: jsonData.products || [],
     locale: jsonData.locale || {},
     additional_info: jsonData.additional_info || [],
@@ -118,12 +106,9 @@ export const formToUpdateOrganizationRequest = (
 ): UpdateOrganizationRequest => ({
     organization_id: organizationId,
     name: data.name,
-    video_cut_description_end_sample: data.video_cut_description_end_sample,
-    publication_text_end_sample: data.publication_text_end_sample,
+    description: data.description,
     tone_of_voice: filterNonEmpty(data.tone_of_voice),
-    brand_rules: filterNonEmpty(data.brand_rules),
     compliance_rules: filterNonEmpty(data.compliance_rules),
-    audience_insights: filterNonEmpty(data.audience_insights),
     additional_info: filterNonEmpty(data.additional_info),
     products: filterNonEmpty(data.products),
     locale: data.locale,

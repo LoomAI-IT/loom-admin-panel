@@ -3,16 +3,13 @@ import type {DetailSection, FormSection} from "../../../shared/ui";
 export interface Organization {
     id: number;
     name: string;
+    description: string;
     rub_balance: string;
-    video_cut_description_end_sample: string;
-    publication_text_end_sample: string;
     tone_of_voice: string[];
-    brand_rules: string[];
-    compliance_rules: string[];
-    audience_insights: string[];
+    compliance_rules: Record<string, any>[];
     products: Record<string, any>[];
     locale: Record<string, any>;
-    additional_info: string[];
+    additional_info: Record<string, any>[];
     created_at: string;
 }
 
@@ -33,15 +30,12 @@ export interface GetAllOrganizationsResponse {
 export interface UpdateOrganizationRequest {
     organization_id: number;
     name?: string;
-    video_cut_description_end_sample?: string;
-    publication_text_end_sample?: string;
+    description?: string;
     tone_of_voice?: string[];
-    brand_rules?: string[];
-    compliance_rules?: string[];
-    audience_insights?: string[];
+    compliance_rules?: Record<string, any>[];
     products?: Record<string, any>[];
     locale?: Record<string, any>;
-    additional_info?: string[];
+    additional_info?: Record<string, any>[];
 }
 
 export interface UpdateOrganizationResponse {
@@ -81,19 +75,14 @@ export const organizationFormSections: FormSection[] = [
                 required: true,
                 inputType: 'text',
             },
+
             {
-                name: 'video_cut_description_end_sample',
-                type: 'textarea',
-                label: 'Образец окончания описания видео-отрывка',
-                placeholder: 'Пример текста для окончания...',
-                debounceDelay: 500,
-            },
-            {
-                name: 'publication_text_end_sample',
-                type: 'textarea',
-                label: 'Образец окончания текста публикации',
-                placeholder: 'Пример текста для окончания публикации...',
-                debounceDelay: 500,
+                name: 'description',
+                type: 'input',
+                label: 'Описание организации',
+                placeholder: 'Введите описание организации',
+                required: true,
+                inputType: 'textarea',
             },
         ],
     },
@@ -106,28 +95,15 @@ export const organizationFormSections: FormSection[] = [
                 label: 'Тон голоса',
                 placeholder: 'тон/стиль',
             },
-            {
-                name: 'brand_rules',
-                type: 'stringList',
-                label: 'Правила бренда',
-                placeholder: 'правило бренда',
-            },
         ],
     },
     {
-        title: 'Комплаенс и аудитория',
+        title: 'Комплаенс',
         fields: [
             {
                 name: 'compliance_rules',
-                type: 'stringList',
+                type: 'objectList',
                 label: 'Правила комплаенса',
-                placeholder: 'правило комплаенса',
-            },
-            {
-                name: 'audience_insights',
-                type: 'stringList',
-                label: 'Инсайты об аудитории',
-                placeholder: 'инсайт',
             },
         ],
     },
@@ -192,9 +168,8 @@ export const organizationFormSections: FormSection[] = [
         fields: [
             {
                 name: 'additional_info',
-                type: 'stringList',
+                type: 'objectList',
                 label: 'Дополнительная информация',
-                placeholder: 'дополнительный пункт',
             },
         ],
     },
@@ -208,13 +183,10 @@ export const organizationDetailsSections: DetailSection[] = [
                 name: 'name',
                 label: 'Название организации',
             },
+
             {
-                name: 'video_cut_description_end_sample',
-                label: 'Образец окончания описания видео-отрывка',
-            },
-            {
-                name: 'publication_text_end_sample',
-                label: 'Образец окончания текста публикации',
+                name: 'description',
+                label: 'Описание организации',
             },
         ],
     },
@@ -225,22 +197,14 @@ export const organizationDetailsSections: DetailSection[] = [
                 name: 'tone_of_voice',
                 label: 'Тон голоса',
             },
-            {
-                name: 'brand_rules',
-                label: 'Правила бренда',
-            },
         ],
     },
     {
-        title: 'Комплаенс и аудитория',
+        title: 'Комплаенс',
         fields: [
             {
                 name: 'compliance_rules',
                 label: 'Правила комплаенса',
-            },
-            {
-                name: 'audience_insights',
-                label: 'Инсайты об аудитории',
             },
         ],
     },

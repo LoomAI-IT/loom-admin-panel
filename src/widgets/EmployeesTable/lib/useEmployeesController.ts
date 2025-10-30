@@ -44,6 +44,8 @@ export const useEmployeesController = ({
         edit_employee_perm_permission: false,
         top_up_balance_permission: false,
         sign_up_social_net_permission: false,
+        setting_category_permission: false,
+        setting_organization_permission: false,
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 

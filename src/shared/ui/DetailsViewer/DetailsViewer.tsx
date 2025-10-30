@@ -1,4 +1,5 @@
 import {type JSX} from 'react';
+import DOMPurify from 'dompurify';
 import {useModal} from '../../lib/hooks';
 import './DetailsViewer.css';
 import {Modal} from "../Modal";
@@ -9,6 +10,7 @@ export interface DetailField {
     name: string;
     label: string;
     groupWith?: string[];
+    renderAsHtml?: boolean;
 }
 
 export interface DetailSection {
@@ -37,7 +39,7 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
 ) => {
     const jsonViewModal = useModal();
 
-    const renderFieldValue = (value: any, label: string): JSX.Element => {
+    const renderFieldValue = (value: any, label: string, renderAsHtml?: boolean): JSX.Element => {
         if (value === null || value === undefined || value === '') {
             return (
                 <div className="details-viewer-field">
@@ -45,6 +47,20 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
                     <div className="details-viewer-field-value details-viewer-field-value--empty">
                         Не указано
                     </div>
+                </div>
+            );
+        }
+
+        // Рендеринг HTML-контента
+        if (renderAsHtml && typeof value === 'string') {
+            const sanitizedHtml = DOMPurify.sanitize(value);
+            return (
+                <div className="details-viewer-field">
+                    <div className="details-viewer-field-label">{label}</div>
+                    <div
+                        className="details-viewer-field-value details-viewer-field-value--html"
+                        dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
+                    />
                 </div>
             );
         }
@@ -198,7 +214,7 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
 
         const value = values[field.name as keyof TEntityFormData];
 
-        return renderFieldValue(value, field.label);
+        return renderFieldValue(value, field.label, field.renderAsHtml);
     };
 
     const renderSection = (section: DetailSection) => {

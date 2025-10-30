@@ -32,6 +32,8 @@ export interface EmployeeEditFormData {
     edit_employee_perm_permission: boolean;
     top_up_balance_permission: boolean;
     sign_up_social_net_permission: boolean;
+    setting_category_permission: boolean;
+    setting_organization_permission: boolean;
 }
 
 /**
@@ -55,6 +57,8 @@ export const employeeToEditForm = (employee: Employee): EmployeeEditFormData => 
     edit_employee_perm_permission: employee.edit_employee_perm_permission,
     top_up_balance_permission: employee.top_up_balance_permission,
     sign_up_social_net_permission: employee.sign_up_social_net_permission,
+    setting_category_permission: employee.setting_category_permission,
+    setting_organization_permission: employee.setting_organization_permission,
 });
 
 /**
@@ -97,6 +101,8 @@ export const formToUpdatePermissionsRequest = (
     edit_employee_perm_permission: formData.edit_employee_perm_permission,
     top_up_balance_permission: formData.top_up_balance_permission,
     sign_up_social_net_permission: formData.sign_up_social_net_permission,
+    setting_category_permission: formData.setting_category_permission,
+    setting_organization_permission: formData.setting_organization_permission,
 });
 
 /**
@@ -143,7 +149,9 @@ export const hasPermissionsChanged = (
         formData.add_employee_permission !== employee.add_employee_permission ||
         formData.edit_employee_perm_permission !== employee.edit_employee_perm_permission ||
         formData.top_up_balance_permission !== employee.top_up_balance_permission ||
-        formData.sign_up_social_net_permission !== employee.sign_up_social_net_permission
+        formData.sign_up_social_net_permission !== employee.sign_up_social_net_permission ||
+        formData.setting_category_permission !== employee.setting_category_permission ||
+        formData.setting_organization_permission !== employee.setting_organization_permission
     );
 };
 
@@ -175,4 +183,6 @@ export const jsonToEmployeeEditForm = (jsonData: any): EmployeeEditFormData => (
     edit_employee_perm_permission: jsonData.edit_employee_perm_permission ?? false,
     top_up_balance_permission: jsonData.top_up_balance_permission ?? false,
     sign_up_social_net_permission: jsonData.sign_up_social_net_permission ?? false,
+    setting_category_permission: jsonData.setting_category_permission ?? false,
+    setting_organization_permission: jsonData.setting_organization_permission ?? false,
 });

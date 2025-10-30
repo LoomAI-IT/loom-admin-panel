@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {memo, useCallback, useMemo} from 'react';
+import {memo, useCallback, useMemo, useRef, useEffect} from 'react';
 
 import {DebouncedInput} from '../DebouncedInput';
 import {DebouncedTextarea} from '../DebouncedTextarea';
@@ -20,6 +20,7 @@ interface ObjectItemProps {
     object: Record<string, any>;
     index: number;
     debounceDelay: number;
+    getStableFieldId: (key: string) => string;
     onAddField: (index: number) => void;
     onRemoveField: (objectIndex: number, key: string) => void;
     onKeyChange: (objectIndex: number, oldKey: string, newKey: string) => void;
@@ -107,6 +108,7 @@ const ObjectItem = memo((
         object,
         index,
         debounceDelay,
+        getStableFieldId,
         onAddField,
         onRemoveField,
         onKeyChange,
@@ -126,7 +128,7 @@ const ObjectItem = memo((
         () =>
             Object.entries(object).map(([key, value]) => (
                 <ObjectField
-                    key={key}
+                    key={getStableFieldId(key)}
                     objectIndex={index}
                     fieldKey={key}
                     fieldValue={value}
@@ -136,7 +138,7 @@ const ObjectItem = memo((
                     onRemove={onRemoveField}
                 />
             )),
-        [object, index, debounceDelay, onKeyChange, onValueChange, onRemoveField]
+        [object, index, debounceDelay, getStableFieldId, onKeyChange, onValueChange, onRemoveField]
     );
 
     return (
@@ -183,6 +185,45 @@ export const ObjectListField = memo((
         debounceDelay = 300
     }: ObjectListFieldProps
 ): React.JSX.Element | null => {
+    // Хранилище стабильных ID для объектов (используем WeakMap для привязки к объектам)
+    const objectIdsRef = useRef(new WeakMap<Record<string, any>, string>());
+    const objectIdCounterRef = useRef(0);
+
+    // Хранилище стабильных ID для полей внутри каждого объекта
+    const fieldIdsRef = useRef(new WeakMap<Record<string, any>, Map<string, string>>());
+    const fieldIdCounterRef = useRef(0);
+
+    // Получить или создать стабильный ID для объекта
+    const getObjectId = useCallback((obj: Record<string, any>): string => {
+        if (!objectIdsRef.current.has(obj)) {
+            objectIdsRef.current.set(obj, `object-${objectIdCounterRef.current++}`);
+        }
+        return objectIdsRef.current.get(obj)!;
+    }, []);
+
+    // Получить или создать Map для полей объекта
+    const getFieldIdsMap = useCallback((obj: Record<string, any>): Map<string, string> => {
+        if (!fieldIdsRef.current.has(obj)) {
+            fieldIdsRef.current.set(obj, new Map<string, string>());
+        }
+        return fieldIdsRef.current.get(obj)!;
+    }, []);
+
+    // Перенести ID и Maps со старого объекта на новый
+    const migrateObjectIds = useCallback((oldObj: Record<string, any>, newObj: Record<string, any>) => {
+        // Переносим ID объекта
+        const objectId = objectIdsRef.current.get(oldObj);
+        if (objectId) {
+            objectIdsRef.current.set(newObj, objectId);
+        }
+
+        // Переносим Map полей
+        const fieldIdsMap = fieldIdsRef.current.get(oldObj);
+        if (fieldIdsMap) {
+            fieldIdsRef.current.set(newObj, fieldIdsMap);
+        }
+    }, []);
+
     const handleAddObject = useCallback(() => {
         onChange([...value, {}]);
     }, [value, onChange]);
@@ -197,21 +238,37 @@ export const ObjectListField = memo((
     const handleAddField = useCallback(
         (objectIndex: number) => {
             const updated = [...value];
-            updated[objectIndex] = {...updated[objectIndex], '': ''};
+            const oldObj = updated[objectIndex];
+            const newObj = {...oldObj, '': ''};
+
+            // Переносим ID со старого объекта на новый
+            migrateObjectIds(oldObj, newObj);
+
+            updated[objectIndex] = newObj;
             onChange(updated);
         },
-        [value, onChange]
+        [value, onChange, migrateObjectIds]
     );
 
     const handleRemoveField = useCallback(
         (objectIndex: number, key: string) => {
             const updated = [...value];
-            const obj = {...updated[objectIndex]};
-            delete obj[key];
-            updated[objectIndex] = obj;
+            const oldObj = updated[objectIndex];
+            const newObj = {...oldObj};
+
+            // Удаляем ID поля перед удалением самого поля
+            const fieldIdsMap = getFieldIdsMap(oldObj);
+            fieldIdsMap.delete(key);
+
+            delete newObj[key];
+
+            // Переносим ID со старого объекта на новый
+            migrateObjectIds(oldObj, newObj);
+
+            updated[objectIndex] = newObj;
             onChange(updated);
         },
-        [value, onChange]
+        [value, onChange, getFieldIdsMap, migrateObjectIds]
     );
 
     const handleKeyChange = useCallback(
@@ -219,43 +276,98 @@ export const ObjectListField = memo((
             if (oldKey === newKey) return;
 
             const updated = [...value];
-            const obj = {...updated[objectIndex]};
-            const val = obj[oldKey];
-            delete obj[oldKey];
-            obj[newKey] = val;
-            updated[objectIndex] = obj;
+            const oldObj = updated[objectIndex];
+
+            // Пересоздаем объект с сохранением порядка ключей
+            const newObj: Record<string, any> = {};
+            for (const [k, v] of Object.entries(oldObj)) {
+                if (k === oldKey) {
+                    newObj[newKey] = v;
+                } else {
+                    newObj[k] = v;
+                }
+            }
+
+            // Переносим ID со старого ключа на новый
+            const fieldIdsMap = getFieldIdsMap(oldObj);
+            const id = fieldIdsMap.get(oldKey);
+            if (id) {
+                fieldIdsMap.delete(oldKey);
+                fieldIdsMap.set(newKey, id);
+            }
+
+            // Переносим ID со старого объекта на новый
+            migrateObjectIds(oldObj, newObj);
+
+            updated[objectIndex] = newObj;
             onChange(updated);
         },
-        [value, onChange]
+        [value, onChange, getFieldIdsMap, migrateObjectIds]
     );
 
     const handleValueChange = useCallback(
         (objectIndex: number, key: string, newValue: string) => {
             const updated = [...value];
-            updated[objectIndex] = {...updated[objectIndex], [key]: newValue};
+            const oldObj = updated[objectIndex];
+            const newObj = {...oldObj, [key]: newValue};
+
+            // Переносим ID со старого объекта на новый
+            migrateObjectIds(oldObj, newObj);
+
+            updated[objectIndex] = newObj;
             onChange(updated);
         },
-        [value, onChange]
+        [value, onChange, migrateObjectIds]
     );
+
+    // Очистка неиспользуемых ID полей
+    useEffect(() => {
+        value.forEach((obj) => {
+            const fieldIdsMap = getFieldIdsMap(obj);
+            const currentKeys = new Set(Object.keys(obj));
+            const keysToDelete: string[] = [];
+
+            fieldIdsMap.forEach((_, key) => {
+                if (!currentKeys.has(key)) {
+                    keysToDelete.push(key);
+                }
+            });
+
+            keysToDelete.forEach(key => fieldIdsMap.delete(key));
+        });
+    }, [value, getFieldIdsMap]);
 
     const items = useMemo(
         () =>
-            value.map((obj, index) => (
-                <ObjectItem
-                    key={index}
-                    object={obj}
-                    index={index}
-                    debounceDelay={debounceDelay}
-                    onAddField={handleAddField}
-                    onRemoveField={handleRemoveField}
-                    onKeyChange={handleKeyChange}
-                    onValueChange={handleValueChange}
-                    onRemove={handleRemoveObject}
-                />
-            )),
+            value.map((obj, index) => {
+                const getStableFieldId = (key: string): string => {
+                    const fieldIdsMap = getFieldIdsMap(obj);
+                    if (!fieldIdsMap.has(key)) {
+                        fieldIdsMap.set(key, `field-${fieldIdCounterRef.current++}`);
+                    }
+                    return fieldIdsMap.get(key)!;
+                };
+
+                return (
+                    <ObjectItem
+                        key={getObjectId(obj)}
+                        object={obj}
+                        index={index}
+                        debounceDelay={debounceDelay}
+                        getStableFieldId={getStableFieldId}
+                        onAddField={handleAddField}
+                        onRemoveField={handleRemoveField}
+                        onKeyChange={handleKeyChange}
+                        onValueChange={handleValueChange}
+                        onRemove={handleRemoveObject}
+                    />
+                );
+            }),
         [
             value,
             debounceDelay,
+            getObjectId,
+            getFieldIdsMap,
             handleAddField,
             handleRemoveField,
             handleKeyChange,
