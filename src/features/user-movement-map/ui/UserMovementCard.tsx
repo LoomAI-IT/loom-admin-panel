@@ -1,19 +1,34 @@
 import {memo, useMemo} from 'react';
 import {ArrowRight, Clock, Calendar} from 'lucide-react';
 import type {UserMovement} from '../../../entities/employee/model/types';
-import {formatTime, formatDate, parseDuration, getDurationColor} from '../lib/helpers';
+import {
+    formatTime,
+    formatDate,
+    parseDuration,
+    getDurationColor,
+    calculateTimeBetween,
+    formatTimeBetween,
+} from '../lib/helpers';
 
 interface UserMovementCardProps {
     movement: UserMovement;
+    nextMovement?: UserMovement;
     isLast: boolean;
 }
 
-export const UserMovementCard = memo(({movement, isLast}: UserMovementCardProps) => {
+export const UserMovementCard = memo(({movement, nextMovement, isLast}: UserMovementCardProps) => {
     // Мемоизируем вычисления для предотвращения пересчетов при ре-рендерах
     const durationMs = useMemo(() => parseDuration(movement.duration), [movement.duration]);
     const colorVariant = useMemo(() => getDurationColor(durationMs), [durationMs]);
     const formattedDate = useMemo(() => formatDate(movement.start_time), [movement.start_time]);
     const formattedTime = useMemo(() => formatTime(movement.start_time), [movement.start_time]);
+
+    // Вычисляем время между текущим и следующим действием
+    const timeBetweenFormatted = useMemo(() => {
+        if (!nextMovement) return null;
+        const timeBetweenMs = calculateTimeBetween(movement.end_time, nextMovement.start_time);
+        return formatTimeBetween(timeBetweenMs);
+    }, [movement.end_time, nextMovement]);
 
     const colorClasses = {
         success: 'movement-card--success',
@@ -47,6 +62,9 @@ export const UserMovementCard = memo(({movement, isLast}: UserMovementCardProps)
             {!isLast && (
                 <div className="movement-card-arrow">
                     <ArrowRight size={24} />
+                    {timeBetweenFormatted && (
+                        <div className="movement-card-arrow-time">{timeBetweenFormatted}</div>
+                    )}
                 </div>
             )}
         </div>

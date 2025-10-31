@@ -8,8 +8,8 @@ interface VirtualizedMovementTimelineProps {
     height: number;
 }
 
-// Фиксированная ширина элемента (карточка + стрелка)
-const ITEM_WIDTH = 256; // 200px (min-width карточки) + 56px (стрелка с паддингами)
+// Фиксированная ширина элемента (карточка + стрелка с временем)
+const ITEM_WIDTH = 320; // 200px (min-width карточки) + 120px (стрелка с паддингами и текстом времени)
 
 // Пропсы для ячейки
 interface CellProps {
@@ -31,6 +31,7 @@ const CellRenderer = ({
     style: CSSProperties;
 } & CellProps) => {
     const movement = movements[columnIndex];
+    const nextMovement = columnIndex < movements.length - 1 ? movements[columnIndex + 1] : undefined;
     const isLast = columnIndex === movements.length - 1;
 
     return (
@@ -42,7 +43,7 @@ const CellRenderer = ({
                 justifyContent: 'center',
             }}
         >
-            <UserMovementCard movement={movement} isLast={isLast}/>
+            <UserMovementCard movement={movement} nextMovement={nextMovement} isLast={isLast}/>
         </div>
     );
 };

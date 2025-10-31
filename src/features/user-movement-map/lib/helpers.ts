@@ -95,6 +95,54 @@ export const formatDate = (dateTimeStr: string): string => {
 };
 
 /**
+ * Вычисляет временной интервал между двумя действиями
+ * @param endTime - время окончания предыдущего действия
+ * @param startTime - время начала следующего действия
+ * @returns интервал в миллисекундах
+ */
+export const calculateTimeBetween = (endTime: string, startTime: string): number => {
+    const end = convertToMoscowTime(endTime);
+    const start = convertToMoscowTime(startTime);
+    return start.getTime() - end.getTime();
+};
+
+/**
+ * Форматирует временной интервал в читаемый формат
+ * @param milliseconds - интервал в миллисекундах
+ * @returns отформатированная строка (например, "5 сек", "2 мин 30 сек", "1 час 15 мин")
+ */
+export const formatTimeBetween = (milliseconds: number): string => {
+    if (milliseconds < 0) {
+        return '0 сек';
+    }
+
+    const seconds = Math.floor(milliseconds / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+
+    // Если меньше минуты - показываем секунды
+    if (seconds < 60) {
+        return `${seconds} сек`;
+    }
+
+    // Если меньше часа - показываем минуты и секунды
+    if (minutes < 60) {
+        const remainingSeconds = seconds % 60;
+        if (remainingSeconds === 0) {
+            return `${minutes} мин`;
+        }
+        return `${minutes} мин ${remainingSeconds} сек`;
+    }
+
+    // Если час или больше - показываем часы и минуты
+    const remainingMinutes = minutes % 60;
+    if (remainingMinutes === 0) {
+        return `${hours} час${hours > 1 ? 'а' : ''}${hours > 4 ? 'ов' : ''}`;
+    }
+    return `${hours} час${hours > 1 ? 'а' : ''}${hours > 4 ? 'ов' : ''} ${remainingMinutes} мин`;
+};
+
+/**
  * Вычисляет статистику по массиву перемещений
  */
 export interface MovementStats {
