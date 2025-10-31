@@ -1,5 +1,6 @@
 import {NotificationContainer} from '../../../features/notification';
 import {ConfirmDialog} from '../../../features/confirmation-dialog';
+import {UserMovementMap} from '../../../features/user-movement-map';
 
 import {
     type Employee,
@@ -18,6 +19,7 @@ import {
     DataTable,
     DetailsViewer,
     FormBuilder,
+    Button,
 } from '../../../shared/ui';
 
 import {useEmployeesController} from '../lib/useEmployeesController';
@@ -123,7 +125,24 @@ export const EmployeesTable = ({organizationId}: EmployeesTableProps) => {
                 values={controller.editFormData}
                 isOpen={controller.detailsModal.isOpen}
                 onClose={controller.detailsModal.close}
+                footerActions={
+                    <Button
+                        variant="primary"
+                        onClick={controller.movementMapModal.open}
+                        size="small"
+                    >
+                        Карта перемещений
+                    </Button>
+                }
             />
+
+            {controller.selectedEmployee && (
+                <UserMovementMap
+                    accountId={controller.selectedEmployee.account_id}
+                    isOpen={controller.movementMapModal.isOpen}
+                    onClose={controller.movementMapModal.close}
+                />
+            )}
         </>
     );
 };

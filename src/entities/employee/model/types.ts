@@ -232,3 +232,17 @@ export const employeeDetailsSections: DetailSection[] = [
         ],
     },
 ];
+
+// User Movement Map Types
+export interface UserMovement {
+    account_id: string;
+    telegram_username: string;
+    start_time: string;
+    end_time: string;
+    duration: string;
+    service: string;
+    method: string;
+}
+
+// API возвращает массив напрямую
+export type UserMovementMapResponse = UserMovement[];

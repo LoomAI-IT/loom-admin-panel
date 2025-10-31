@@ -4,3 +4,4 @@ export {accountClient} from './accountClient';
 export {organizationClient} from './organizationClient';
 export {employeeClient} from './employeeClient';
 export {contentClient} from './contentClient';
+export {internalDashboardClient} from './internalDashboardClient';

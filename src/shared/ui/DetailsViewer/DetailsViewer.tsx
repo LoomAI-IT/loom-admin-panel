@@ -1,4 +1,4 @@
-import {type JSX} from 'react';
+import {type JSX, type ReactNode} from 'react';
 import DOMPurify from 'dompurify';
 import {useModal} from '../../lib/hooks';
 import './DetailsViewer.css';
@@ -25,6 +25,7 @@ interface DetailsViewerProps<TEntityFormData> {
     values: TEntityFormData;
     isOpen: boolean;
     onClose: () => void;
+    footerActions?: ReactNode;
 }
 
 export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
@@ -35,6 +36,7 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
         values,
         isOpen,
         onClose,
+        footerActions,
     }: DetailsViewerProps<TEntityFormData>
 ) => {
     const jsonViewModal = useModal();
@@ -286,6 +288,7 @@ export const DetailsViewer = <TEntityFormData extends Record<string, any>>(
                         {sections.map(renderSection)}
                     </div>
                     <div className="details-viewer-footer">
+                        {footerActions}
                         <Button
                             variant="secondary"
                             onClick={jsonViewModal.open}

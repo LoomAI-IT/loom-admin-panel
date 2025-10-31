@@ -55,6 +55,7 @@ export const useEmployeesController = ({
     const addModal = useModal();
     const editModal = useModal();
     const detailsModal = useModal();
+    const movementMapModal = useModal();
 
     const handleOpenAddModal = () => {
         setCreateFormData(createEmptyEmployeeForm());
@@ -185,10 +186,14 @@ export const useEmployeesController = ({
         setEditFormData,
         isSubmitting,
 
+        // Selected employee
+        selectedEmployee,
+
         // Modal state
         addModal,
         editModal,
         detailsModal,
+        movementMapModal,
 
         // Notification state
         notification,
