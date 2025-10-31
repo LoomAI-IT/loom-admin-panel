@@ -45,26 +45,52 @@ export const getDurationColor = (durationMs: number): 'success' | 'warning' | 'd
 };
 
 /**
- * Форматирует дату/время для отображения
+ * Конвертирует время в московское (UTC+3)
+ */
+const convertToMoscowTime = (dateTimeStr: string): Date => {
+    let date: Date;
+
+    // Проверяем, содержит ли строка timezone info (Z, +offset, или -offset)
+    const hasTimezone = dateTimeStr.endsWith('Z') ||
+                       dateTimeStr.includes('+') ||
+                       (dateTimeStr.includes('T') && dateTimeStr.lastIndexOf('-') > dateTimeStr.indexOf('T'));
+
+    if (hasTimezone) {
+        // Строка уже содержит timezone - парсим как есть
+        date = new Date(dateTimeStr);
+    } else {
+        // Naive datetime - явно указываем, что это UTC, добавляя 'Z'
+        date = new Date(dateTimeStr + 'Z');
+    }
+
+    // Добавляем 3 часа для московского времени (в миллисекундах)
+    const moscowTime = new Date(date.getTime() + 3 * 60 * 60 * 1000);
+    return moscowTime;
+};
+
+/**
+ * Форматирует дату/время для отображения в московском времени (UTC+3)
  */
 export const formatTime = (dateTimeStr: string): string => {
-    const date = new Date(dateTimeStr);
-    return date.toLocaleTimeString('ru-RU', {
+    const moscowDate = convertToMoscowTime(dateTimeStr);
+    return moscowDate.toLocaleTimeString('ru-RU', {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
+        timeZone: 'UTC',
     });
 };
 
 /**
- * Форматирует дату для отображения
+ * Форматирует дату для отображения в московском времени (UTC+3)
  */
 export const formatDate = (dateTimeStr: string): string => {
-    const date = new Date(dateTimeStr);
-    return date.toLocaleDateString('ru-RU', {
+    const moscowDate = convertToMoscowTime(dateTimeStr);
+    return moscowDate.toLocaleDateString('ru-RU', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
+        timeZone: 'UTC',
     });
 };
 
