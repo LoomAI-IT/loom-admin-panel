@@ -70,6 +70,11 @@
     overflow-y: hidden;
     cursor: grab;
     padding: var(--spacing-6);
+    /* GPU acceleration для плавного скролла */
+    transform: translateZ(0);
+    -webkit-overflow-scrolling: touch;
+    /* Оптимизация скролла */
+    will-change: scroll-position;
 }
 
 .movement-map-scroll.is-dragging {
@@ -104,6 +109,41 @@
     padding: var(--spacing-4);
 }
 
+/* Virtualized Timeline Container */
+.movement-map-timeline-virtualized {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    min-width: min-content;
+    padding: var(--spacing-4);
+    /* Оптимизация для горизонтального скролла */
+    will-change: transform;
+}
+
+/* Wrapper для виртуализированного списка с drag-scroll */
+.movement-map-scroll-wrapper {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    position: relative;
+}
+
+.movement-map-scroll-wrapper.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+}
+
+/* Принудительно убираем вертикальный скролл из Grid */
+.movement-map-scroll-wrapper > div {
+    overflow-y: hidden !important;
+    overflow-x: auto;
+}
+
+/* Убираем вертикальный скролл из внутренних контейнеров Grid */
+.movement-map-scroll-wrapper [style*="overflow"]:not([style*="overflow-x"]) {
+    overflow-y: hidden !important;
+}
+
 /* Movement Card Wrapper */
 .movement-card-wrapper {
     display: flex;
@@ -124,6 +164,10 @@
     gap: var(--spacing-3);
     box-shadow: var(--shadow-sm);
     transition: all var(--transition-fast);
+    /* CSS containment для изоляции рендеринга и улучшения производительности */
+    contain: layout style paint;
+    /* Оптимизация для трансформаций при hover */
+    will-change: transform, box-shadow;
 }
 
 .movement-card:hover {

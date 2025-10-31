@@ -1,3 +1,4 @@
+import {memo, useMemo} from 'react';
 import {ArrowRight, Clock, Calendar} from 'lucide-react';
 import type {UserMovement} from '../../../entities/employee/model/types';
 import {formatTime, formatDate, parseDuration, getDurationColor} from '../lib/helpers';
@@ -7,9 +8,12 @@ interface UserMovementCardProps {
     isLast: boolean;
 }
 
-export const UserMovementCard = ({movement, isLast}: UserMovementCardProps) => {
-    const durationMs = parseDuration(movement.duration);
-    const colorVariant = getDurationColor(durationMs);
+export const UserMovementCard = memo(({movement, isLast}: UserMovementCardProps) => {
+    // Мемоизируем вычисления для предотвращения пересчетов при ре-рендерах
+    const durationMs = useMemo(() => parseDuration(movement.duration), [movement.duration]);
+    const colorVariant = useMemo(() => getDurationColor(durationMs), [durationMs]);
+    const formattedDate = useMemo(() => formatDate(movement.start_time), [movement.start_time]);
+    const formattedTime = useMemo(() => formatTime(movement.start_time), [movement.start_time]);
 
     const colorClasses = {
         success: 'movement-card--success',
@@ -23,11 +27,11 @@ export const UserMovementCard = ({movement, isLast}: UserMovementCardProps) => {
                 <div className="movement-card-datetime">
                     <div className="movement-card-date">
                         <Calendar size={14} />
-                        <span>{formatDate(movement.start_time)}</span>
+                        <span>{formattedDate}</span>
                     </div>
                     <div className="movement-card-time">
                         <Clock size={14} />
-                        <span>{formatTime(movement.start_time)}</span>
+                        <span>{formattedTime}</span>
                     </div>
                 </div>
 
@@ -47,4 +51,6 @@ export const UserMovementCard = ({movement, isLast}: UserMovementCardProps) => {
             )}
         </div>
     );
-};
+});
+
+UserMovementCard.displayName = 'UserMovementCard';

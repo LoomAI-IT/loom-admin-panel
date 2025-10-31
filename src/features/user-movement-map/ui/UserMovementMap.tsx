@@ -1,10 +1,10 @@
-import {useState} from 'react';
+import {useState, useRef, useEffect} from 'react';
 import {Activity, TrendingUp} from 'lucide-react';
+import type {GridImperativeAPI} from 'react-window';
 import {Modal} from '../../../shared/ui';
-import {UserMovementCard} from './UserMovementCard';
+import {VirtualizedMovementTimeline} from './VirtualizedMovementTimeline';
 import {TimeFilter} from './TimeFilter';
 import {useUserMovementMap} from '../lib/useUserMovementMap';
-import {useDragScroll} from '../lib/useDragScroll';
 import './UserMovementMap.css';
 
 interface UserMovementMapProps {
@@ -15,6 +15,9 @@ interface UserMovementMapProps {
 
 export const UserMovementMap = ({accountId, isOpen, onClose}: UserMovementMapProps) => {
     const [countLastHours, setCountLastHours] = useState(24);
+    const [contentHeight, setContentHeight] = useState(500);
+    const gridRef = useRef<GridImperativeAPI | null>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
 
     const {movements, loading, error, stats} = useUserMovementMap({
         accountId,
@@ -22,8 +25,13 @@ export const UserMovementMap = ({accountId, isOpen, onClose}: UserMovementMapPro
         isOpen,
     });
 
-    const {scrollRef, isDragging, onMouseDown, onMouseMove, onMouseUp, onMouseLeave} =
-        useDragScroll();
+    // Вычисляем высоту контейнера для виртуализированного списка
+    useEffect(() => {
+        if (contentRef.current) {
+            const height = contentRef.current.clientHeight;
+            setContentHeight(height > 0 ? height : 500);
+        }
+    }, [isOpen, loading, movements.length]);
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Карта перемещений" size="xl">
@@ -47,7 +55,7 @@ export const UserMovementMap = ({accountId, isOpen, onClose}: UserMovementMapPro
                 </div>
 
                 {/* Основной контент */}
-                <div className="movement-map-content">
+                <div className="movement-map-content" ref={contentRef}>
                     {loading && (
                         <div className="movement-map-loading">
                             <div className="spinner" />
@@ -69,24 +77,11 @@ export const UserMovementMap = ({accountId, isOpen, onClose}: UserMovementMapPro
                     )}
 
                     {!loading && !error && movements.length > 0 && (
-                        <div
-                            ref={scrollRef}
-                            className={`movement-map-scroll ${isDragging ? 'is-dragging' : ''}`}
-                            onMouseDown={onMouseDown}
-                            onMouseMove={onMouseMove}
-                            onMouseUp={onMouseUp}
-                            onMouseLeave={onMouseLeave}
-                        >
-                            <div className="movement-map-timeline">
-                                {movements.map((movement, index) => (
-                                    <UserMovementCard
-                                        key={`${movement.start_time}-${index}`}
-                                        movement={movement}
-                                        isLast={index === movements.length - 1}
-                                    />
-                                ))}
-                            </div>
-                        </div>
+                        <VirtualizedMovementTimeline
+                            ref={gridRef}
+                            movements={movements}
+                            height={contentHeight}
+                        />
                     )}
                 </div>
 
