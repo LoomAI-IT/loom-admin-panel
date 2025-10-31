@@ -1,6 +1,5 @@
 import {useState, useRef, useEffect} from 'react';
 import {Activity, TrendingUp} from 'lucide-react';
-import type {GridImperativeAPI} from 'react-window';
 import {Modal} from '../../../shared/ui';
 import {VirtualizedMovementTimeline} from './VirtualizedMovementTimeline';
 import {TimeFilter} from './TimeFilter';
@@ -16,7 +15,6 @@ interface UserMovementMapProps {
 export const UserMovementMap = ({accountId, isOpen, onClose}: UserMovementMapProps) => {
     const [countLastHours, setCountLastHours] = useState(24);
     const [contentHeight, setContentHeight] = useState(500);
-    const gridRef = useRef<GridImperativeAPI | null>(null);
     const contentRef = useRef<HTMLDivElement>(null);
 
     const {movements, loading, error, stats} = useUserMovementMap({
@@ -78,7 +76,6 @@ export const UserMovementMap = ({accountId, isOpen, onClose}: UserMovementMapPro
 
                     {!loading && !error && movements.length > 0 && (
                         <VirtualizedMovementTimeline
-                            ref={gridRef}
                             movements={movements}
                             height={contentHeight}
                         />
