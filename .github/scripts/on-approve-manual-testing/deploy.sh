@@ -195,7 +195,7 @@ build_container() {
     cd loom/$SERVICE_NAME
 
 
-    docker build --build-arg VITE_LOOM_DOMAIN=https://$PROD_DOMAIN -t loom-admin-panel .
+    docker build --build-arg VITE_LOOM_DOMAIN=$PROD_DOMAIN -t loom-admin-panel .
     docker stop loom-admin-panel
     docker rm loom-admin-panel
     docker run --name loom-admin-panel -d -p 3010:80 loom-admin-panel
