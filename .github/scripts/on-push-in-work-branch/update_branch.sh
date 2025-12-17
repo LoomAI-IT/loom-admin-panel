@@ -249,23 +249,7 @@ build_and_start_container() {
     log INFO "Сборка и запуск контейнера"
     echo "─────────────────────────────────────────"
 
-    cd loom/$SYSTEM_REPO
-    log DEBUG "Рабочая директория: $(pwd)"
-
-    # Проверка наличия env файлов
-    log INFO "Проверка наличия env файлов"
-    for env_file in env/.env.app env/.env.db env/.env.monitoring; do
-        if [ -f "$env_file" ]; then
-            log SUCCESS "Найден: $env_file"
-            echo "File: $env_file ($(wc -l < $env_file) lines)" >> "$LOG_FILE"
-        else
-            log ERROR "Отсутствует: $env_file"
-            exit 1
-        fi
-    done
-
-    export $(cat env/.env.app env/.env.db env/.env.monitoring | xargs)
-    log INFO "Переменные окружения загружены"
+    cd loom/$SERVICE_NAME
 
     # Информация о текущем состоянии контейнера
     log INFO "Проверка текущего состояния контейнера"
@@ -279,17 +263,10 @@ build_and_start_container() {
         echo ""
     } >> "$LOG_FILE"
 
-    # Остановка существующего контейнера если есть
-    if docker ps -a --filter "name=$SERVICE_NAME" --format "{{.Names}}" | grep -q "^${SERVICE_NAME}$"; then
-        log INFO "Остановка существующего контейнера"
-        docker stop $SERVICE_NAME >> "$LOG_FILE" 2>&1 || true
-        docker rm $SERVICE_NAME >> "$LOG_FILE" 2>&1 || true
-        log SUCCESS "Контейнер остановлен и удален"
-    fi
-
     docker build --build-arg VITE_LOOM_DOMAIN=https://$DEV_DOMAIN -t loom-admin-panel .
     docker stop loom-admin-panel
-    docker run -p 3010:80 loom-admin-panel
+    docker rm loom-admin-panel
+    docker run --name loom-admin-panel -d -p 3010:80 loom-admin-panel
 }
 
 send_telegram_notification() {

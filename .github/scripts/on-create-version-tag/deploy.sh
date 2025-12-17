@@ -163,47 +163,6 @@ cleanup_branches() {
 # Миграции базы данных
 # ============================================
 
-run_migrations() {
-    echo ""
-    log INFO "Запуск миграций базы данных"
-    cd loom/$SERVICE_NAME
-
-    # Создаем временный файл для вывода миграций
-    local migration_output=$(mktemp)
-
-    docker run --rm \
-        --network net \
-        -v ./:/app \
-        -w /app \
-        --env-file ../$SYSTEM_REPO/env/.env.app \
-        --env-file ../$SYSTEM_REPO/env/.env.db \
-        --env-file ../$SYSTEM_REPO/env/.env.monitoring \
-        migration-base:latest \
-        bash -c '
-            python internal/migration/run.py stage
-        ' > "$migration_output" 2>&1
-
-    local exit_code=$?
-
-    # Показываем только важные строки из вывода миграций
-    if [ $exit_code -eq 0 ]; then
-        # Фильтруем вывод: показываем только строки с миграциями
-        grep -E "(Running migration|Applied|Skipping|No migrations)" "$migration_output" || echo "Миграции выполнены"
-        log SUCCESS "Миграции выполнены успешно"
-    else
-        # При ошибке показываем полный вывод
-        cat "$migration_output"
-        log ERROR "Миграции завершились с ошибкой"
-        rm -f "$migration_output"
-        exit 1
-    fi
-
-    # Сохраняем полный вывод в лог-файл
-    cat "$migration_output" >> "$LOG_FILE"
-    rm -f "$migration_output"
-
-    cd
-}
 
 # ============================================
 # Операции с Docker контейнерами
@@ -212,71 +171,15 @@ run_migrations() {
 build_container() {
     echo ""
     log INFO "Сборка и запуск Docker контейнера"
-    cd loom/$SYSTEM_REPO
+    cd loom/$SERVICE_NAME
 
-    export $(cat env/.env.app env/.env.db env/.env.monitoring | xargs)
 
-    # Создаем временный файл для вывода docker compose
-    local docker_output=$(mktemp)
-
-    docker compose -f ./docker-compose/app.yaml up -d --build $SERVICE_NAME > "$docker_output" 2>&1
-    local exit_code=$?
-
-    if [ $exit_code -eq 0 ]; then
-        # Показываем только важные строки
-        grep -E "(Building|Built|Creating|Created|Starting|Started|Recreating)" "$docker_output" || echo "Контейнер запущен"
-        log SUCCESS "Контейнер $SERVICE_NAME собран и запущен"
-    else
-        # При ошибке показываем полный вывод
-        cat "$docker_output"
-        log ERROR "Ошибка сборки контейнера $SERVICE_NAME"
-        rm -f "$docker_output"
-        exit 1
-    fi
-
-    # Сохраняем полный вывод в лог-файл
-    cat "$docker_output" >> "$LOG_FILE"
-    rm -f "$docker_output"
+    docker build --build-arg VITE_LOOM_DOMAIN=https://$DEV_DOMAIN -t loom-admin-panel .
+    docker stop loom-admin-panel
+    docker rm loom-admin-panel
+    docker run --name loom-admin-panel -d -p 3010:80 loom-admin-panel
 
     cd
-}
-
-check_health() {
-    local url="$STAGE_DOMAIN$SERVICE_PREFIX/health"
-    local http_code=$(curl -f -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null)
-    [ "$http_code" = "200" ]
-}
-
-wait_for_health() {
-    echo ""
-    log INFO "Проверка работоспособности сервиса"
-    log INFO "Ожидание 15 секунд перед проверкой..."
-    sleep 15
-
-    local max_attempts=3
-    local attempt=1
-
-    while [ $attempt -le $max_attempts ]; do
-        log INFO "Попытка $attempt/$max_attempts"
-
-        if check_health; then
-            log SUCCESS "Сервис работает корректно (HTTP 200)"
-            return 0
-        fi
-
-        if [ $attempt -lt $max_attempts ]; then
-            log WARN "Сервис не готов, ожидание 15 сек..."
-            sleep 15
-        fi
-
-        ((attempt++))
-    done
-
-    log ERROR "Сервис не прошел проверку после $max_attempts попыток"
-    echo ""
-    echo "Логи контейнера (последние 30 строк):"
-    docker logs --tail 30 $SERVICE_NAME 2>&1 | tee -a "$LOG_FILE"
-    exit 1
 }
 
 # ============================================
@@ -295,9 +198,7 @@ main() {
     update_repository
     checkout_tag
     cleanup_branches
-    run_migrations
     build_container
-    wait_for_health
 
     echo ""
     echo "╔════════════════════════════════════════════════════════════╗"
