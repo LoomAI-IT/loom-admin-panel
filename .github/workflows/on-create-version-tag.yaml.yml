@@ -59,6 +59,7 @@ jobs:
           
           update_release_status "stage_building"
           deploy_to_server
+          update_release_status "manual_testing"
 
 
       - name: 🎉 Уведомление об успехе
