@@ -249,23 +249,7 @@ build_and_start_container() {
     log INFO "Сборка и запуск контейнера"
     echo "─────────────────────────────────────────"
 
-    cd loom/$SYSTEM_REPO
-    log DEBUG "Рабочая директория: $(pwd)"
-
-    # Проверка наличия env файлов
-    log INFO "Проверка наличия env файлов"
-    for env_file in env/.env.app env/.env.db env/.env.monitoring; do
-        if [ -f "$env_file" ]; then
-            log SUCCESS "Найден: $env_file"
-            echo "File: $env_file ($(wc -l < $env_file) lines)" >> "$LOG_FILE"
-        else
-            log ERROR "Отсутствует: $env_file"
-            exit 1
-        fi
-    done
-
-    export $(cat env/.env.app env/.env.db env/.env.monitoring | xargs)
-    log INFO "Переменные окружения загружены"
+    cd loom/$SERVICE_NAME
 
     # Информация о текущем состоянии контейнера
     log INFO "Проверка текущего состояния контейнера"
