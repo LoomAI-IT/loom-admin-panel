@@ -273,7 +273,7 @@ build_and_start_container() {
 
     docker build --build-arg VITE_LOOM_DOMAIN=https://$DEV_DOMAIN -t loom-admin-panel .
     docker stop loom-admin-panel
-    docker run -p 3010:80 loom-admin-panel
+    docker run --name loom-admin-panel -p 3010:80 loom-admin-panel
 }
 
 send_telegram_notification() {
