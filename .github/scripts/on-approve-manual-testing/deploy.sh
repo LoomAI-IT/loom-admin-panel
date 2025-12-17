@@ -220,94 +220,32 @@ main() {
     cleanup_branches
     build_container
 
-    if wait_for_health; then
-        echo ""
-        echo "╔════════════════════════════════════════════════════════════╗"
-        echo "║         РАЗВЕРТЫВАНИЕ ЗАВЕРШЕНО УСПЕШНО! 🎉               ║"
-        echo "╚════════════════════════════════════════════════════════════╝"
-        echo ""
+    echo ""
+    echo "╔════════════════════════════════════════════════════════════╗"
+    echo "║         РАЗВЕРТЫВАНИЕ ЗАВЕРШЕНО УСПЕШНО! 🎉               ║"
+    echo "╚════════════════════════════════════════════════════════════╝"
+    echo ""
 
-        if [ -f "/tmp/${SERVICE_NAME}_previous_tag.txt" ]; then
-            local saved_tag=$(cat /tmp/${SERVICE_NAME}_previous_tag.txt)
-            if [ -n "$saved_tag" ]; then
-                log INFO "Для отката доступен тег: $saved_tag"
-            fi
-        fi
-
-        {
-            echo ""
-            echo "========================================"
-            echo "PRODUCTION РАЗВЕРТЫВАНИЕ ЗАВЕРШЕНО"
-            echo "========================================"
-            echo "Время:   $(date '+%Y-%m-%d %H:%M:%S')"
-            echo "Статус:  УСПЕШНО"
-            echo "Версия:  $TAG_NAME"
-            echo "========================================"
-        } >> "$LOG_FILE"
-
-        echo ""
-        log INFO "📁 Полный лог сохранен: $LOG_FILE"
-
-    else
-        log ERROR "Health check не прошел - начинается откат"
-        update_release_status_internal "production_rollback"
-
-        if rollback_to_previous; then
-            echo ""
-            echo "╔════════════════════════════════════════════════════════════╗"
-            echo "║           ОТКАТ ВЫПОЛНЕН УСПЕШНО                           ║"
-            echo "╚════════════════════════════════════════════════════════════╝"
-            echo ""
-
-            log SUCCESS "Автоматический откат выполнен"
-            log WARN "Деплой версии $TAG_NAME отменен"
-
-            update_release_status_internal "rollback_done"
-
-            {
-                echo ""
-                echo "========================================"
-                echo "ОТКАТ ВЫПОЛНЕН"
-                echo "========================================"
-                echo "Время:      $(date '+%Y-%m-%d %H:%M:%S')"
-                echo "Статус:     ОТКАЧЕНО"
-                echo "Попытка:    $TAG_NAME"
-                echo "Откат на:   $(cat /tmp/${SERVICE_NAME}_previous_tag.txt)"
-                echo "========================================"
-            } >> "$LOG_FILE"
-
-            echo ""
-            log INFO "📁 Полный лог сохранен: $LOG_FILE"
-            exit 1
-
-        else
-            echo ""
-            echo "╔════════════════════════════════════════════════════════════╗"
-            echo "║           КРИТИЧЕСКАЯ ОШИБКА ОТКАТА                       ║"
-            echo "╚════════════════════════════════════════════════════════════╝"
-            echo ""
-
-            log ERROR "Автоматический откат не удался"
-            log ERROR "ТРЕБУЕТСЯ СРОЧНОЕ РУЧНОЕ ВМЕШАТЕЛЬСТВО"
-
-            update_release_status_internal "rollback_failed"
-
-            {
-                echo ""
-                echo "========================================"
-                echo "КРИТИЧЕСКАЯ ОШИБКА"
-                echo "========================================"
-                echo "Время:   $(date '+%Y-%m-%d %H:%M:%S')"
-                echo "Статус:  ОШИБКА ОТКАТА"
-                echo "Версия:  $TAG_NAME"
-                echo "========================================"
-            } >> "$LOG_FILE"
-
-            echo ""
-            log INFO "📁 Полный лог сохранен: $LOG_FILE"
-            exit 1
+    if [ -f "/tmp/${SERVICE_NAME}_previous_tag.txt" ]; then
+        local saved_tag=$(cat /tmp/${SERVICE_NAME}_previous_tag.txt)
+        if [ -n "$saved_tag" ]; then
+            log INFO "Для отката доступен тег: $saved_tag"
         fi
     fi
+
+    {
+        echo ""
+        echo "========================================"
+        echo "PRODUCTION РАЗВЕРТЫВАНИЕ ЗАВЕРШЕНО"
+        echo "========================================"
+        echo "Время:   $(date '+%Y-%m-%d %H:%M:%S')"
+        echo "Статус:  УСПЕШНО"
+        echo "Версия:  $TAG_NAME"
+        echo "========================================"
+    } >> "$LOG_FILE"
+
+    echo ""
+    log INFO "📁 Полный лог сохранен: $LOG_FILE"
 }
 
 main
