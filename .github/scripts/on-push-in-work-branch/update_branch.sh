@@ -263,8 +263,17 @@ build_and_start_container() {
         echo ""
     } >> "$LOG_FILE"
 
+    # Остановка существующего контейнера если есть
+    if docker ps -a --filter "name=$SERVICE_NAME" --format "{{.Names}}" | grep -q "^${SERVICE_NAME}$"; then
+        log INFO "Остановка существующего контейнера"
+        docker stop $SERVICE_NAME >> "$LOG_FILE" 2>&1 || true
+        docker rm $SERVICE_NAME >> "$LOG_FILE" 2>&1 || true
+        log SUCCESS "Контейнер остановлен и удален"
+    fi
+
     docker build --build-arg VITE_LOOM_DOMAIN=https://$DEV_DOMAIN -t loom-admin-panel .
     docker stop loom-admin-panel
+    docker rm loom-admin-panel
     docker run --name loom-admin-panel -p 3010:80 loom-admin-panel
 }
 
