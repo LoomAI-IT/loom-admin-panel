@@ -21,6 +21,7 @@ export const AppRouter = () => {
                         </PrivateRoute>
                     }
                 >
+
                     <Route index element={<MainMenuPage/>}/>
                     <Route path="organizations" element={<OrganizationsMenuPage/>}/>
                     <Route path="organizations/:organizationId" element={<OrganizationDetailPage/>}/>
